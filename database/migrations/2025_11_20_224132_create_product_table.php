@@ -8,22 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product', function (Blueprint $table) {
-            $table->id('id_product'); // PK Custom
-            $table->string('namaproduct', 100);
-            $table->enum('category', ['nail polish', 'nail tools', 'nail care', 'nail kit'])->nullable();
-            $table->integer('stock');
-            $table->decimal('price', 10, 2);
-            $table->enum('status', ['draft', 'published', 'low stock']);
-            $table->string('image');
-            $table->decimal('discount', 5, 2)->default(0.00);
-            $table->date('added');
-            $table->timestamps();
+        Schema::create('products', function (Blueprint $table) {
+            $table->id(); // Primary key standar (id)
+            $table->string('name', 500); // Diperpanjang untuk menghindari truncate
+            $table->string('slug', 500)->unique();
+            $table->string('category', 500); // Ubah dari ENUM jadi VARCHAR agar fleksibel
+            $table->integer('stock')->default(0);
+            $table->decimal('price', 12, 2); // 12 digit total, 2 desimal
+            $table->integer('discount')->default(0); // Dalam persen (0-100)
+            $table->enum('status', ['draft', 'published', 'low stock', 'out of stock'])->default('draft');
+            $table->string('image', 500)->nullable();
+            $table->timestamps(); // Otomatis bikin created_at & updated_at
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product');
+        Schema::dropIfExists('products');
     }
 };

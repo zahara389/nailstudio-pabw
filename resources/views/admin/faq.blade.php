@@ -1,60 +1,103 @@
-@extends('layouts.app-admin') 
+@extends('layouts.app') 
+
+@section('title', 'FAQ - Nail Art Studio')
 
 @section('content')
-<div class="head-title">
-    <div class="left">
-        <h1>FAQ Message</h1>
-        <ul class="breadcrumb">
-            <li><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
-            <li><i class='bx bx-chevron-right'></i></li>
-            <li><a class="active" href="{{ route('admin.faq.index') }}">FAQ</a></li>
-        </ul>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Frequently Asked Questions</h1>
+        <p class="text-muted">Halo, {{ $nama_user }}! Ada yang bisa kami bantu?</p>
     </div>
-</div>
 
-<div class="faq-questions">
-    <h2>Pertanyaan Member</h2>
-    
-    {{-- Pesan Sukses (Menggantikan echo $_SESSION['success']) --}}
-    @if ($success)
-        <div class='alert-success'>{{ $success }}</div>
+    {{-- 1. SEARCH BAR --}}
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form action="{{ url('/faq') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Cari pertanyaan..." value="{{ $search }}">
+                    <button class="btn btn-primary" type="submit">Cari</button>
+                    @if($search)
+                        <a href="{{ url('/faq') }}" class="btn btn-secondary">Reset</a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- 2. ALERT SUKSES / ERROR --}}
+    @if($success)
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ $success }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
-    
-    @forelse ($faqs as $faq)
-        <div class='faq-box'>
-            <div class='faq-question'><b>Pertanyaan:</b> {{ htmlspecialchars($faq['question']) }}</div>
-            <div class='faq-meta'><small>Dari user_id: {{ $faq['user_id'] }} | Status: {{ $faq['status'] }}</small></div>
-            
-            @if ($faq['status'] == 'answered')
-                {{-- Jika sudah dijawab --}}
-                <div class='faq-answer'><b>Jawaban Admin:</b><br>{!! nl2br(htmlspecialchars($faq['answer'])) !!}</div>
+
+    @if($error)
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ $error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error_msg)
+                    <li>{{ $error_msg }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- 3. DAFTAR FAQ (ACCORDION) --}}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if($faqs->count() > 0)
+                <div class="accordion" id="faqAccordion">
+                    @foreach($faqs as $index => $faq)
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ $index }}">
+                                <button class="accordion-button {{ $index != 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse{{ $index }}">
+                                    <strong>{{ $faq->question }}</strong>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ $index }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}" aria-labelledby="heading{{ $index }}" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {!! nl2br(e($faq->answer)) !!}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @else
-                {{-- Form jawaban untuk admin --}}
-                <form method="post" action="{{ route('admin.faq.submit') }}" class="faq-answer-form">
-                    @csrf 
-                    <input type="hidden" name="faq_id" value="{{ $faq['id'] }}">
-                    <textarea name="answer" rows="2" required placeholder="Tulis jawaban admin..."></textarea>
-                    <button type="submit">Publish Jawaban</button>
-                </form>
+                <div class="alert alert-warning text-center">
+                    Pertanyaan yang Anda cari tidak ditemukan.
+                </div>
             @endif
         </div>
-    @empty
-        <div>Tidak ada pertanyaan dari member.</div>
-    @endforelse
-</div>
-@endsection
+    </div>
 
-{{-- Pindahkan CSS Inline ke styles section --}}
-@section('styles')
-<style>
-.faq-questions { margin: 32px 0; }
-.faq-box { border: 1px solid #eee; padding: 16px 20px; margin-bottom: 20px; border-radius: 8px; background: #fff; }
-.faq-question { font-size: 1.1em; margin-bottom: 6px; }
-.faq-meta { color: #888; font-size: .9em; margin-bottom: 10px; }
-.faq-answer { background: #f9f9f9; border-radius: 5px; padding: 10px; margin-top: 8px; }
-.faq-answer-form textarea { width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ccc;}
-.faq-answer-form button { background: #8B1D3B; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; cursor: pointer; }
-.alert-success { background: #d0ffd8; border: 1px solid #96d8a8; padding: 8px 16px; border-radius: 6px; margin-bottom: 18px; color: #276b3d;}
-/* Tambahkan styles untuk alert-danger jika ada */
-</style>
+    {{-- 4. FORM AJUKAN PERTANYAAN --}}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-3">Punya pertanyaan lain?</h4>
+                    <p class="text-muted small">Tanyakan kepada kami, admin akan segera menjawabnya.</p>
+                    
+                    <form action="{{ url('/faq') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="member_question" class="form-label">Pertanyaan Anda</label>
+                            <textarea class="form-control" id="member_question" name="member_question" rows="3" placeholder="Tulis pertanyaan Anda di sini..." required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark">Kirim Pertanyaan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

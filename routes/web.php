@@ -7,6 +7,7 @@ use App\Http\Controllers\AnalyticsController;     // ← Tambahkan juga yang lai
 use App\Http\Controllers\FaqController;           // ← Jika belum ada
 use App\Http\Controllers\StockController;         // ← Jika belum ada
 
+
 //ADMIN PAGE
 
 // 1. Dashboard
@@ -14,10 +15,17 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::post('/dashboard/update-status', [DashboardController::class, 'updateStatus'])->name('dashboard.updateStatus');
 
 // 2. Product Management
-Route::resource('product', ProductAdminController::class)->names('product'); 
+Route::get('product', [ProductAdminController::class, 'index'])->name('product.index');
+Route::get('product/create', [ProductAdminController::class, 'create'])->name('product.create');
+Route::post('product', [ProductAdminController::class, 'store'])->name('product.store');
+Route::get('product/{id}/edit', [ProductAdminController::class, 'edit'])->name('product.edit');
+Route::put('product/{id}', [ProductAdminController::class, 'update'])->name('product.update');
+Route::delete('product/{id}', [ProductAdminController::class, 'destroy'])->name('product.destroy');
 
 // 3. Analytics
-Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+Route::get('analytics/realtime', [AnalyticsController::class, 'getRealtimeData'])->name('analytics.realtime');
+Route::get('analytics/export', [AnalyticsController::class, 'exportSalesReport'])->name('analytics.export');
 
 // 4. FAQ Message
 Route::prefix('faq')->name('admin.faq.')->group(function () {
