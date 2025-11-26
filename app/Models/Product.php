@@ -16,7 +16,14 @@ class Product extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'namaproduct', 'category', 'stock', 'price', 'status', 'image', 'discount', 'added'
+        'namaproduct', 'category', 'stock', 'price', 'status', 'image', 'discount', 'description', 'added'
+    ];
+
+    protected $casts = [
+        'added' => 'datetime',
+        'price' => 'integer',
+        'stock' => 'integer',
+        'discount' => 'integer',
     ];
 
     // ← TAMBAHKAN: Default values

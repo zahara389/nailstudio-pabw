@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductAdminController;  // ← TAMBAHKAN INI
 use App\Http\Controllers\AnalyticsController;     // ← Tambahkan juga yang lain
 use App\Http\Controllers\FaqController;           // ← Jika belum ada
 use App\Http\Controllers\StockController;         // ← Jika belum ada
+use App\Http\Controllers\ProductController;
 
 
 // Route utama ke HomePage
@@ -14,6 +15,10 @@ Route::get('/', [HomePageController::class, 'index'])->name('home.index');
 
 // Route untuk post booking
 Route::post('/booking', [HomePageController::class, 'storeBooking'])->name('booking.store');
+
+// Route katalog produk
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
 
 //ADMIN PAGE
 // 1. Dashboard
