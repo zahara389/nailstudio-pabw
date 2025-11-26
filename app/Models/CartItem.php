@@ -9,11 +9,25 @@ class CartItem extends Model
 {
     use HasFactory;
 
-    protected $table = 'cart_item'; // Nama tabel singular
+    // PERBAIKAN 1: Sesuaikan nama tabel dengan database (plural)
+    protected $table = 'cart_items'; 
 
-    protected $fillable = ['cart_id', 'product_id', 'qty', 'price'];
+    // PERBAIKAN 2: Sesuaikan nama kolom dengan database
+    // qty -> quantity
+    // price -> unit_price
+    protected $fillable = ['cart_id', 'product_id', 'quantity', 'unit_price'];
 
-    // Relasi
-    public function cart() { return $this->belongsTo(Cart::class, 'cart_id'); }
-    public function product() { return $this->belongsTo(Product::class, 'product_id', 'id_product'); }
+    // Relasi ke Cart
+    public function cart() 
+    { 
+        return $this->belongsTo(Cart::class, 'cart_id'); 
+    }
+    
+    // Relasi ke Product
+    public function product() 
+    { 
+        // Pastikan parameter ke-3 adalah 'id' (default primary key tabel products)
+        // Kecuali jika di tabel products kamu memang mengubah nama ID-nya jadi 'id_product'
+        return $this->belongsTo(Product::class, 'product_id'); 
+    }
 }
