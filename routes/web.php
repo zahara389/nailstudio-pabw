@@ -75,7 +75,6 @@ Route::post('/stock-management/{id}/delete', [StockManagementController::class, 
 Route::post('/stock-management/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('stock.bulkDelete');
     
 
-
 //landing page 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
