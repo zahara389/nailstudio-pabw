@@ -9,6 +9,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\FaqMessageController;   
 use App\Http\Controllers\TransactionController;   
 use App\Http\Controllers\StockManagementController; 
+use App\Http\Controllers\LandingPageController;
 
 
 
@@ -69,3 +70,8 @@ Route::get('/logout', function () {
     request()->session()->regenerateToken();
     return redirect('/');
 })->name('logout');
+
+//landing page 
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
+
+Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
