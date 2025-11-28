@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductAdminController;  // ← TAMBAHKAN INI
-use App\Http\Controllers\AnalyticsController;     // ← Tambahkan juga yang lain
-use App\Http\Controllers\StockController;         // ← Jika belum ada
-use App\Http\Controllers\FaqMessageController;   // ← Tambahkan ini
-use App\Http\Controllers\TransactionController;   // ← Tambahkan ini
-use App\Http\Controllers\StockManagementController; // ← Tambahkan ini
+use App\Http\Controllers\ProductAdminController;  
+use App\Http\Controllers\AnalyticsController;     
+use App\Http\Controllers\StockController;         
+use App\Http\Controllers\FaqMessageController;   
+use App\Http\Controllers\TransactionController;   
+use App\Http\Controllers\StockManagementController; 
 
 
 //ADMIN PAGE
@@ -41,13 +41,20 @@ Route::delete('/admin/faq/{id}', [FaqMessageController::class, 'destroy'])->name
 
 // 5. Transaction History
 Route::get('/transaction/history', [TransactionController::class, 'index'])->name('transaction.history');
+Route::post('/transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
+Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
 
 // 6. Management Stock & Harga
-Route::get('/stock-management', [StockManagementController::class, 'index'])->name('stock.index');
+Route::get('/stock-management', [StockManagementController::class, 'index'])->name('stock.index');  
 Route::post('/stock/add', [StockManagementController::class, 'updateStock'])->name('stock.updateStock');
 Route::post('/stock/price', [StockManagementController::class, 'updatePrice'])->name('stock.updatePrice');
-
-
+Route::get('/stock-management/create', [StockManagementController::class, 'create'])->name('stock.create');
+Route::post('/stock-management/store', [StockManagementController::class, 'store'])->name('stock.store');
+Route::get('/stock-management/{id}/edit', [StockManagementController::class, 'edit'])->name('stock.edit');
+Route::post('/stock-management/{id}/update', [StockManagementController::class, 'update'])->name('stock.update');
+Route::post('/stock-management/{id}/delete', [StockManagementController::class, 'destroy'])->name('stock.destroy');
+Route::post('/stock-management/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('stock.bulkDelete');
+    
 // Route Logout
 Route::get('/logout', function () {
     auth()->logout();
