@@ -16,10 +16,11 @@
     <h2>Pertanyaan Member</h2>
     
     {{-- Pesan Sukses (Menggantikan echo $_SESSION['success']) --}}
-    @if ($success)
-        <div class='alert-success'>{{ $success }}</div>
+    @if (session('success'))
+    <div class='alert-success'>{{ session('success') }}</div>
     @endif
-    
+
+        
     @forelse ($faqs as $faq)
         <div class='faq-box'>
             <div class='faq-question'><b>Pertanyaan:</b> {{ htmlspecialchars($faq['question']) }}</div>

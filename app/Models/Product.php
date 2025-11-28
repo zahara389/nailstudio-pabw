@@ -10,24 +10,33 @@ class Product extends Model
     
     use HasFactory;
 
-    protected $table = 'product'; 
-    protected $primaryKey = 'id_product'; // ← Primary key custom
-    public $incrementing = true;
-    protected $keyType = 'int';
+    // Nama table di database
+    protected $table = 'products';
 
+    // Primary key (default: id)
+    protected $primaryKey = 'id';
+
+    // Kolom yang bisa diisi mass assignment
     protected $fillable = [
-        'namaproduct', 'category', 'stock', 'price', 'status', 'image', 'discount', 'added'
+        'name',
+        'slug',
+        'category',
+        'stock',
+        'price',
+        'discount',
+        'status',
+        'image',
     ];
 
-    // ← TAMBAHKAN: Default values
-    protected $attributes = [
-        'status' => 'draft',
-        'discount' => 0,
-        'stock' => 0,
+    // Casting tipe data
+    protected $casts = [
+        'price' => 'decimal:2',
+        'discount' => 'integer',
+        'stock' => 'integer',
     ];
 
-    // ← TAMBAHKAN: Accessor untuk harga setelah diskon
-    public function getDiscountedPriceAttribute()
+    // Accessor untuk harga setelah diskon
+    public function getPriceAfterDiscountAttribute()
     {
         if ($this->discount > 0) {
             return $this->price - ($this->price * $this->discount / 100);
@@ -43,4 +52,5 @@ class Product extends Model
     public function favorites() { 
         return $this->hasMany(Favorite::class, 'product_id', 'id_product'); 
     }
+}
 }
