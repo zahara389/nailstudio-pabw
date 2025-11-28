@@ -10,11 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class StockManagementController extends Controller
 {
-    /**
-     * ========================================
-     * INDEX - Tampilkan list produk
-     * ========================================
-     */
+    
     public function index(Request $request)
     {
         $perPage = 10;
@@ -69,11 +65,7 @@ class StockManagementController extends Controller
         ));
     }
 
-    /**
-     * ========================================
-     * CREATE - Tampilkan form tambah produk
-     * ========================================
-     */
+   
     public function create()
     {
         $categories = Product::select('category')
@@ -85,11 +77,7 @@ class StockManagementController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
-    /**
-     * ========================================
-     * STORE - Simpan produk baru
-     * ========================================
-     */
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -131,22 +119,13 @@ class StockManagementController extends Controller
         }
     }
 
-    /**
-     * ========================================
-     * SHOW - Tampilkan detail produk
-     * ========================================
-     */
     public function show($id)
     {
         $product = Product::findOrFail($id);
         return view('admin.products.show', compact('product'));
     }
 
-    /**
-     * ========================================
-     * EDIT - Tampilkan form edit produk
-     * ========================================
-     */
+    
     public function edit($id)
     {
         $product = Product::findOrFail($id);
@@ -160,11 +139,7 @@ class StockManagementController extends Controller
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    /**
-     * ========================================
-     * UPDATE - Update produk
-     * ========================================
-     */
+    
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -213,11 +188,7 @@ class StockManagementController extends Controller
         }
     }
 
-    /**
-     * ========================================
-     * DESTROY - Hapus produk
-     * ========================================
-     */
+    
     public function destroy($id)
     {
         try {
@@ -239,101 +210,35 @@ class StockManagementController extends Controller
         }
     }
 
-    /**
-     * ========================================
-     * AJAX - Tambah stock (Modal)
-     * ========================================
-     */
-    public function updateStock(Request $request)
+    
+    public function updateStock(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:products,id',
-            'add_stock' => 'required|integer|min:1',
-        ]);
+    $request->validate([
+        'stock' => 'required|numeric|min:0'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'error' => $validator->errors()->first()
-            ], 400);
-        }
+    $product = Product::findOrFail($id);
+    $product->stock = $request->stock;
+    $product->save();
 
-        try {
-            DB::beginTransaction();
-            
-            $product = Product::findOrFail($request->id);
-            $product->addStock($request->add_stock);
-            
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Stock berhasil ditambahkan!',
-                'new_stock' => $product->stock,
-                'status' => $product->status
-            ]);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return response()->json([
-                'success' => false,
-                'error' => 'Gagal menambah stock: ' . $e->getMessage()
-            ], 500);
-        }
+    return back()->with('success', 'Stock berhasil diperbarui!');
     }
 
-    /**
-     * ========================================
-     * AJAX - Update harga & diskon (Modal)
-     * ========================================
-     */
-    public function updatePrice(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:products,id',
-            'price' => 'required|numeric|min:0',
-            'discount' => 'required|integer|min:0|max:100',
-        ]);
+    
+    public function updatePrice(Request $request, $id)
+{
+    $request->validate([
+        'price' => 'required|numeric|min:0'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'error' => $validator->errors()->first()
-            ], 400);
-        }
+    $product = Product::findOrFail($id);
+    $product->price = $request->price;
+    $product->save();
 
-        try {
-            DB::beginTransaction();
-            
-            $product = Product::findOrFail($request->id);
-            $product->updatePrice($request->price, $request->discount);
-            
-            DB::commit();
+    return back()->with('success', 'Harga berhasil diperbarui!');
+}
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Harga berhasil diperbarui!',
-                'new_price' => $product->price,
-                'new_discount' => $product->discount,
-                'formatted_price' => $product->formatted_price
-            ]);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return response()->json([
-                'success' => false,
-                'error' => 'Gagal memperbarui harga: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * ========================================
-     * BULK DELETE - Hapus banyak produk
-     * ========================================
-     */
+    
     public function bulkDelete(Request $request)
     {
         $validator = Validator::make($request->all(), [
