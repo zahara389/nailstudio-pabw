@@ -5,82 +5,102 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException; 
+use Illuminate\Support\Facades\Cookie; 
 
 class AuthController extends Controller
 {
     // ----------------------------------------------------------
-    // LOGIN FORM
+    // 1. LOGIN FORM (GET /login)
     // ----------------------------------------------------------
     public function showLoginForm()
     {
-        if (session('loggedin')) {
-            return session('role') === 'admin'
+        if (Auth::check()) {
+            return Auth::user()->role === 'admin'
                 ? redirect()->route('dashboard.index')
-                : redirect('/');
+                // PERBAIKAN: Arahkan user ke landing.index (bukan booking.index)
+                : redirect()->route('landing.index'); 
         }
 
-        return view('admin.login', [
-            'error' => session('error')
-        ]);
+        return view('admin.login');
     }
 
     // ----------------------------------------------------------
-    // LOGIN PROCESS
+    // 2. LOGIN PROCESS (POST /login)
     // ----------------------------------------------------------
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string'
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string']
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
+            
+            $request->session()->regenerate();
 
-        if (!$user) {
-            return back()->with('error', 'Username tidak ditemukan');
+            // Redirect berdasarkan role
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended(route('dashboard.index'));
+            } else {
+                // PERBAIKAN: User diarahkan ke landing.index
+                return redirect()->intended(route('landing.index')); 
+            }
         }
 
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->with('error', 'Password salah');
-        }
-
-        // SET SESSION
-        session([
-            'loggedin' => true,
-            'id'       => $user->id,
-            'username' => $user->username,
-            'role'     => $user->role,
+        throw ValidationException::withMessages([
+            'username' => ['Username atau password salah.'],
         ]);
-
-        return $user->role === 'admin'
-            ? redirect()->route('dashboard.index')
-            : redirect('/');
     }
 
     // ----------------------------------------------------------
-    // LOGOUT
+    // 3. LOGOUT (GET /logout)
     // ----------------------------------------------------------
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->flush();
-        session()->regenerate(true);
-
-        Cookie::forget('user_id');
-        Cookie::forget('user_name');
-        Cookie::forget('user_email');
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('login');
     }
+    
+    // ----------------------------------------------------------
+    // 4. REGISTER PROCESS (POST /register)
+    // ----------------------------------------------------------
+    public function showRegistrationForm()
+    {
+        return view('admin.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|unique:users',
+            'email'    => 'required|email|unique:users', 
+            'password' => 'required|min:5|confirmed',
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'user', 
+        ]);
+
+        Auth::login($user); 
+
+        // PERBAIKAN: User baru diarahkan ke landing.index
+        return redirect()->route('landing.index');
+    }
 
     // ----------------------------------------------------------
-    // USER CRUD (DATABASE)
+    // 5. USER CRUD (ADMIN) - Sisanya
     // ----------------------------------------------------------
     public function index()
     {
-        return view('admin.users.index', [
-            'users' => User::all()
-        ]);
+        return view('admin.users.index', ['users' => User::all()]);
     }
 
     public function create()
@@ -117,16 +137,11 @@ class AuthController extends Controller
             'role'     => 'required'
         ]);
 
-        // update basic
         $user->username = $request->username;
         $user->role     = $request->role;
 
-        // kalau password diubah
         if ($request->password) {
-            $request->validate([
-                'password' => 'min:5'
-            ]);
-
+            $request->validate(['password' => 'min:5']);
             $user->password = Hash::make($request->password);
         }
 

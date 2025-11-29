@@ -20,3 +20,22 @@
             const emailInput = event.target.querySelector('.ns-newsletter-input').value;
             showMessage(`Simulasi: Terima kasih! Email "${emailInput}" telah didaftarkan.`);
         }
+
+        // Listener untuk notifikasi yang membutuhkan redirect (Hanya terjadi saat BELUM LOGIN)
+    Livewire.on('alert-redirect', (data) => {
+        const message = data[0].message;
+        const url = data[0].redirectUrl;
+
+        // Tampilkan alert
+        alert(message);
+
+        // Redirect ke halaman login setelah user menekan OK
+        window.location.href = url;
+    });
+
+    // Listener untuk notifikasi sukses/error yang TIDAK membutuhkan redirect (Terjadi saat SUDAH LOGIN)
+    Livewire.on('alert-show', (data) => {
+        const message = data[0].message;
+        // Tampilkan alert sukses/error
+        alert(message);
+    });

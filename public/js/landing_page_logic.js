@@ -144,22 +144,7 @@
             dateInput.min = today;
         }
 
-        // Handle Form Submission (dipertahankan dari kode sebelumnya)
-        const form = document.getElementById('bookingForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-                
-                const confirmationMessage = `Booking confirmed for ${data.name}!\nService: ${data.service}\nDate: ${data.date} at ${data.time}\nWe will contact you at ${data.phone} shortly.`;
-                console.log(confirmationMessage);
-                alert(confirmationMessage); 
-                
-                form.reset();
-            });
-        }
+      
 
 
 

@@ -11,7 +11,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StockManagementController; 
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\BookingController;
 
 
 // Route utama ke HomePage
@@ -78,6 +79,7 @@ Route::post('/stock-management/bulk-delete', [StockManagementController::class, 
 //landing page 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
+
 Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
 Route::put('/stock-management/{id}/update', [StockManagementController::class, 'update'])->name('stock.update');
 
@@ -97,3 +99,16 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 // REGISTER
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+// Route untuk menghandle submission form newsletter
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+    ->name('newsletter.subscribe');
+
+Route::middleware(['auth'])->group(function () {
+    
+    // Tampilkan formulir booking (GET)
+    Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create'); 
+    
+    // Proses dan simpan data (POST)
+    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+});

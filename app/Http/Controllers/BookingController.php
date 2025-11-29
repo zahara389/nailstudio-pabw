@@ -1,52 +1,68 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Models\Booking;
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
-    public function store(Request $request)
+    // Konstruktor kini kosong, middleware diatur di routes/web.php
+
+    /**
+     * Menampilkan formulir booking (GET)
+     */
+    public function create()
     {
-        $request->validate([
-            'service' => 'required',
-            'date' => 'required',
-            'time' => 'required',
-            'name' => 'required',
-            'phone' => 'required'
-        ]);
-
-        // Convert date + time ke DATETIME MySQL
-        $start_time = $request->date . ' ' . date("H:i:s", strtotime($request->time));
-
-        // Ambil harga berdasarkan layanan
-        $price = $this->getServicePrice($request->service);
-
-        // Simpan ke database
-        Booking::create([
-            'user_id' => auth()->id() ?? 1, // sementara 1 jika belum login
-            'start_time' => $start_time,
-            'total_price' => $price,
-            'payment_method' => null,
-            'payment_status' => 'Pending',
-            'status' => 'Scheduled',
-            'notes' => "Customer: {$request->name}, Phone: {$request->phone}"
-        ]);
-
-        return back()->with('success', 'Booking berhasil dibuat!');
+        return view('landing_page.booking');
     }
 
-    private function getServicePrice($service)
+    /**
+     * Menyimpan data pemesanan ke database (POST)
+     */
+    public function store(Request $request)
     {
-        return match($service) {
-            'Classic Manicure' => 120000,
-            'Gel Manicure' => 150000,
-            'Nail Art Design' => 180000,
-            'Pedicure' => 130000,
-            'Nail Extension' => 200000,
-            'Nail Care Treatment' => 90000,
-            default => 100000
-        };
+        // 1. Validasi Input
+        $validated = $request->validate([
+            'customer_name'  => ['required', 'string', 'max:255'],
+            'customer_email' => ['required', 'email', 'max:255'],
+            'customer_phone' => ['required', 'string', 'max:15'], 
+
+            'location'       => ['required', 'string', 'max:255'],
+            'service'        => ['required', 'string', 'max:255'],
+            
+            // Nama input dari form adalah 'date' dan 'time'
+            'date'           => ['required', 'date', 'after_or_equal:today'],
+            'time'           => ['required', 'date_format:H:i'], 
+            
+            'notes'          => ['nullable', 'string'],
+            'agreement'      => ['required', 'accepted'], 
+        ]);
+        
+        // 2. Pemetaan dan Penyimpanan Data ke Database
+        Booking::create([
+            'user_id'         => Auth::id(), 
+            
+            // Mapping Kontak
+            'customer_name'   => $validated['customer_name'],
+            'customer_email'  => $validated['customer_email'],
+            'customer_phone'  => $validated['customer_phone'], 
+            
+            // Mapping Layanan & Waktu
+            'location'        => $validated['location'],
+            'service'         => $validated['service'],
+            'booking_date'    => $validated['date'], // Mapping: date (form) -> booking_date (DB)
+            'booking_time'    => $validated['time'], // Mapping: time (form) -> booking_time (DB)
+            
+            'notes'           => $validated['notes'],
+            'status'          => 'pending', 
+        ]);
+
+      return back()->with('alert', 
+    'Pemesanan untuk layanan ' . $validated['service'] . 
+    ' pada ' . $validated['date'] . 
+    ' berhasil dikirim! Tim kami akan menghubungi Anda melalui WhatsApp.'
+);
     }
 }
