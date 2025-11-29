@@ -26,7 +26,7 @@
                     href="mailto:careers@nailsstudio.com"
                     class="career-cta-btn"
                 >
-                    careers@nailsstudio.com
+                    nailartstudio@gmail.com
                 </a>
             </div>
         </div>

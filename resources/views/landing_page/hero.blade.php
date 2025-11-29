@@ -13,7 +13,7 @@
         <div class="decorative-badge animate-fade-in-up">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
             <span class="text-sm tracking-wide font-medium">
-                Premium Nail Art Experience
+                Premium Nail Art studio
             </span>
         </div>
 

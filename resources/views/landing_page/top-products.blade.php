@@ -15,7 +15,7 @@
                 </div>
                 <div class="product-info">
                     <h3 class="mb-2 text-xl font-semibold text-[#1a1a1a]">Cuticle Oil</h3>
-                    <p class="product-price">$24.99</p>
+                    <p class="product-price">Rp.24.990</p>
                     <button class="add-to-cart-btn">Add to Cart</button>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="product-info">
                     <h3 class="mb-2 text-xl font-semibold text-[#1a1a1a]">Premium Nail Polish</h3>
-                    <p class="product-price">$18.99</p>
+                    <p class="product-price">Rp.18.990</p>
                     <button class="add-to-cart-btn">Add to Cart</button>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="product-info">
                     <h3 class="mb-2 text-xl font-semibold text-[#1a1a1a]">Luxury Hand Cream</h3>
-                    <p class="product-price">$29.99</p>
+                    <p class="product-price">Rp.29.990</p>
                     <button class="add-to-cart-btn">Add to Cart</button>
                 </div>
             </div>

@@ -104,7 +104,7 @@
           <a class="footer-link" href="#">Privacy Policy</a>
           <a class="footer-link" href="#">Terms of Service</a>
           <a class="footer-link" href="#">Security Policy</a>
-        </div>
+       <!--  </div>
         <div class="payment-logos">
           <img alt="PayPal logo black" class="payment-logo" height="20" src="https://upload.wikimedia.org/wikipedia/commons/3/39/PayPal_logo_black.svg" width="50"/>
           <img alt="Afterpay logo black" class="payment-logo" height="20" src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Afterpay_logo_black.svg" width="50"/>
@@ -112,7 +112,7 @@
           <img alt="Visa logo black" class="payment-logo" height="20" src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo_Black.svg" width="40"/>
           <img alt="Mastercard logo black" class="payment-logo" height="20" src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo-black.svg" width="40"/>
         </div>
-      </div>
+      </div> -->
     </footer>
   </div>
  </body>
