@@ -17,70 +17,89 @@ class OrdersSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        // ---------------------------------------
-        // 1. Buat 5 user
-        // ---------------------------------------
+        // =====================================================
+        // 1. Generate USERS (5 user)
+        // =====================================================
         $userIds = [];
 
-        for ($k = 0; $k < 5; $k++) {
+        for ($i = 0; $i < 5; $i++) {
+
             $name = $faker->name;
 
             $user = User::create([
-                'name' => $name,
-                'username' => Str::slug($name, '_') . rand(1, 999),
-                'email' => $faker->unique()->safeEmail,
-                'password' => Hash::make('password'),
-                'role' => 'member'
+                'name'      => $name,
+                'username'  => Str::slug($name, '_') . rand(10, 999),
+                'email'     => $faker->unique()->safeEmail,
+                'password'  => Hash::make('password'),
+                'role'      => 'member'
             ]);
 
             $userIds[] = $user->id;
         }
 
-        // ---------------------------------------
-        // 2. Produk dummy
-        // ---------------------------------------
+        // =====================================================
+        // 2. Generate 3 PRODUCT DUMMY
+        // =====================================================
         $products = [];
+
         for ($i = 1; $i <= 3; $i++) {
             $productName = 'Nail Polish Varian ' . $i;
+
             $products[] = Product::firstOrCreate(
                 ['name' => $productName],
                 [
-                    'slug' => Str::slug($productName),
-                    'description' => 'Kutek kualitas premium nomor ' . $i,
-                    'price' => 50000 * $i,
-                    'stock' => 100,
-                    'image' => 'products/dummy.jpg'
+                    'slug'        => Str::slug($productName),
+                    'description' => 'Kutek premium varian ' . $i,
+                    'price'       => 50000 * $i,
+                    'stock'       => 100,
+                    'image'       => 'products/dummy.jpg'
                 ]
             );
         }
 
-        // ---------------------------------------
-        // 3. BUAT 10 CARTS
-        // ---------------------------------------
-
-        // === STATUS SESUAI MIGRATION ===
+        // =====================================================
+        // 3. Generate CARTS (10 cart)
+        // =====================================================
         $statuses = ['pending', 'processing', 'shipped', 'completed'];
 
-        for ($j = 0; $j < 10; $j++) {
+        for ($i = 0; $i < 10; $i++) {
 
-            $randomUserId = $userIds[array_rand($userIds)];
+            $randomUser = $userIds[array_rand($userIds)];
 
-            // Header Cart
+            // Buat Cart
             $cart = Cart::create([
-                'user_id' => $randomUserId,
-                'status' => $statuses[array_rand($statuses)],   // <= disesuaikan
-                'created_at' => $faker->dateTimeBetween('-1 month', 'now'),
+                'user_id'    => $randomUser,
+                'status'     => $statuses[array_rand($statuses)],
+                'created_at' => $faker->dateTimeBetween('-2 months', 'now'),
             ]);
 
-            // Item cart
-            $randomProduct = $products[rand(0, 2)];
+            // =====================================================
+            // 4. Generate 1–4 ITEM per cart
+            // =====================================================
+            $itemsCount = rand(1, 4);
+            $totalPrice = 0;
 
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $randomProduct->id,
-                'quantity' => rand(1, 3),
-                'unit_price' => $randomProduct->price,
-            ]);
+            for ($x = 0; $x < $itemsCount; $x++) {
+
+                $product = $products[array_rand($products)];
+
+                $qty = rand(1, 3);
+                $subtotal = $product->price * $qty;
+
+                CartItem::create([
+                    'cart_id'    => $cart->id,
+                    'product_id' => $product->id,
+                    'quantity'   => $qty,
+                    'unit_price' => $product->price,
+                ]);
+
+                $totalPrice += $subtotal;
+            }
+
+            // Update total price (jika tabel cart-mu punya kolom total_price)
+            if (isset($cart->total_price)) {
+                $cart->update(['total_price' => $totalPrice]);
+            }
         }
     }
 }

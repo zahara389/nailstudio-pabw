@@ -9,19 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // Ambil semua transaksi + detail
-        $transactions = Transaction::with('details')
-                        ->latest()
-                        ->paginate(5);
-
-        // Hitung total harga setiap transaksi
-        foreach ($transactions as $t) {
-            $t->total_harga = $t->details->sum(function ($d) {
-                return $d->harga * $d->qty;
-            });
-        }
+        // Ambil transaksi + relasi detail
+        $transactions = Transaction::with('details')->latest()->paginate(5);
 
         return view('admin.transaction-history', compact('transactions'));
     }
@@ -45,8 +36,8 @@ class TransactionController extends Controller
                     'nama_produk'    => $item['nama_produk'] 
                                         ?? $item['namaproduct'] 
                                         ?? 'Produk',
-                    'harga'          => $item['harga'] ?? $item['price'],
-                    'qty'            => $item['qty'],
+                    'harga'          => $item['harga'] ?? $item['price'] ?? 0,
+                    'qty'            => $item['qty'] ?? 1,
                 ]);
             }
         });
@@ -56,9 +47,7 @@ class TransactionController extends Controller
 
     public function destroy($id)
     {
-        $trans = Transaction::findOrFail($id);
-        $trans->delete();
-
+        Transaction::findOrFail($id)->delete();
         return back()->with('success', 'Transaksi berhasil dihapus!');
     }
 }

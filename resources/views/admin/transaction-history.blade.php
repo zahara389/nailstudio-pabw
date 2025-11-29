@@ -48,7 +48,7 @@
                             <td>
                                 <ul class="list-none">
                                     @foreach ($trans->details as $detail)
-                                        <li>- {{ $detail->nama_product }} (x{{ $detail->qty }})</li>
+                                        <li>- {{ $detail->nama_produk }} (x{{ $detail->qty }})</li>
                                     @endforeach
                                 </ul>
                             </td>
@@ -57,18 +57,18 @@
                             <td>
                                 <ul class="list-none">
                                     @foreach ($trans->details as $detail)
-                                        <li>Rp {{ number_format($detail->price, 0, ',', '.') }}</li>
+                                        <li>Rp {{ number_format($detail->harga, 0, ',', '.') }}</li>
                                     @endforeach
                                 </ul>
                             </td>
 
                             {{-- Total Harga --}}
                             <td>
-                                <strong>Rp {{ number_format($trans->total_transaksi, 0, ',', '.') }}</strong>
+                                <strong>Rp {{ number_format($trans->total_harga, 0, ',', '.') }}</strong>
                             </td>
 
                             {{-- Total Item --}}
-                            <td>{{ $trans->total_qty }} items</td>
+                            <td>{{ $trans->details->sum('qty') }} items</td>
 
                             {{-- Tombol Delete --}}
                             <td>
