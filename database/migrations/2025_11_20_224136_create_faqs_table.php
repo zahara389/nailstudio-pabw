@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-<<<<<<<< HEAD:database/migrations/2025_11_25_182405_create_core_tables.php
-        Schema::create('core_tables', function (Blueprint $table) {
-            $table->id();
-========
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->text('answer');
-            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
->>>>>>>> tazkya:database/migrations/2025_11_20_224136_create_faqs_table.php
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->text('question');
+            $table->text('answer')->nullable();
+            $table->enum('status', ['pending', 'answered'])->default('pending');
+            $table->foreignId('admin_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
@@ -30,10 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-<<<<<<<< HEAD:database/migrations/2025_11_25_182405_create_core_tables.php
-        Schema::dropIfExists('core_tables');
-========
         Schema::dropIfExists('faqs');
->>>>>>>> tazkya:database/migrations/2025_11_20_224136_create_faqs_table.php
     }
 };

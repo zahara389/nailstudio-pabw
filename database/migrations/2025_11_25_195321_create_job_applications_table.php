@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
-<<<<<<< HEAD:database/migrations/2025_11_25_195321_create_job_applications_table.php
-=======
             $table->foreignId('job_id')->constrained('jobs')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('applicant_name', 100);
@@ -23,7 +21,6 @@ return new class extends Migration
             $table->string('cv_filename');
             $table->text('description')->nullable();
             $table->enum('status', ['new','reviewed','interview','rejected'])->default('new');
->>>>>>> tazkya:database/migrations/2025_11_20_224137_create_job_applications_table.php
             $table->timestamps();
         });
     }

@@ -13,18 +13,11 @@ return new class extends Migration
     {
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
-<<<<<<< HEAD:database/migrations/2025_11_25_195314_create_cart_items_table.php
+            $table->foreignId('cart_id')->constrained('carts')->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->unsignedInteger('quantity');
+            $table->unsignedBigInteger('unit_price');
             $table->timestamps();
-=======
-            $table->unsignedBigInteger('cart_id');
-            $table->string('file_path')->nullable();
-            $table->timestamps();
-
-            $table->foreign('cart_id')
-                  ->references('id')
-                  ->on('carts') // FIX HERE
-                  ->onDelete('cascade');
->>>>>>> tazkya:database/migrations/2025_11_20_224134_create_bukti_bayar_table.php
         });
     }
 
