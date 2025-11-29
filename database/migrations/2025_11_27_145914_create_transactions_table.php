@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id(); // Ini akan jadi Primary Key (ID Transaksi)
-            $table->string('pembeli'); // Nama Pembeli (Joko Santoso, Siti, dll)
-            $table->timestamps(); // created_at & updated_at
-        });
+       Schema::create('transactions', function (Blueprint $table) {
+        $table->id();
+        $table->string('pembeli');
+        $table->string('status'); // TAMBAHKAN
+        $table->date('tanggal_pembelian'); // TAMBAHKAN
+        $table->integer('total_harga'); // TAMBAHKAN
+        $table->timestamps();
+    });
+
     }
 
     /**

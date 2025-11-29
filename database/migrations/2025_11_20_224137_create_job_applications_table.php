@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname');
-            $table->string('email');
-            $table->string('phone');
-            $table->string('position');
-            $table->text('description');
+            $table->foreignId('job_id')->constrained('jobs')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('applicant_name', 100);
+            $table->string('email', 100);
+            $table->string('phone', 20);
             $table->string('cv_filename');
-            $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->text('description')->nullable();
+            $table->enum('status', ['new','reviewed','interview','rejected'])->default('new');
             $table->timestamps();
         });
     }

@@ -8,18 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('newsletter_subscribers', function (Blueprint $table) {
+        Schema::create('user_questions', function (Blueprint $table) {
             $table->id();
-            $table->string('email')->unique();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('subscribed_at')->useCurrent();
-            $table->timestamp('unsubscribed_at')->nullable();
+            $table->text('question');
+            $table->text('answer')->nullable();
+            $table->enum('status', ['pending','answered'])->default('pending');
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('newsletter_subscribers');
+        Schema::dropIfExists('user_questions');
     }
 };

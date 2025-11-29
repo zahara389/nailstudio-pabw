@@ -80,3 +80,4 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 // REGISTER
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+

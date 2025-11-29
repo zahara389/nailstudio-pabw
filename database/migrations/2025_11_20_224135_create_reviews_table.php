@@ -10,23 +10,14 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('product_id')->nullable()->constrained('product', 'id_product')->nullOnDelete();
-            
-            $table->float('rating')->nullable();
-            $table->integer('packaging')->nullable();
-            $table->integer('pigmentation')->nullable();
-            $table->integer('longwear')->nullable();
-            $table->integer('texture')->nullable();
-            $table->integer('value_for_money')->nullable();
-            
-            $table->enum('recommend', ['Yes', 'No'])->nullable();
-            $table->enum('repurchase', ['Yes', 'Maybe', 'No'])->nullable();
-            $table->string('usage_period')->nullable();
-            $table->string('tag')->nullable();
-            
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->tinyInteger('rating');
             $table->text('comment')->nullable();
-            $table->string('photo')->nullable();
+            $table->string('photo_path')->nullable();
+            $table->tinyInteger('price_rating')->nullable();
+            $table->tinyInteger('quality_rating')->nullable();
+            $table->integer('like_count')->default(0);
             $table->timestamps();
         });
     }

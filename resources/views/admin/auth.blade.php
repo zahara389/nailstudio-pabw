@@ -1,22 +1,18 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-<head> 	
-    <meta charset="UTF-8"> 	
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 	
-    <title>Login - Nail Studio</title> 	
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Nail Studio</title>
 
-    {{-- CSS --}}
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 
     <style>
-        .error { color: red; margin-bottom: 15px; } 		
+        .error { color: red; margin-bottom: 15px; }
         .right-panel { display: flex; flex-direction: column; justify-content: center; }
         .form-container { width: 100%; max-width: 600px; }
-        h2 { text-align: left; margin-bottom: 25px; }
-        .login-link { display: flex; justify-content: center; margin-top: 15px; }
-        input[type="text"], input[type="password"] {
-            height: 50px; border-radius: 8px; margin-bottom: 20px;
-        }
+        h2 { margin-bottom: 25px; }
+        input { height: 50px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 
@@ -27,48 +23,59 @@
             <div class="logo-container">
                 <img src="{{ asset('images/logonails.png') }}" alt="Nail Studio Logo">
             </div>
-            <p>Selamat datang di platform kami! Login atau daftar untuk melanjutkan.</p>
+            <p>Daftar dengan mengisi data lengkap di bawah.</p>
         </div>
 
         <div class="right-panel">
 
-            <div class="welcome-box">Welcome!</div>
+            <div class="welcome-box">Create Account</div>
 
             <div class="form-container">
-                <h2>Login</h2>
-
-                {{-- SUCCESS --}}
-                @if (session('success'))
-                    <div class="success">{{ session('success') }}</div>
-                @endif
+                <h2>Sign Up</h2>
 
                 {{-- ERROR --}}
-                @if (session('error'))
-                    <div class="error">{{ session('error') }}</div>
+                @if ($errors->any())
+                    <div class="error">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
                 @endif
 
-                {{-- FORM LOGIN --}}
-                <form action="{{ route('login.process') }}" method="POST">
-                    @csrf
+                <form action="{{ route('register.process') }}" method="POST">
+    @csrf
 
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" 
-                        required value="{{ old('username') }}">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ old('name') }}" required>
 
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+    <label>Email</label>
+    <input type="email" name="email" value="{{ old('email') }}" required>
 
-                    <button type="submit" class="signup-btn">Login</button>
-                </form>
+    <label>Username</label>
+    <input type="text" name="username" value="{{ old('username') }}" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required>
+
+    <label>Confirm Password</label>
+    <input type="password" name="password_confirmation" required>
+
+    <label>Role</label>
+    <select name="role" required>
+        <option value="member">Member</option>
+        <option value="admin">Admin</option>
+    </select>
+
+    <button type="submit" class="signup-btn">Register</button>
+</form>
 
                 <div class="login-link">
-                    Don't have an account?
-                    <a href="{{ route('register') }}">Sign Up</a>
+                    Already have an account?
+                    <a href="{{ route('login') }}">Login</a>
                 </div>
 
             </div>
         </div>
-
     </div>
 </body>
 </html>

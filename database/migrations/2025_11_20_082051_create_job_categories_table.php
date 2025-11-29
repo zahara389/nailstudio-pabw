@@ -8,17 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('faq', function (Blueprint $table) {
+        Schema::create('job_categories', function (Blueprint $table) {
             $table->id();
-            $table->text('question');
-            $table->text('answer')->nullable();
-            $table->foreignId('admin_id')->nullable()->constrained('users');
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('faq');
+        Schema::dropIfExists('job_categories');
     }
 };

@@ -10,9 +10,14 @@ return new class extends Migration
     {
         Schema::create('bukti_bayar', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cart_id')->constrained('cart')->cascadeOnDelete();
-            $table->string('file_path');
-            $table->timestamp('uploaded_at')->useCurrent();
+            $table->unsignedBigInteger('cart_id');
+            $table->string('file_path')->nullable();
+            $table->timestamps();
+
+            $table->foreign('cart_id')
+                  ->references('id')
+                  ->on('carts') // FIX HERE
+                  ->onDelete('cascade');
         });
     }
 

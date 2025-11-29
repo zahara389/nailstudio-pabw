@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id('sale_id'); // PK Custom
-            $table->foreignId('id_product')->constrained('product', 'id_product');
+            $table->foreignId('id_product')->constrained('products', 'id');
             $table->integer('quantity');
             $table->date('sale_date');
         });
