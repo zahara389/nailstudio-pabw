@@ -1,12 +1,71 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    @include('partials.head')
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@yield('title', 'Premium Nail Art Studio')</title>
+
+    {{-- GLOBAL CSS --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+    <link rel="stylesheet" href="{{ asset('css/landing_page.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+
+    @livewireStyles
 </head>
-<body class="bg-gradient-to-b from-pink-50 to-blue-50">
 
-    @yield('content')
+<body id="ns-body">
 
-    @include('partials.scripts')
+    {{-- NAVBAR --}}
+    <livewire:navbar />
+
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- FOOTER --}}
+    <livewire:footer />
+
+    @stack('scripts')
+
+    @livewireScripts
+
+    <script src="{{ asset('js/nama_file_js_anda.js') }}"></script>
+
+    <script>
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+
+    {{-- POPUP SUKSES / ERROR --}}
+    @if (session('alert'))
+        <script>
+            alert("{{ session('alert') }}");
+        </script>
+    @endif
+
+    {{-- POPUP -> REDIRECT LOGIN --}}
+    @if (session('alert_login'))
+        <script>
+            alert("{{ session('alert_login') }}");
+            window.location.href = "{{ route('login') }}";
+        </script>
+    @endif
+
 </body>
 </html>

@@ -1,0 +1,419 @@
+
+
+#ns-body { overflow-x: hidden; font-family: 'Inter', sans-serif; }
+.ns-block { display: block; }
+
+/* WARNA PINK UTAMA (Soft Pink Terang) */
+.ns-text-pink-600 { color: #ff80bf; } 
+
+.ns-text-xl-semibold { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+.ns-mb-2 { margin-bottom: 0.5rem; }
+.ns-opacity-0 { opacity: 0; }
+.ns-opacity-100 { opacity: 1; }
+.ns-pointer-events-none { pointer-events: none; }
+
+/* Top Info Bar */
+.top-info-bar {
+    background-color: #fde0e7; /* Pink Paling Terang (Light Rose) */
+    color: #1f2937; /* gray-800 */
+    text-align: center;
+    font-size: 0.75rem; 
+    padding-top: 0.5rem; 
+    padding-bottom: 0.5rem; 
+    user-select: none;
+    border-radius: 0 0 10px 10px; 
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* |----------------------------------------------------|
+| 🛠️ HEADER UTAMA (FINAL & AKURAT) 🛠️ |
+|----------------------------------------------------| */
+#ns-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    /* Padding horizontal diminimalisir agar elemen lebih dekat ke tepi */
+    padding: 0.5rem 0.5rem; 
+    border-bottom: 1px solid #e5e7eb; 
+    background-color: white; 
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03), 0 1px 2px -1px rgb(0 0 0 / 0.02); 
+    min-height: 55px; 
+}
+
+#ns-header-left, #ns-header-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; 
+}
+
+/* Menu dan Logo (DIRAPATKAN KE KIRI TEPI) */
+#ns-header-left {
+    gap: 8px; 
+    margin-right: 10px; 
+    flex-grow: 0; 
+    padding-left: 0.5rem; 
+}
+
+/* Logo */
+#ns-logo {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; 
+    font-weight: 600; 
+    font-size: 1.3rem; 
+    color: black;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+/* Ukuran Ikon */
+.ns-icon-xl { font-size: 1.05rem; } /* Menu */
+.ns-icon-button-lg { font-size: 0.95rem; } /* Aksi */
+
+
+/* --- PERBAIKAN PADA #ns-header-right (Menghilangkan Jarak Antar Ikon) --- */
+
+#ns-header-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    
+    /* PENTING: MENGATUR GAP MENJADI NOL */
+    gap: 0; /* Dikoreksi: Menghapus semua jarak Flexbox */
+    
+    margin-left: auto; 
+    padding-right: 0.5rem; 
+}
+
+/* --- PERBAIKAN PADA IKON BUTTON (Menghapus padding bawaan) --- */
+
+.ns-icon-button {
+    position: relative;
+    color: #4b5563; 
+    transition: color 0.2s, transform 0.2s;
+    cursor: pointer;
+    border: none;
+    background: none;
+    /* PENTING: MENGHAPUS PADDING PADA TOMBOL ITU SENDIRI */
+    padding: 0; 
+    
+    /* Tambahkan margin negatif jika perlu untuk saling menimpa sedikit */
+    margin: 0 -1px; /* Opsional: Membuat ikon tumpang tindih sedikit jika masih ada jarak */
+}
+
+
+/* Search Form (MELENGKUNG, KECIL, DAN DIGESER KANAN) */
+.ns-search-form {
+    display: flex !important; 
+    flex-grow: 1; 
+    max-width: 260px;
+
+    margin-left: auto; 
+    margin-right: 1rem;
+
+    align-items: center;
+    background-color: #f3f4f6;
+    border-radius: 9999px;
+
+    padding: 0.15rem 0.7rem;  /* DIPERKECIL */
+    width: auto;
+    transition: all 0.2s;
+    margin-bottom: 0;
+
+    height: 36px; /* TAMBAHAN: bikin lebih kecil dan konsisten */
+}
+
+@media (min-width: 768px) {
+    .ns-search-form { 
+        display: flex; 
+    }
+}
+.ns-search-form:focus-within {
+    box-shadow: 0 0 0 2px #fde0e7; 
+}
+.ns-search-btn {
+    color: #9ca3af; 
+    margin-right: 0.5rem; 
+    font-size: 0.95rem; 
+}
+.ns-search-input {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: 0.85rem; 
+    color: #4b5563; 
+    width: 100%;
+}
+.ns-search-input::placeholder {
+    color: #9ca3af; 
+}
+
+
+/* Badges */
+.ns-badge {
+    position: absolute;
+    top: -0.25rem; 
+    right: -0.5rem; 
+    background-color: #f9a8d4; 
+    color: white;
+    font-size: 0.75rem; 
+    font-weight: 600; 
+    border-radius: 9999px; 
+    width: 1.25rem; 
+    height: 1.25rem; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+.ns-badge[style*="display: none"] { display: none !important; }
+
+/* |----------------------------------------------------|
+| 📱 RESPONSIF (Mobile/Layar Kecil) 📱             |
+|----------------------------------------------------| */
+
+@media (max-width: 992px) {
+    /* Sembunyikan search form di mobile */
+    .ns-search-form {
+        display: none !important;
+        flex-grow: 0; 
+        margin-left: 0; 
+        margin-right: 0; 
+    }
+    
+    /* Gunakan space-between di mobile untuk memisahkan grup kiri dan kanan */
+    #ns-header {
+        justify-content: space-between;
+        padding-left: 1rem; /* Padding kembali normal di mobile */
+        padding-right: 1rem;
+    }
+    #ns-header-left {
+        padding-left: 0;
+    }
+    #ns-header-right {
+        padding-right: 0;
+    }
+}
+
+
+/* --- MODALS (Category & Cart) --- */
+
+#universal-modal-backdrop { 
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 40; 
+    transition: opacity 0.3s; opacity: 0; 
+}
+#universal-modal-backdrop.active { display: block; opacity: 1; }
+
+#category-modal {
+    position: fixed; top: 0; left: -100%; width: 70%; max-width: 360px; height: 100vh;
+    background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.15); padding: 0; z-index: 50;
+    box-sizing: border-box; overflow-y: auto;
+    transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+#category-modal.open { left: 0; }
+
+#category-modal .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb;
+}
+#category-modal .modal-header h2 { font-size: 1.25rem; font-weight: 600; }
+#category-modal .modal-body { padding: 1.5rem; }
+#category-modal::-webkit-scrollbar { display: none; }
+#category-modal { -ms-overflow-style: none; scrollbar-width: none; }
+
+#close-category-btn {
+    color: #6b7280; 
+    transition: color 0.2s; 
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+#close-category-btn:hover { color: #111827; } 
+
+/* Category List Items */
+#category-list { margin-bottom: 1.5rem; }
+#category-list a { text-decoration: none; }
+.ns-category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fefcfb; 
+    border: 1px solid #f0e9e8; 
+    border-radius: 0.375rem; 
+    padding: 0.75rem 1rem; 
+    overflow: hidden;
+    transition: box-shadow 0.2s; 
+    cursor: pointer;
+}
+.ns-category-item:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
+}
+.ns-category-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+    max-width: 70%;
+    display: block;
+    font-weight: 500; 
+    color: #4b5563; 
+}
+.ns-category-img-container {
+    flex-shrink: 0;
+    margin-left: 0.75rem; 
+    width: 2.5rem; 
+    height: 2.5rem; 
+}
+.ns-category-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.375rem; 
+    object-fit: cover;
+    display: block;
+}
+#category-list > a + a {
+    margin-top: 0.5rem; 
+}
+
+
+/* Nav Menu (Bawah Kategori) */
+#ns-nav-menu {
+    border-top: 1px solid #e5e7eb; 
+    border-bottom: 1px solid #e5e7eb; 
+    margin-top: 0.75rem; 
+}
+#ns-nav-menu a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; 
+    padding: 0.75rem 0; 
+    color: #4b5563; 
+    font-size: 1rem; 
+    font-weight: 400; 
+    transition: color 0.2s; 
+}
+#ns-nav-menu a:hover {
+    color: #ff80bf; 
+}
+#ns-nav-menu > a + a {
+    border-top: 1px solid #e5e7eb; 
+}
+.ns-icon-lg-centered {
+    font-size: 1.125rem; 
+    width: 1.25rem; 
+    text-align: center;
+}
+.ns-link-justify {
+    justify-content: space-between;
+}
+.ns-link-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; 
+}
+.ns-icon-plus {
+    font-size: 0.875rem; 
+    color: #9ca3af; 
+}
+
+/* Cart Modal */
+#cart-modal {
+    position: fixed; top: 0; right: -100%; width: 90%; max-width: 400px; height: 100vh;
+    background-color: white; box-shadow: -2px 0 5px rgba(0,0,0,0.1); overflow-y: auto;
+    transition: right 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 50;
+    display: flex; 
+    flex-direction: column; 
+}
+#cart-modal.open { right: 0; }
+
+@media (min-width: 768px) { #cart-modal { width: 40%; } }
+@media (min-width: 1024px) { #cart-modal { width: 30%; } }
+
+.ns-modal-cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem; 
+    border-bottom: 1px solid #e5e7eb; 
+    flex-shrink: 0; 
+}
+.ns-close-btn {
+    color: #6b7280; 
+    transition: color 0.2s; 
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+.ns-close-btn:hover { color: #111827; } 
+
+.ns-cart-body {
+    padding: 1rem; 
+    flex-grow: 1; 
+    overflow-y: auto;
+}
+.ns-cart-empty-message {
+    text-align: center;
+    color: #6b7280; 
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+#ns-cart-footer {
+    padding: 1rem; 
+    border-top: 1px solid #e5e7eb; 
+    flex-shrink: 0; 
+    background-color: white;
+}
+.ns-cart-subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600; 
+    font-size: 1.125rem; 
+    margin-bottom: 1rem; 
+}
+
+/* Buttons */
+.ns-btn {
+    width: 100%;
+    padding: 0.5rem 1rem; 
+    border-radius: 0.5rem; 
+    transition: background-color 0.2s; 
+    border: none;
+    cursor: pointer;
+}
+.ns-btn-primary {
+    background-color: #ff80bf; 
+    color: white;
+}
+.ns-btn-primary:hover {
+    background-color: #f754a3; 
+}
+.ns-btn-secondary {
+    background-color: #4b5563; 
+    color: white;
+}
+.ns-btn-secondary:hover {
+    background-color: #374151; 
+}
+
+/* Custom Message Box Style */
+.ns-message-box {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    z-index: 100;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+    text-align: center;
+    font-size: 0.875rem;
+}

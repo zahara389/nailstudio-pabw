@@ -6,35 +6,34 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+// HAPUS: use Laravel\Sanctum\HasApiTokens; // Baris ini dihapus
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    // HAPUS: use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable; 
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Kolom yang dapat diisi secara massal (mass assignable).
      */
     protected $fillable = [
         'name',
         'email',
         'username',
         'password',
-        'role',          // 'admin' atau 'member'
+        'role',
         'phone',
         'address',
         'city',
         'postal_code',
         'photo',
-        'status',        // 'active' atau 'inactive'
+        'status',
         'last_login'
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Kolom yang harus disembunyikan untuk serialisasi.
      */
     protected $hidden = [
         'password',
@@ -42,82 +41,56 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Kolom yang harus di-cast ke tipe data tertentu.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'last_login' => 'datetime',
     ];
-
+    
     // ==========================================
-    // RELATIONS (Hubungan antar Tabel)
-    // ==========================================
-
-    public function carts() 
-    { 
-        return $this->hasMany(Cart::class); 
-    }
-
-    public function orders() 
-    { 
-        return $this->hasMany(Order::class); 
-    }
-
-    public function reviews() 
-    { 
-        return $this->hasMany(Review::class); 
-    }
-
-    public function favorites() 
-    { 
-        return $this->hasMany(Favorite::class); 
-    }
-
-    public function bookings() 
-    { 
-        return $this->hasMany(Booking::class); 
-    }
-
-    public function questions() 
-    { 
-        return $this->hasMany(UserQuestion::class); 
-    }
-
-    public function jobApplications() 
-    { 
-        return $this->hasMany(JobApplication::class); 
-    }
-
-    // ==========================================
-    // HELPER METHODS (Untuk kemudahan logika)
+    // OVERRIDE AUTHENTICATION METHOD (Wajib untuk 'username' login)
     // ==========================================
 
     /**
-     * Cek apakah user adalah admin
+     * Mengambil user berdasarkan kolom username untuk otentikasi.
+     * Overrides default Laravel behavior (which looks for 'email').
      */
-    public function isAdmin()
+    public function findForLogin($username)
+    {
+        return $this->where('username', $username)->first();
+    }
+
+
+    // ==========================================
+    // RELATIONS
+    // ==========================================
+
+    public function carts(): HasMany { return $this->hasMany(Cart::class); }
+    public function orders(): HasMany { return $this->hasMany(Order::class); }
+    public function reviews(): HasMany { return $this->hasMany(Review::class); }
+    public function favorites(): HasMany { return $this->hasMany(Favorite::class); }
+    public function bookings(): HasMany { return $this->hasMany(Booking::class); }
+    public function questions(): HasMany { return $this->hasMany(UserQuestion::class); }
+    public function jobApplications(): HasMany { return $this->hasMany(JobApplication::class); }
+
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    /**
-     * Scope: Query khusus admin
-     * Cara pakai: User::admin()->get();
-     */
     public function scopeAdmin($query)
     {
         return $query->where('role', 'admin');
     }
 
-    /**
-     * Scope: Query khusus customer/member
-     * Cara pakai: User::customer()->get();
-     */
     public function scopeCustomer($query)
     {
-        return $query->where('role', 'member'); // Sesuaikan dengan enum di database ('member' atau 'customer')
+        return $query->where('role', 'member'); 
     }
 }

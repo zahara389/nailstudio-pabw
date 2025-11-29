@@ -7,25 +7,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cart extends Model
 {
-    
     use HasFactory;
 
-    // TAMBAHKAN BARIS INI
     protected $table = 'carts'; 
-
-    // Pastikan field yang boleh diisi juga sudah ada (sesuaikan dengan migrasi kamu)
     protected $guarded = ['id'];
     
-    // Relasi ke User (sesuai kode controller kamu)
+    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke Items (sesuai kode controller kamu)
+    // Relasi ke Items
     public function items()
     {
-        // Sesuaikan 'cart_items' dengan nama tabel item kamu
         return $this->hasMany(CartItem::class); 
+    }
+
+    // Accessor untuk menghitung total harga
+    public function getTotalPriceAttribute()
+    {
+        return $this->items->sum(function($item) {
+            return $item->quantity * $item->unit_price;
+        });
     }
 }

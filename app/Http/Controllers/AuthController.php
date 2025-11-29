@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException; 
+
+class AuthController extends Controller
+{
+    // ----------------------------------------------------------
+    // 1. LOGIN FORM
+    // ----------------------------------------------------------
+    public function showLoginForm()
+    {
+        if (Auth::check()) {
+            return Auth::user()->role === 'admin'
+                ? redirect()->route('dashboard.index')
+                : redirect()->route('landing.index');
+        }
+
+        return view('admin.login');
+    }
+
+    // ----------------------------------------------------------
+    // 2. LOGIN PROCESS
+    // ----------------------------------------------------------
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string'
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return Auth::user()->role === 'admin'
+                ? redirect()->intended(route('dashboard.index'))
+                : redirect()->intended(route('landing.index'));
+        }
+
+        throw ValidationException::withMessages([
+            'username' => ['Username atau password salah.'],
+        ]);
+    }
+
+    // ----------------------------------------------------------
+    // 3. REGISTER FORM
+    // ----------------------------------------------------------
+    public function showRegistrationForm()
+    {
+        return view('admin.register');
+    }
+
+    // ----------------------------------------------------------
+    // 4. REGISTER PROCESS
+    // ----------------------------------------------------------
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required',
+            'email'    => 'required|email|unique:users',
+            'username' => 'required|unique:users',
+            'password' => 'required|min:5|confirmed',
+            'role'     => 'required'
+        ]);
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role'     => $request->role
+        ]);
+
+        Auth::login($user);
+        return redirect()->route('landing.index');
+    }
+
+    // ----------------------------------------------------------
+    // 5. LOGOUT
+    // ----------------------------------------------------------
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
+
+    // ----------------------------------------------------------
+    // 6. USER CRUD
+    // ----------------------------------------------------------
+    public function index()
+    {
+        return view('admin.users.index', ['users' => User::all()]);
+    }
+
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|unique:users',
+            'password' => 'required|min:5',
+            'role'     => 'required'
+        ]);
+
+        User::create([
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role'     => $request->role
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'User berhasil dibuat');
+    }
+
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'username' => 'required|unique:users,username,' . $user->id,
+            'role'     => 'required'
+        ]);
+
+        $user->username = $request->username;
+        $user->role     = $request->role;
+
+        if ($request->password) {
+            $request->validate(['password' => 'min:5']);
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('users.index')->with('success', 'User berhasil diupdate');
+    }
+}

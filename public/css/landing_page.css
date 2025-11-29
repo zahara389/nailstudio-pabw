@@ -1,0 +1,490 @@
+  /* --- Variabel Warna dan Font --- */
+        :root {
+            /* GENERAL BRAND COLORS */
+            --primary: #1a1a1a;
+            --secondary-text: #666;
+            --color-dark-text: #030213;
+
+            /* SOFT COLOR SCHEME (Restored separation between Pink/Blue) */
+            --color-pink-main: #FFADBD; /* Bright Soft Pink (Primary) */
+            --color-pink-light: #FFE4E9; /* Light Pink */
+            --color-blue-main: #AEC6CF; /* Soft Blue (Secondary Accent) */
+            
+            /* Old variables re-mapped */
+            --color-gold: var(--color-pink-main); 
+            --color-gold-light: var(--color-pink-light);
+            --color-pink: var(--color-pink-main); 
+            --color-blue: var(--color-blue-main); /* Restored Blue */
+            --color-cream: #FAF9F6; 
+
+            /* HERO/TEAM STYLING */
+            --hero-cta-bg: linear-gradient(135deg, var(--color-pink) 0%, #D8859D 100%);
+            --hero-cta-shadow: 0 10px 25px rgba(255, 173, 189, 0.5); 
+            --hero-overlay-bg: linear-gradient(135deg, rgba(248, 230, 235, 0.95) 0%, rgba(255, 240, 245, 0.92) 50%, rgba(255, 245, 238, 0.90) 100%);
+            
+            /* TEAM SPECIFIC COLORS */
+            --team-role-color: var(--color-pink-main); 
+            --team-specialty-pink: var(--color-pink-light); 
+            --team-specialty-blue: #E8F4F8; /* Light Blue for contrast on tags */
+            --team-award-icon: var(--color-pink-main); 
+            --team-award-bg: var(--color-pink-light); 
+
+            /* BOOKING PROMO STYLES */
+            --promo-card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --promo-bg-gradient: linear-gradient(135deg, var(--color-pink) 0%, var(--color-blue) 100%);
+
+            /* CAREERS SECTION COLORS (Isolated and Neutral Background) */
+            --career-card-bg-start: #ffffff; /* White */
+            --career-card-bg-end: #FDFDFD; /* Off White */
+            --career-tag-pink: var(--color-pink);
+            --career-tag-blue: var(--color-blue); 
+            
+            /* CAREER BUTTON GRADIENT (Keep Pink accent) */
+            --career-grad-start: var(--color-pink);
+            --career-grad-end: var(--color-pink-main);
+        }
+
+        /* --- Global & Base Styling --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .font-serif { font-family: 'Playfair Display', serif; }
+        
+        /* Section Layout */
+        .section-padding { padding: 4rem 1rem; }
+
+        /* Responsive Grid Utilities (Essential for structure) */
+        .grid-3-cols { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 2rem; }
+        .grid-4-cols { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1.5rem; }
+
+        @media (min-width: 640px) { /* sm */
+            .sm-flex-row { flex-direction: row; }
+        }
+        @media (min-width: 768px) { /* md */
+            .md-grid-2-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md-grid-3-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md-p-12 { padding: 3rem; }
+        }
+        @media (min-width: 1024px) { /* lg */
+            .lg-grid-4-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .lg-grid-3-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate3d(0, 40px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Button Shine Effect */
+        .btn-shine::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%); transition: transform 0.7s ease;
+        }
+        .btn-shine:hover::after { transform: translateX(100%); }
+
+        /* --- HERO SECTION STYLES (PINK/BLUE UNIFIED) --- */
+        .hero-section {
+            position: relative; width: 100%; min-height: 100vh; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+        }
+        .hero-image-wrapper { position: absolute; inset: 0; z-index: 0; }
+        .hero-image { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { position: absolute; inset: 0; background: var(--hero-overlay-bg); }
+        .hero-content {
+            position: relative; z-index: 10; max-width: 80rem; margin: auto;
+            padding: 5rem 1rem; text-align: center; 
+        }
+        .decorative-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; 
+            padding: 0.5rem 1rem; border-radius: 9999px; background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); color: var(--color-pink);
+        }
+        
+        /* Hero Headline Typography Restored */
+        .main-headline { 
+            font-size: 2.25rem; 
+            line-height: 1.25; 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 640px) { 
+            .main-headline { font-size: 3.75rem; } 
+        }
+        @media (min-width: 1024px) { 
+            .main-headline { font-size: 4.5rem; } 
+        }
+        
+        .main-headline span {
+            background: linear-gradient(135deg, var(--color-pink) 0%, var(--color-gold-light) 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        
+        .subheadline {
+            max-width: 42rem; 
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2.5rem;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #6b7280; 
+        }
+
+        .cta-button {
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            min-width: 200px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-primary { 
+            background: var(--hero-cta-bg); 
+            box-shadow: var(--hero-cta-shadow); 
+            color: white; 
+        }
+        .cta-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 173, 189, 0.5); 
+        }
+        
+        .cta-secondary {
+            background-color: rgba(255, 255, 255, 0.3); 
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: var(--primary); 
+            backdrop-filter: blur(4px);
+        }
+        .cta-secondary:hover {
+            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Trust Indicator Styles Restored */
+        .trust-indicator-group {
+            margin-top: 4rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+        .trust-value {
+            margin-bottom: 0.25rem;
+            font-size: 1.875rem; /* 3xl */
+            font-weight: 700;
+            color: var(--color-pink); 
+            font-family: 'Playfair Display', serif;
+        }
+        .trust-label {
+            font-size: 0.875rem; /* sm */
+            color: #6b7280; /* gray-500 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em; /* tracking-wider */
+        }
+        .indicator-divider {
+            width: 1px;
+            height: 3rem; /* h-12 */
+            background-color: #9ca3af; /* gray-400 */
+            opacity: 0.3;
+        }
+        
+        /* --- PRODUCTS & CATEGORIES --- */
+        .product-section { background-color: var(--color-cream); }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-title { margin-bottom: 1rem; font-size: 2.25rem; font-weight: 700; color: var(--primary); }
+        .section-subtitle { color: var(--secondary-text); font-size: 1.125rem; }
+
+        .product-card {
+            background-color: white; border-radius: 0.75rem; overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; 
+            cursor: pointer;
+        }
+        .product-card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-8px); }
+        .product-image-wrapper { position: relative; height: 16rem; overflow: hidden; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .product-card:hover .product-image { transform: scale(1.1); }
+        
+        .bestseller-badge {
+            position: absolute; top: 1rem; right: 1rem; padding: 0.25rem 0.75rem; border-radius: 9999px;
+            font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background-color: var(--color-pink); color: #fff;
+        }
+        .product-info { padding: 1.5rem; }
+        .product-price { 
+            font-weight: 600; font-size: 1.125rem; color: var(--color-pink);
+        }
+        .add-to-cart-btn {
+            margin-top: 1rem; width: 100%; padding: 0.5rem 0; border-radius: 0.5rem;
+            border: 2px solid var(--color-pink); color: var(--color-pink); transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .add-to-cart-btn:hover { background-color: var(--color-pink); color: white; }
+
+        /* Category Cards */
+        .category-card:hover .category-image { transform: scale(1.1); }
+        .category-card {
+            position: relative; border-radius: 0.75rem; overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); cursor: pointer;
+            transition: all 0.3s ease; height: 18rem;
+        }
+        .category-card:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); transform: translateY(-4px); }
+        .category-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .category-overlay {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
+        }
+        .category-content {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; color: white;
+        }
+        .category-icon-wrapper {
+            width: 3rem; height: 3rem; border-radius: 9999px; display: flex; align-items: center; 
+            justify-content: center; margin-bottom: 0.75rem; transition: transform 0.3s ease;
+        }
+        .category-card:hover .category-icon-wrapper { transform: scale(1.1); }
+        .icon-pink { background-color: var(--color-pink); }
+        .icon-blue { background-color: var(--color-blue); } /* Used Blue for secondary icon color */
+        .category-title { color: white; margin-bottom: 0.25rem; font-size: 1.25rem; font-weight: 700; }
+        .category-subtitle { color: rgba(255, 255, 255, 0.8); font-size: 0.875rem; font-weight: 500; }
+        
+        /* --- BOOKING PROMOTION STYLES (Re-inserted Section) --- */
+        .promo-section { background-color: var(--color-cream); padding: 4rem 1rem; }
+        .promo-container { max-width: 64rem; margin-left: auto; margin-right: auto; }
+        .promo-card { background-color: white; border-radius: 1rem; box-shadow: var(--promo-card-shadow); overflow: hidden; border: 1px solid #f9fafb; }
+        .promo-content { padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+        .promo-headline { margin-bottom: 1rem; font-size: 1.875rem; font-weight: 700; color: var(--primary); }
+        
+        .promo-icon-box { 
+            width: 4rem; height: 4rem; border-radius: 9999px; display: flex; align-items: center; 
+            justify-content: center; margin-bottom: 1.5rem; background-color: var(--color-pink); 
+        }
+        .promo-icon-box svg { color: var(--color-dark-text); width: 2rem; height: 2rem; }
+        
+        .promo-list-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background-color: var(--color-pink); }
+        .promo-list-item { display: flex; align-items: center; gap: 0.75rem; color: #4b5563; }
+
+        .promo-btn-primary { 
+            padding: 0.75rem 2rem; border-radius: 0.5rem; transition: all 0.3s; 
+            background-color: var(--color-pink); color: white; font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .promo-btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .promo-btn-secondary { 
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid var(--color-blue); /* Used Blue Border */
+            color: var(--color-blue); /* Used Blue Color */
+            transition: all 0.3s; display: flex; align-items: center; 
+            justify-content: center; gap: 0.5rem; font-weight: 500;
+        }
+        .promo-bg-gradient { 
+            background: linear-gradient(135deg, var(--color-pink) 0%, var(--color-blue) 100%); /* Pink to Blue Gradient */
+            position: relative; 
+            display: none;
+        }
+        @media (min-width: 768px) { .promo-bg-gradient { display: block; } }
+
+
+        /* --- BOOKING FORM --- */
+        .booking-container { max-width: 56rem; margin: auto; }
+        .booking-form-wrapper { 
+            background-color: white; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 2rem; border: 1px solid #f9fafb;
+        }
+        .form-label {
+            display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;
+            color: #374151; font-weight: 500;
+        }
+        .form-input, .form-select {
+            width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #d1d5db;
+            transition: all 0.3s; color: #374151; background-color: white;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none; ring: 2px solid var(--color-pink); border-color: var(--color-pink);
+        }
+        .form-icon { width: 1.25rem; height: 1.25rem; color: var(--color-pink); }
+        .submit-button {
+            width: 100%; padding: 1rem 0; border-radius: 0.5rem; transition: all 0.3s;
+            font-weight: 700; background-color: var(--color-pink); color: var(--color-dark-text);
+        }
+        .submit-button:hover { transform: scale(1.02); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        /* --- TEAM SECTION --- */
+        .team-section-bg { background: linear-gradient(to bottom right, #eff6ff, #fef2f4, #f3e8ff); }
+        .team-header-badge {
+            display: inline-block; padding: 0.5rem 1rem; background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px); border-radius: 9999px; color: #ec4899; 
+            margin-bottom: 1rem; font-weight: 500;
+        }
+        .team-card {
+            background-color: white; border-radius: 1.5rem; overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;
+            display: flex; flex-direction: column; 
+        }
+        .team-card:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); transform: translateY(-8px); }
+        .team-photo-area { background: linear-gradient(to bottom right, #fef2f4, #eff6ff); }
+        
+        /* FIX: Photo Shape for Team Members (Set to perfect circle) */
+        /* Set Photo Wrapper Size */
+        .team-card .team-photo-wrapper { 
+            position: relative; 
+            width: 12rem; /* w-48 */
+            height: 12rem; /* h-48 */
+            margin: auto; 
+            padding-top: 2rem;
+            padding-bottom: 1rem;
+        }
+        
+        /* Outer ring 1 (Background Gradient) */
+        .team-card .team-photo-wrapper .team-photo-ring-1 {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fce7f3 0%, #eff6ff 100%); /* Lighter Pink/Blue */
+            z-index: 0;
+            animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Inner White Border / Frame */
+        .team-card .team-photo-wrapper .team-photo-frame {
+            position: absolute;
+            inset: 1.25rem; /* Padding for the frame */
+            border-radius: 50%;
+            background: white;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        /* Actual Image Container (Clipped) */
+        .team-card .team-photo-wrapper .team-photo-inner {
+            position: absolute; 
+            inset: 1.5rem; /* Photo inside the frame */
+            border-radius: 50%; 
+            overflow: hidden; 
+            z-index: 3;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        
+        .team-info { 
+            padding: 1.5rem; text-align: center; display: flex; flex-direction: column; 
+            align-items: center; gap: 0.5rem; 
+        }
+        .team-name { color: #111827; font-size: 1.25rem; font-weight: 700; margin-top: 0.5rem; }
+        .team-role { color: var(--team-role-color); font-weight: 500; } 
+        .team-description { color: #4b5563; font-size: 0.875rem; line-height: 1.625; margin-top: 0.5rem;}
+        .specialties-group { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; padding-top: 0.5rem; }
+        
+        /* FIX: Team Specialty Tag Styling */
+        .specialty-tag {
+            padding: 0.25rem 0.75rem; 
+            background: var(--team-specialty-pink); 
+            color: #4b5563; 
+            border-radius: 9999px; font-size: 0.75rem; display: flex; 
+            align-items: center; gap: 0.25rem; font-weight: 500;
+        }
+        .specialty-tag:nth-child(even) {
+            background: var(--team-specialty-blue); 
+        }
+        .specialty-tag .specialty-icon { color: var(--team-role-color); width: 0.75rem; height: 0.75rem; }
+        
+        /* Award Badge Fix */
+        .award-badge {
+            position: absolute; top: 1rem; right: 1rem; background-color: var(--team-award-bg);
+            border-radius: 9999px; padding: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 4; 
+        }
+        .award-icon { color: var(--team-award-icon); width: 1.25rem; height: 1.25rem; }
+
+        
+        /* --- CAREERS SECTION (ISOLATED CSS) --- */
+        .career-section { background-color: white; padding: 5rem 1.5rem; }
+        .career-container { max-width: 80rem; margin-left: auto; margin-right: auto; }
+        .career-header { text-align: center; margin-bottom: 4rem; }
+        .career-badge {
+            display: inline-block; padding: 0.5rem 1rem; border-radius: 9999px; margin-bottom: 1rem;
+            color: var(--career-tag-pink); background: linear-gradient(to right, var(--career-card-bg-start), var(--career-card-bg-end));
+        }
+        .career-title { color: #111827; }
+        .career-subtitle { color: #4b5563; max-width: 40rem; margin-left: auto; margin-right: auto; }
+        .career-jobs-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.5rem; }
+        @media (min-width: 768px) { .career-jobs-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .career-jobs-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .career-job-card {
+            /* Neutral Background */
+            background: linear-gradient(to bottom right, var(--career-card-bg-start), var(--career-card-bg-end));
+            border-radius: 1.5rem; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); 
+            border: 1px solid white; transition: 0.3s ease;
+        }
+        .career-job-card:hover { transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        
+        .career-icon-box {
+            width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; 
+            /* Gradient tetap Pink/Blue untuk icon box */
+            background: linear-gradient(to bottom right, var(--color-pink-main), var(--color-blue-main));
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem; transition: 0.3s ease;
+        }
+        .career-job-card:hover .career-icon-box { transform: scale(1.1); }
+        .career-icon-box svg { color: white; width: 1.5rem; height: 1.5rem; }
+
+        .career-job-title { font-size: 1.25rem; color: #111827; font-weight: 600; margin-bottom: 0.5rem; }
+        
+        .career-chips-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .career-chip { 
+            background: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; 
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 0.375rem;
+        }
+        .career-chip-clock { color: var(--career-tag-pink); }
+        .career-chip-map { color: var(--career-tag-blue); }
+        
+        .career-description { font-size: 0.875rem; color: #4b5563; margin-bottom: 1.5rem; line-height: 1.6; }
+        
+        .career-req-title { font-size: 0.875rem; color: #374151; margin-bottom: 0.375rem; font-weight: 600; }
+        .career-req-list { list-style: none; padding: 0; margin: 0; margin-bottom: 1.5rem; }
+        .career-req-list li { 
+            display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; 
+            color: #4b5563; margin-bottom: 0.375rem; 
+        }
+        .career-req-check { color: var(--career-grad-start); margin-top: 0.125rem; }
+
+        .career-apply-btn {
+            width: 100%; padding: 0.75rem; border-radius: 0.75rem; background: white;
+            border: none; font-size: 0.9375rem; color: #1f2937; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            cursor: pointer; transition: 0.3s ease; display: flex; align-items: center; 
+            justify-content: center; gap: 0.375rem; font-weight: 600;
+        }
+        .career-apply-btn:hover {
+            /* Button Hover tetap Pink Gradient */
+            background: linear-gradient(to right, var(--career-grad-start), var(--career-grad-end));
+            color: white; transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .career-apply-btn:hover svg { transform: translateX(4px); }
+
+        .career-cta-text { margin-top: 3rem; text-align: center; color: #4b5563; }
+        .career-cta-btn {
+            display: inline-block; margin-top: 0.75rem; padding: 0.875rem 2rem; 
+            /* CTA Footer tetap Pink Gradient */
+            background: linear-gradient(to right, var(--career-grad-start), var(--career-grad-end));
+            color: white; border-radius: 9999px; text-decoration: none; font-size: 1rem;
+            transition: 0.3s; font-weight: 700;
+        }
+        .career-cta-btn:hover { transform: scale(1.07); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }

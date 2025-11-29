@@ -1,4 +1,4 @@
-@extends('layouts.app-admin') 
+@extends('layouts.app-admin')
 
 @section('content')
 <main>
@@ -6,80 +6,187 @@
         <div class="left">
             <h1>Transaction History</h1>
             <ul class="breadcrumb">
-                <li><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+                <li><a href="#">Dashboard</a></li>
                 <li><i class='bx bx-chevron-right'></i></li>
-                <li><a class="active" href="{{ route('transaction.history') }}">Transaction History</a></li>
+                <li><a class="active" href="#">Transaction History</a></li>
             </ul>
         </div>
     </div>
-    
+
     <div class="container">
-        <div class="header"></div>
-        
+        {{-- Notifikasi Sukses --}}
+        @if(session('success'))
+            <div class="alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>ID Transaksi</th>
+                        <th>ID</th>
                         <th>Nama Pembeli</th>
                         <th>Daftar Barang</th>
-                        <th>Harga per Item</th>
+                        <th>Harga Satuan</th>
                         <th>Total Harga</th>
-                        <th>Total Pembelian</th>
+                        <th>Total Item</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="transactionTable">
+
+                <tbody>
                     @forelse ($transactions as $trans)
                         <tr>
-                            <td>#{{ str_pad($trans['id'], 3, '0', STR_PAD_LEFT) }}</td>
-                            <td>{{ htmlspecialchars($trans['pembeli']) }}</td>
-                            
+                            {{-- ID --}}
+                            <td>#{{ str_pad($trans->id, 3, '0', STR_PAD_LEFT) }}</td>
+
+                            {{-- Nama Pembeli --}}
+                            <td>{{ $trans->pembeli }}</td>
+
                             {{-- Daftar Barang --}}
-                            <td><ul>@foreach ($trans['barang'] as $b)<li>{{ htmlspecialchars($b) }}</li>@endforeach</ul></td>
-                            
-                            {{-- Harga per Item --}}
-                            <td><ul>@foreach ($trans['harga'] as $h)<li>{{ $h }}</li>@endforeach</ul></td>
-                            
-                            {{-- Total Harga Transaksi --}}
-                            <td>Rp {{ number_format($trans['total'], 0, ',', '.') }}</td>
-                            
+                            <td>
+                                <ul class="list-none">
+                                    @foreach ($trans->details as $detail)
+                                        <li>- {{ $detail->nama_produk }} (x{{ $detail->qty }})</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+
+                            {{-- Harga Satuan --}}
+                            <td>
+                                <ul class="list-none">
+                                    @foreach ($trans->details as $detail)
+                                        <li>Rp {{ number_format($detail->harga, 0, ',', '.') }}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+
+                            {{-- Total Harga --}}
+                            <td>
+                                <strong>Rp {{ number_format($trans->total_harga, 0, ',', '.') }}</strong>
+                            </td>
+
                             {{-- Total Item --}}
-                            <td>{{ $trans['qty_total'] }} items</td>
+                            <td>{{ $trans->details->sum('qty') }} items</td>
+
+                            {{-- Tombol Delete --}}
+                            <td>
+                                <form action="{{ route('transaction.destroy', $trans->id) }}" 
+                                      method="POST"
+                                      onsubmit="return confirm('Hapus transaksi ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn-delete" type="submit">Hapus</button>
+                                </form>
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6">No completed transactions found.</td></tr>
+                        <tr>
+                            <td colspan="7" class="text-center">Belum ada data transaksi.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
         {{-- PAGINATION --}}
-        <div style='margin-top:20px;'>
-            @if ($page > 1)
-                <a href="{{ route('transaction.history', ['page' => $page - 1]) }}" style='margin-right: 10px;'>&laquo; Previous</a>
-            @endif
-            
-            @if ($page < $totalPages)
-                <a href="{{ route('transaction.history', ['page' => $page + 1]) }}">Next &raquo;</a>
-            @endif
-            
-            @if ($totalRows > 0)
-                <small style="margin-left: 15px;">Page {{ $page }} of {{ $totalPages }} (Total {{ $totalRows }} transactions)</small>
-            @endif
+        <div class="pagination-container">
+            {{ $transactions->links() }}
         </div>
     </div>
 </main>
 @endsection
 
-{{-- Pindahkan CSS Inline ke styles section di Layout Utama atau di sini --}}
+
 @section('styles')
 <style>
-.table-container { margin: 32px 0; }
-.table-container table { width: 100%; border-collapse: collapse; }
-.table-container th, .table-container td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align: left; }
-.table-container th { background: #8B1D3B; color: #fff; }
-.table-container tr:nth-child(even) { background: #faf8fb; }
-a { text-decoration: none; color: #8B1D3B; font-weight: bold; }
-a:hover { text-decoration: underline; }
+/* Alert */
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Table */
+.table-container { 
+    margin: 32px 0; 
+    overflow-x: auto;
+}
+
+.table-container table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 900px; 
+}
+
+.table-container th, 
+.table-container td { 
+    padding: 12px 15px; 
+    border-bottom: 1px solid #ddd; 
+    vertical-align: top; 
+    text-align: left;
+}
+
+.table-container th { 
+    background: #8B1D3B; 
+    color: #fff; 
+}
+
+.table-container tr:nth-child(even) { 
+    background: #faf8fb; 
+}
+
+.table-container tr:hover { 
+    background-color: #f1f1f1; 
+}
+
+.list-none {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Delete Button */
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.btn-delete:hover {
+    background: #bb2d3b;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+.pagination li {
+    margin-right: 5px;
+}
+.pagination li a,
+.pagination li span {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    color: #8B1D3B;
+    text-decoration: none;
+    border-radius: 4px;
+}
+.pagination li.active span {
+    background-color: #8B1D3B;
+    color: white;
+    border-color: #8B1D3B;
+}
 </style>
 @endsection

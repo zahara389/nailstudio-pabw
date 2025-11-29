@@ -8,9 +8,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Panggil seeder produk yang baru kita buat
         $this->call([
             ProductSeeder::class,
+            UserSeeder::class,
+            TransactionSeeder::class,
+            TransactionDetailSeeder::class,
+            OrdersSeeder::class,
         ]);
     }
 }

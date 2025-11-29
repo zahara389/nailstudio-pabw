@@ -1,51 +1,70 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductAdminController;  // ← TAMBAHKAN INI
-use App\Http\Controllers\AnalyticsController;     // ← Tambahkan juga yang lain
-use App\Http\Controllers\FaqController;           // ← Jika belum ada
-use App\Http\Controllers\StockController;         // ← Jika belum ada
+use App\Http\Controllers\FaqMessageController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\ProductAdminController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockManagementController;
+use App\Http\Controllers\TransactionController;
 
 
-// Route utama ke HomePage
-Route::get('/', [HomePageController::class, 'index'])->name('home.index');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
-// Route untuk post booking
-Route::post('/booking', [HomePageController::class, 'storeBooking'])->name('booking.store');
-
-// Route katalog produk
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
 
-//ADMIN PAGE
-// 1. Dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-Route::post('/dashboard/update-status', [DashboardController::class, 'updateStatus'])->name('dashboard.updateStatus');
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
-// 2. Product Management
-Route::resource('product', ProductAdminController::class)->names('product'); 
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-// 3. Analytics
-Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
-// 4. FAQ Message
-Route::prefix('faq')->name('admin.faq.')->group(function () {
-    Route::get('/', [FaqController::class, 'index'])->name('index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::post('/dashboard/update-status', [DashboardController::class, 'updateStatus'])->name('dashboard.updateStatus');
+    Route::get('/dashboard/orders/{id}', [DashboardController::class, 'showDetail'])->name('dashboard.orders.show');
+
+    Route::resource('product', ProductAdminController::class)
+        ->names('product')
+        ->except(['show']);
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
+    Route::prefix('admin/faq')->name('admin.faq.')->group(function () {
+        Route::get('/', [FaqMessageController::class, 'index'])->name('index');
+        Route::post('/', [FaqMessageController::class, 'store'])->name('store');
+        Route::get('/{id}', [FaqMessageController::class, 'show'])->name('show');
+        Route::put('/{id}', [FaqMessageController::class, 'update'])->name('update');
+        Route::delete('/{id}', [FaqMessageController::class, 'destroy'])->name('destroy');
+        Route::post('/submit-answer', [FaqMessageController::class, 'submitAnswer'])->name('submit');
+    });
+
+    Route::prefix('transaction')->name('transaction.')->group(function () {
+        Route::get('/history', [TransactionController::class, 'index'])->name('history');
+        Route::post('/store', [TransactionController::class, 'store'])->name('store');
+        Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('stock-management')->name('stock.')->group(function () {
+        Route::get('/', [StockManagementController::class, 'index'])->name('index');
+        Route::get('/create', [StockManagementController::class, 'create'])->name('create');
+        Route::post('/', [StockManagementController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [StockManagementController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [StockManagementController::class, 'update'])->name('update');
+        Route::delete('/{id}', [StockManagementController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}/update-stock', [StockManagementController::class, 'updateStock'])->name('updateStock');
+        Route::put('/{id}/update-price', [StockManagementController::class, 'updatePrice'])->name('updatePrice');
+        Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
+    });
 });
-
-// 5. Transaction History
-Route::get('/transaction/history', [DashboardController::class, 'history'])->name('transaction.history');
-
-// 6. Management Stock & Harga
-Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
-
-// Route Logout
-Route::get('/logout', function () {
-    auth()->logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');

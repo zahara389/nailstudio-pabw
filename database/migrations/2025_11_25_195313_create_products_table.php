@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product', function (Blueprint $table) {
-            $table->bigIncrements('id_product');
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
             $table->string('namaproduct');
             $table->string('category')->nullable();
             $table->unsignedInteger('stock')->default(0);
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product');
+        Schema::dropIfExists('products');
     }
 };
