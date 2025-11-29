@@ -28,6 +28,40 @@ class AuthController extends Controller
 
     // ----------------------------------------------------------
     // 2. LOGIN PROCESS (POST /login)
+    // REGISTER FORM
+    // ----------------------------------------------------------
+    public function showRegistrationForm()
+    {
+        return view('admin.register');
+    }
+
+    // ----------------------------------------------------------
+    // REGISTER PROCESS
+    // ----------------------------------------------------------
+    public function register(Request $request)
+{
+    $request->validate([
+        'name'     => 'required',
+        'email'    => 'required|email|unique:users',
+        'username' => 'required|unique:users',
+        'password' => 'required|min:5|confirmed',
+        'role'     => 'required'
+    ]);
+
+    User::create([
+        'name'     => $request->name,
+        'email'    => $request->email,
+        'username' => $request->username,
+        'password' => Hash::make($request->password),
+        'role'     => $request->role
+    ]);
+
+    return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login!');
+}
+
+
+    // ----------------------------------------------------------
+    // LOGIN PROCESS
     // ----------------------------------------------------------
     public function login(Request $request)
     {
@@ -97,6 +131,7 @@ class AuthController extends Controller
 
     // ----------------------------------------------------------
     // 5. USER CRUD (ADMIN) - Sisanya
+    // USER CRUD
     // ----------------------------------------------------------
     public function index()
     {
