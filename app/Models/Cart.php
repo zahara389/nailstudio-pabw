@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cart extends Model
 {
-    
     use HasFactory;
 
     protected $table = 'carts'; 
@@ -24,9 +23,8 @@ class Cart extends Model
     {
         return $this->hasMany(CartItem::class); 
     }
-}
 
-    // ✅ TAMBAHKAN INI - Accessor untuk menghitung total harga
+    // Accessor untuk menghitung total harga
     public function getTotalPriceAttribute()
     {
         return $this->items->sum(function($item) {
