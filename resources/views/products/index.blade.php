@@ -9,10 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{{ asset('css/products.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    @livewireStyles
 </head>
-<body class="gradient-bg min-h-screen">
+<body id="ns-body" class="gradient-bg min-h-screen">
     <div class="bg-white/70">
-        @include('components.navbar')
+        <livewire:navbar />
     </div>
 
     <section class="mx-auto max-w-7xl px-4 py-16">
@@ -73,8 +76,10 @@
             @endforelse
         </div>
     </section>
-</body>
-<script>
+        @livewireScripts
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="{{ asset('js/navbar.js') }}"></script>
+        <script>
     document.addEventListener('DOMContentLoaded', function () {
         const cards = document.querySelectorAll('[data-card]');
 
@@ -88,5 +93,6 @@
             });
         });
     });
-</script>
+    </script>
+</body>
 </html>

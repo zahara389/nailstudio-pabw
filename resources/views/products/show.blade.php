@@ -9,15 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{{ asset('css/products.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    @livewireStyles
 </head>
-<body class="gradient-bg min-h-screen">
+<body id="ns-body" class="gradient-bg min-h-screen">
     <div class="bg-white/70">
-        @include('components.navbar')
+        <livewire:navbar />
     </div>
 
     <main class="mx-auto max-w-6xl px-4 pt-16 pb-24">
         <nav class="flex items-center text-sm text-gray-500">
-            <a href="{{ route('home.index') }}" class="hover:text-pink-500">Beranda</a>
+            <a href="{{ route('landing.index') }}" class="hover:text-pink-500">Beranda</a>
             <span class="mx-2">/</span>
             <a href="{{ route('products.index') }}" class="hover:text-pink-500">Produk</a>
             <span class="mx-2">/</span>
@@ -102,5 +105,8 @@
             </aside>
         </section>
     </main>
+    @livewireScripts
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="{{ asset('js/navbar.js') }}"></script>
 </body>
 </html>
