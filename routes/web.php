@@ -10,6 +10,7 @@ use App\Http\Controllers\FaqMessageController;
 use App\Http\Controllers\TransactionController;   
 use App\Http\Controllers\StockManagementController; 
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\AuthController;
 
 
 
@@ -53,25 +54,46 @@ Route::post('/transaction/store', [TransactionController::class, 'store'])->name
 Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
 
 // 6. Management Stock & Harga
-Route::get('/stock-management', [StockManagementController::class, 'index'])->name('stock.index');  
-Route::post('/stock/add', [StockManagementController::class, 'updateStock'])->name('stock.updateStock');
-Route::post('/stock/price', [StockManagementController::class, 'updatePrice'])->name('stock.updatePrice');
+Route::get('/stock-management', [StockManagementController::class, 'index'])->name('stock.index');
+
+// UPDATE STOCK (PUT)
+Route::put('/stock/{id}/update-stock', [StockManagementController::class, 'updateStock'])
+        ->name('stock.updateStock');
+
+// UPDATE HARGA (PUT)
+Route::put('/stock/{id}/update-price', [StockManagementController::class, 'updatePrice'])
+        ->name('stock.updatePrice');
+
+// CREATE
 Route::get('/stock-management/create', [StockManagementController::class, 'create'])->name('stock.create');
 Route::post('/stock-management/store', [StockManagementController::class, 'store'])->name('stock.store');
+
+// EDIT & UPDATE PRODUK
 Route::get('/stock-management/{id}/edit', [StockManagementController::class, 'edit'])->name('stock.edit');
 Route::post('/stock-management/{id}/update', [StockManagementController::class, 'update'])->name('stock.update');
 Route::post('/stock-management/{id}/delete', [StockManagementController::class, 'destroy'])->name('stock.destroy');
 Route::post('/stock-management/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('stock.bulkDelete');
     
-// Route Logout
-Route::get('/logout', function () {
-    auth()->logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
 
 //landing page 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
 Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
+Route::put('/stock-management/{id}/update', [StockManagementController::class, 'update'])->name('stock.update');
+
+// DELETE
+Route::delete('/stock-management/{id}/delete', [StockManagementController::class, 'destroy'])->name('stock.destroy');
+Route::delete('/stock-management/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('stock.bulkDelete');
+
+// AUTHENTICATION ROUTES
+
+// LOGIN
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+// LOGOUT
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// REGISTER
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
