@@ -36,8 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/orders/{id}', [DashboardController::class, 'showDetail'])->name('dashboard.orders.show');
 
     Route::resource('product', ProductAdminController::class)
-        ->names('product')
-        ->except(['show']);
+        ->parameters(['product' => 'id'])
+        ->names('product');
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 

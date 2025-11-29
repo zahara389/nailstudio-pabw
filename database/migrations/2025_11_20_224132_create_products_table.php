@@ -10,17 +10,15 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('slug', 150)->unique();
-            $table->enum('category', ['nail polish','nail tools','nail care','nail kit']);
-            $table->text('description')->nullable();
-            $table->integer('stock')->default(0);
-            $table->decimal('price', 10, 2);
-            $table->decimal('discount', 5, 2)->default(0);
-            $table->enum('status', ['draft','published','low stock']);
+            $table->string('namaproduct');
+            $table->string('category')->nullable();
+            $table->unsignedInteger('stock')->default(0);
+            $table->unsignedBigInteger('price');
+            $table->string('status')->default('draft');
             $table->string('image')->nullable();
-            $table->decimal('rating', 2, 1)->default(0.0);
-            $table->integer('review_count')->default(0);
+            $table->unsignedTinyInteger('discount')->default(0);
+            $table->text('description')->nullable();
+            $table->timestamp('added')->nullable();
             $table->timestamps();
         });
     }

@@ -11,10 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_questions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        // Duplicate placeholder migration; intentionally left empty.
     }
 
     /**
@@ -22,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_questions');
+        // No-op; handled by primary user_questions migration.
     }
 };

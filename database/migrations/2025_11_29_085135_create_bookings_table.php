@@ -11,32 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-
-            // Kunci Asing
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
-            
-            // Kolom Kontak Pelanggan (Dari input manual user)
-            $table->string('customer_name');
-            $table->string('customer_email');
-            $table->string('customer_phone');
-            
-            // Detail Booking
-            $table->string('location');
-            $table->string('service');
-            
-            // Kolom Tanggal dan Waktu (Nama yang konsisten dengan Controller)
-            $table->date('booking_date');
-            $table->time('booking_time');
-            
-            $table->text('notes')->nullable();
-            
-            // Status Booking
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
-            
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('bookings')) {
+            Schema::create('bookings', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('customer_name');
+                $table->string('customer_email');
+                $table->string('customer_phone');
+                $table->string('location');
+                $table->string('service');
+                $table->date('booking_date');
+                $table->time('booking_time');
+                $table->text('notes')->nullable();
+                $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

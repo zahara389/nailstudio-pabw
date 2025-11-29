@@ -11,10 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_categories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        // Duplicate placeholder migration; intentionally left empty.
     }
 
     /**
@@ -22,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_categories');
+        // No-op; handled by primary job_categories migration.
     }
 };
