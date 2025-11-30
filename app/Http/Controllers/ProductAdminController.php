@@ -16,8 +16,7 @@ class ProductAdminController extends Controller
         
         // Format products untuk view
         $formattedProducts = $products->map(function($product) {
-            // Hitung harga setelah diskon
-            $priceDiscounted = $product->price - ($product->price * $product->discount / 100);
+            $priceDiscounted = $product->final_price;
             
             // Tentukan status class dan text
             $statusClass = 'status-draft';
@@ -28,15 +27,12 @@ class ProductAdminController extends Controller
             } elseif ($product->status === 'low stock') {
                 $statusClass = 'status-low';
                 $statusText = 'Low Stock';
-            } elseif ($product->status === 'out of stock') {
-                $statusClass = 'status-low';
-                $statusText = 'Out of Stock';
             }
             
             return [
                 'id' => $product->id,
                 'name' => $product->name,
-                'category' => $product->category,
+                'category' => Str::headline($product->category),
                 'stock' => number_format($product->stock),
                 'price' => number_format($product->price, 0, ',', '.'),
                 'discount' => $product->discount,
@@ -59,12 +55,12 @@ class ProductAdminController extends Controller
     public function store(Request $request) 
     { 
         $request->validate([
-            'namaproduct' => 'required|string|max:255|unique:products,name',
-            'category'    => 'required|string|max:255',
+            'namaproduct' => 'required|string|max:100|unique:products,name',
+            'category'    => ['required', Rule::in(['nail polish','nail tools','nail care','nail kit'])],
             'stock'       => 'required|integer|min:0',
             'price'       => 'required|numeric|min:0',
-            'discount'    => 'nullable|integer|min:0|max:100',
-            'status'      => ['required', Rule::in(['published', 'low stock', 'draft', 'out of stock'])],
+            'discount'    => 'nullable|numeric|min:0|max:100',
+            'status'      => ['required', Rule::in(['draft', 'published', 'low stock'])],
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -101,14 +97,14 @@ class ProductAdminController extends Controller
 
         $request->validate([
             'namaproduct' => [
-                'required', 'string', 'max:255', 
+                'required', 'string', 'max:100', 
                 Rule::unique('products', 'name')->ignore($product->id)
             ],
-            'category'    => 'required|string|max:255',
+            'category'    => ['required', Rule::in(['nail polish','nail tools','nail care','nail kit'])],
             'stock'       => 'required|integer|min:0',
             'price'       => 'required|numeric|min:0',
-            'discount'    => 'nullable|integer|min:0|max:100',
-            'status'      => ['required', Rule::in(['published', 'low stock', 'draft', 'out of stock'])],
+            'discount'    => 'nullable|numeric|min:0|max:100',
+            'status'      => ['required', Rule::in(['draft', 'published', 'low stock'])],
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

@@ -3,37 +3,90 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\User;
 
 class TransactionSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('transactions')->insert([
+        $products = Product::all();
+        $users = User::all();
+
+        if ($products->isEmpty() || $users->isEmpty()) {
+            return;
+        }
+
+        $orders = [
             [
-                'pembeli' => 'Tazkya Mutia',
-                'tanggal_pembelian' => now()->subDays(1),
-                'total_harga' => 150000,
-                'status' => 'Selesai',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'customer' => 'Tazkya Mutia',
+                'status' => 'Completed',
+                'discount' => 10000,
+                'items' => [
+                    ['quantity' => 1, 'product' => $products->get(0) ?? $products->first()],
+                    ['quantity' => 2, 'product' => $products->get(1) ?? $products->first()],
+                ],
             ],
             [
-                'pembeli' => 'Ayu Putri',
-                'tanggal_pembelian' => now()->subDays(2),
-                'total_harga' => 80000,
+                'customer' => 'Ayu Putri',
                 'status' => 'Pending',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'discount' => 0,
+                'items' => [
+                    ['quantity' => 1, 'product' => $products->get(2) ?? $products->first()],
+                ],
             ],
             [
-                'pembeli' => 'Sinta Rahma',
-                'tanggal_pembelian' => now()->subDays(3),
-                'total_harga' => 120000,
-                'status' => 'Dibatalkan',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'customer' => 'Sinta Rahma',
+                'status' => 'Cancelled',
+                'discount' => 5000,
+                'items' => [
+                    ['quantity' => 1, 'product' => $products->get(3) ?? $products->first()],
+                ],
             ],
-        ]);
+        ];
+
+        foreach ($orders as $index => $payload) {
+            $customer = $users->firstWhere('name', $payload['customer']) ?? $users->random();
+
+            $order = Order::create([
+                'user_id' => $customer->id,
+                'order_number' => 'ORD-' . Str::upper(Str::random(8)),
+                'total_amount' => 0,
+                'payment_method' => 'Manual Transfer',
+                'proof_of_payment_path' => null,
+                'order_status' => $payload['status'],
+                'discount_amount' => (float) $payload['discount'],
+            ]);
+
+            $total = 0;
+
+            foreach ($payload['items'] as $item) {
+                $product = $item['product'] instanceof Product
+                    ? $item['product']
+                    : $products->random();
+
+                $quantity = max(1, $item['quantity']);
+                $unitPrice = $product->price;
+                $subtotal = $quantity * $unitPrice;
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'discount_amount' => 0,
+                    'subtotal_item' => $subtotal,
+                ]);
+
+                $total += $subtotal;
+            }
+
+            $order->update([
+                'total_amount' => max(0, $total - (float) $payload['discount']),
+            ]);
+        }
     }
 }

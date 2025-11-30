@@ -25,10 +25,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nama Pembeli</th>
-                        <th>Daftar Barang</th>
-                        <th>Harga Satuan</th>
+                        <th>Order</th>
+                        <th>Pelanggan</th>
+                        <th>Barang</th>
+                        <th>Status Pembayaran</th>
                         <th>Total Harga</th>
                         <th>Total Item</th>
                         <th>Aksi</th>
@@ -36,43 +36,39 @@
                 </thead>
 
                 <tbody>
-                    @forelse ($transactions as $trans)
+                    @forelse ($orders as $order)
                         <tr>
-                            {{-- ID --}}
-                            <td>#{{ str_pad($trans->id, 3, '0', STR_PAD_LEFT) }}</td>
-
-                            {{-- Nama Pembeli --}}
-                            <td>{{ $trans->pembeli }}</td>
-
-                            {{-- Daftar Barang --}}
+                            <td>
+                                <strong>{{ $order->order_number }}</strong>
+                                <div class="text-muted">{{ $order->created_at->format('d M Y H:i') }}</div>
+                            </td>
+                            <td>
+                                <div>{{ $order->user->name ?? 'Guest' }}</div>
+                                <div class="text-muted">{{ $order->user->email ?? '-' }}</div>
+                            </td>
                             <td>
                                 <ul class="list-none">
-                                    @foreach ($trans->details as $detail)
-                                        <li>- {{ $detail->nama_produk }} (x{{ $detail->qty }})</li>
+                                    @foreach ($order->items as $item)
+                                        <li>
+                                            - {{ $item->product->name ?? 'Produk dihapus' }} (x{{ $item->quantity }})
+                                            <div class="text-muted">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</div>
+                                        </li>
                                     @endforeach
                                 </ul>
                             </td>
-
-                            {{-- Harga Satuan --}}
                             <td>
-                                <ul class="list-none">
-                                    @foreach ($trans->details as $detail)
-                                        <li>Rp {{ number_format($detail->harga, 0, ',', '.') }}</li>
-                                    @endforeach
-                                </ul>
+                                <div>{{ $order->payment_method ?? 'Manual Transfer' }}</div>
+                                <div class="badge-status badge-status--{{ strtolower($order->order_status) }}">{{ $order->order_status }}</div>
                             </td>
-
-                            {{-- Total Harga --}}
                             <td>
-                                <strong>Rp {{ number_format($trans->total_harga, 0, ',', '.') }}</strong>
+                                <strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong>
+                                @if($order->discount_amount > 0)
+                                    <div class="text-muted">Diskon Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</div>
+                                @endif
                             </td>
-
-                            {{-- Total Item --}}
-                            <td>{{ $trans->details->sum('qty') }} items</td>
-
-                            {{-- Tombol Delete --}}
+                            <td>{{ $order->items->sum('quantity') }} items</td>
                             <td>
-                                <form action="{{ route('transaction.destroy', $trans->id) }}" 
+                                <form action="{{ route('transaction.destroy', $order->id) }}"
                                       method="POST"
                                       onsubmit="return confirm('Hapus transaksi ini?');">
                                     @csrf
@@ -90,9 +86,8 @@
             </table>
         </div>
 
-        {{-- PAGINATION --}}
         <div class="pagination-container">
-            {{ $transactions->links() }}
+            {{ $orders->links() }}
         </div>
     </div>
 </main>
@@ -134,6 +129,7 @@
     background: #8B1D3B; 
     color: #fff; 
 }
+
 
 .table-container tr:nth-child(even) { 
     background: #faf8fb; 
@@ -187,6 +183,47 @@
     background-color: #8B1D3B;
     color: white;
     border-color: #8B1D3B;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.badge-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-top: 4px;
+    text-transform: capitalize;
+    background: #e9ecef;
+    color: #343a40;
+}
+
+.badge-status--pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-status--processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.badge-status--shipped {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-status--completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-status--cancelled {
+    background: #f8d7da;
+    color: #721c24;
 }
 </style>
 @endsection

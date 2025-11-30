@@ -17,7 +17,7 @@
         <li>
             <i class='bx bxs-calendar-check'></i>
             <span class="text">
-                <h3>{{ count($recent_orders) }}</h3>
+                <h3>{{ $recent_orders->count() }}</h3>
                 <p>Recent Orders</p>
             </span> 
         </li>
@@ -87,11 +87,11 @@
                             </ul>
                         </td>
 
-                        <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
 
                         <td>
-                            @if ($order->file_path)
-                                <a href="{{ asset('uploads/' . $order->file_path) }}" 
+                            @if ($order->proof_of_payment_path)
+                                <a href="{{ asset($order->proof_of_payment_path) }}" 
                                    target="_blank" 
                                    class="text-blue-600 underline">
                                    View
@@ -108,16 +108,16 @@
                                 <input type="hidden" name="order_id" value="{{ $order->id }}">
 
                                 <select name="new_status"
-                                        class="status-select status-{{ strtolower($order->status) }}"
+                                        class="status-select status-{{ strtolower($order->order_status) }}"
                                         onchange="this.form.submit()">
 
                                     @php
-                                        $statuses = ['pending','processing','shipped','completed'];
+                                        $statuses = ['Pending','Processing','Shipped','Completed','Cancelled'];
                                     @endphp
 
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status }}" 
-                                            {{ $order->status == $status ? 'selected' : '' }}>
+                                            {{ $order->order_status === $status ? 'selected' : '' }}>
                                             {{ ucfirst($status) }}
                                         </option>
                                     @endforeach
@@ -126,7 +126,7 @@
                         </td>
 
                         <td>
-                            <a href="{{ url('order_detail/' . $order->id) }}" 
+                                     <a href="{{ route('dashboard.orders.show', $order->id) }}" 
                                class="btn-detail-black-text text-sm bg-pink-600 px-3 py-1 rounded hover:bg-pink-700 transition">
                                Detail
                             </a>
@@ -183,6 +183,12 @@
     background-color: #d5ffd5 !important; 
     color: #007f00 !important; 
     border-color: #007f00 !important; 
+}
+
+.status-cancelled {
+    background-color: #fde2e1 !important;
+    color: #b31b1b !important;
+    border-color: #b31b1b !important;
 }
 </style>
 @endsection

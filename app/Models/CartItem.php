@@ -18,6 +18,11 @@ class CartItem extends Model
     // price -> unit_price
     protected $fillable = ['cart_id', 'product_id', 'quantity', 'unit_price'];
 
+    protected $casts = [
+        'quantity' => 'integer',
+        'unit_price' => 'decimal:2',
+    ];
+
     // Relasi ke Cart
     public function cart() 
     { 

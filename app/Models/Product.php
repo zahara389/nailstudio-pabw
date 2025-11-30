@@ -9,40 +9,99 @@ class Product extends Model
 {
     use HasFactory;
 
-    // Nama table di database
-    protected $table = 'products';
-
-    // Primary key (default: id)
-    protected $primaryKey = 'id';
-
-    // Kolom yang bisa diisi mass assignment
     protected $fillable = [
-        'namaproduct', 'category', 'stock', 'price', 'status', 'image', 'discount', 'added'
+        'name',
+        'slug',
+        'category',
+        'description',
+        'stock',
+        'price',
+        'discount',
+        'status',
+        'image',
+        'rating',
+        'review_count',
     ];
 
-    // Casting tipe data
     protected $casts = [
         'price' => 'decimal:2',
-        'discount' => 'integer',
+        'discount' => 'decimal:2',
         'stock' => 'integer',
+        'rating' => 'decimal:1',
+        'review_count' => 'integer',
     ];
 
-    // Accessor untuk harga setelah diskon
-    public function getPriceAfterDiscountAttribute()
+    protected $appends = [
+        'discounted_price',
+        'final_price',
+    ];
+
+    public function getDiscountedPriceAttribute(): float
     {
-        if ($this->discount > 0) {
-            return $this->price - ($this->price * $this->discount / 100);
+        $price = (float) $this->price;
+        $discount = max(0.0, (float) $this->discount);
+
+        if ($discount <= 0) {
+            return $price;
         }
-        return $this->price;
+
+        return round($price - (($discount / 100) * $price), 2);
     }
 
-    // Relasi
-    public function reviews() { 
-        return $this->hasMany(Review::class, 'product_id', 'id_product'); 
+    public function getFinalPriceAttribute(): float
+    {
+        return $this->discounted_price;
     }
-    
-    public function favorites() { 
-        return $this->hasMany(Favorite::class, 'product_id', 'id_product'); 
+
+    public function getNamaproductAttribute(): string
+    {
+        return $this->attributes['name'] ?? '';
+    }
+
+    public function setNamaproductAttribute($value): void
+    {
+        $this->attributes['name'] = $value;
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /*
+     * Query Scopes
+     */
+
+    public function scopeSearch($query, string $term)
+    {
+        $like = '%' . strtolower($term) . '%';
+
+        return $query->whereRaw('LOWER(name) LIKE ?', [$like]);
+    }
+
+    public function scopeByCategory($query, string $category)
+    {
+        return $query->where('category', $category);
+    }
+
+    public function scopeByStatus($query, string $status)
+    {
+        return $query->where('status', $status);
     }
 }
 

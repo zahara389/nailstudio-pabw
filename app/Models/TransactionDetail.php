@@ -2,37 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class TransactionDetail extends Model
+class TransactionDetail extends OrderItem
 {
-    use HasFactory;
-
-    protected $table = 'transaction_details';
+    protected $table = 'order_items';
 
     protected $fillable = [
-        'transaction_id',
-        'nama_produk',
-        'harga',
-        'qty',
+        'order_id',
+        'product_id',
+        'quantity',
+        'unit_price',
+        'discount_amount',
+        'subtotal_item',
     ];
 
-    /**
-     * Get the transaction that owns the detail.
-     */
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class, 'transaction_id');
+        return $this->belongsTo(Transaction::class, 'order_id');
     }
-
-    /**
-     * The attributes that should be cast.
-     */
-    protected $casts = [
-        'harga' => 'decimal:2',
-        'qty' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
 }

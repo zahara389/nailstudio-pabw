@@ -10,7 +10,10 @@ class Cart extends Model
     use HasFactory;
 
     protected $table = 'carts'; 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'user_id',
+        'status',
+    ];
     
     // Relasi ke User
     public function user()

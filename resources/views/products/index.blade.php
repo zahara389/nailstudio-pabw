@@ -1,23 +1,17 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Produk Nail Art</title>
+@extends('layouts.app')
+
+@section('title', 'Katalog Produk Nail Art')
+
+@section('body-class', 'gradient-bg min-h-screen')
+
+@push('styles')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{{ asset('css/products.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-    @livewireStyles
-</head>
-<body id="ns-body" class="gradient-bg min-h-screen">
-    <div class="bg-white/70">
-        <livewire:navbar />
-    </div>
+@endpush
 
+@section('content')
     <section class="mx-auto max-w-7xl px-4 py-16">
         <div class="mb-12 text-center">
             <p class="text-sm font-semibold uppercase tracking-widest text-pink-500">Katalog Nail Art</p>
@@ -28,14 +22,14 @@
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @forelse ($products as $product)
                 <a
-                    href="{{ route('products.show', ['category' => $product->category_slug, 'product' => $product->slug]) }}?id={{ $product->id_product ?? $product->id ?? 0 }}"
+                    href="{{ route('products.show', ['category' => $product->category_slug, 'product' => $product->slug]) }}?id={{ $product->id ?? 0 }}"
                     class="relative product-card group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-md shadow-pink-100 transition-transform duration-200 focus:outline-none"
                     data-card
                 >
                     <div class="relative h-48 w-full overflow-hidden">
                         <img
                             src="{{ $product->image_url }}"
-                            alt="{{ $product->namaproduct }}"
+                            alt="{{ $product->name }}"
                             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                             onerror="this.src='{{ $fallbackImage }}';"
                         >
@@ -44,14 +38,14 @@
 
                     <div class="flex flex-1 flex-col gap-4 p-5">
                         <div class="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-gray-400">
-                            <span class="truncate text-gray-500">{{ $product->category ?? 'Nail Art' }}</span>
+                            <span class="truncate text-gray-500">{{ $product->category_label ?? 'Nail Art' }}</span>
                             @if ($product->discount > 0)
                                 <span class="rounded-full bg-pink-50 px-3 py-1 text-pink-500">Diskon {{ $product->discount }}%</span>
                             @endif
                         </div>
 
                         <div class="flex-1">
-                            <h2 class="text-lg font-semibold text-gray-900">{{ $product->namaproduct }}</h2>
+                            <h2 class="text-lg font-semibold text-gray-900">{{ $product->name }}</h2>
                             <div class="mt-2 flex items-baseline gap-3">
                                 @if ($product->discount > 0)
                                     <p class="text-xl font-bold text-pink-500">Rp {{ number_format($product->discounted_price, 0, ',', '.') }}</p>
@@ -76,23 +70,23 @@
             @endforelse
         </div>
     </section>
-        @livewireScripts
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="{{ asset('js/navbar.js') }}"></script>
-        <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const cards = document.querySelectorAll('[data-card]');
+@endsection
 
-        cards.forEach((card) => {
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('product-card--active');
-            });
+@push('scripts')
+    <script src="{{ asset('js/navbar.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cards = document.querySelectorAll('[data-card]');
 
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('product-card--active');
+            cards.forEach((card) => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('product-card--active');
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('product-card--active');
+                });
             });
         });
-    });
     </script>
-</body>
-</html>
+@endpush

@@ -7,6 +7,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class StockManagementController extends Controller
 {
@@ -56,7 +58,7 @@ class StockManagementController extends Controller
             ->pluck('category')
             ->toArray();
             
-        $statuses = ['published', 'low stock', 'draft'];
+        $statuses = ['draft', 'published', 'low stock'];
 
         return view('admin.stockmanagement', compact(
             'products',
@@ -81,12 +83,13 @@ class StockManagementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'namaproduct' => 'required|string|max:255',
-            'category' => 'required|string|max:100',
+            'namaproduct' => 'required|string|max:100',
+            'category' => ['required', 'string', Rule::in(['nail polish','nail tools','nail care','nail kit'])],
             'stock' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'discount' => 'nullable|integer|min:0|max:100',
+            'discount' => 'nullable|numeric|min:0|max:100',
             'description' => 'nullable|string',
+            'status' => ['nullable', Rule::in(['draft','published','low stock'])],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -97,14 +100,23 @@ class StockManagementController extends Controller
         }
 
         try {
-            $data = $request->except('image');
+            $data = [
+                'name' => $request->namaproduct,
+                'slug' => Str::slug($request->namaproduct),
+                'category' => $request->category,
+                'stock' => $request->stock,
+                'price' => $request->price,
+                'discount' => $request->discount ?? 0,
+                'description' => $request->description,
+                'status' => $request->status ?? 'draft',
+            ];
             
             // Handle upload gambar
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('uploads/products'), $imageName);
-                $data['image'] = $imageName;
+                $data['image'] = 'uploads/products/' . $imageName;
             }
 
             Product::create($data);
@@ -145,12 +157,13 @@ class StockManagementController extends Controller
         $product = Product::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'namaproduct' => 'required|string|max:255',
-            'category' => 'required|string|max:100',
+            'namaproduct' => 'required|string|max:100',
+            'category' => ['required', 'string', Rule::in(['nail polish','nail tools','nail care','nail kit'])],
             'stock' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'discount' => 'nullable|integer|min:0|max:100',
+            'discount' => 'nullable|numeric|min:0|max:100',
             'description' => 'nullable|string',
+            'status' => ['nullable', Rule::in(['draft','published','low stock'])],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -161,19 +174,28 @@ class StockManagementController extends Controller
         }
 
         try {
-            $data = $request->except('image');
+            $data = [
+                'name' => $request->namaproduct,
+                'slug' => Str::slug($request->namaproduct),
+                'category' => $request->category,
+                'stock' => $request->stock,
+                'price' => $request->price,
+                'discount' => $request->discount ?? 0,
+                'description' => $request->description,
+                'status' => $request->status ?? $product->status,
+            ];
             
             // Handle upload gambar baru
             if ($request->hasFile('image')) {
                 // Hapus gambar lama
-                if ($product->image && file_exists(public_path('uploads/products/' . $product->image))) {
-                    unlink(public_path('uploads/products/' . $product->image));
+                if ($product->image && file_exists(public_path($product->image))) {
+                    unlink(public_path($product->image));
                 }
                 
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('uploads/products'), $imageName);
-                $data['image'] = $imageName;
+                $data['image'] = 'uploads/products/' . $imageName;
             }
 
             $product->update($data);
@@ -195,8 +217,8 @@ class StockManagementController extends Controller
             $product = Product::findOrFail($id);
             
             // Hapus file gambar
-            if ($product->image && file_exists(public_path('uploads/products/' . $product->image))) {
-                unlink(public_path('uploads/products/' . $product->image));
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
             }
             
             $product->delete();

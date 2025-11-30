@@ -21,9 +21,10 @@
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
 
     @livewireStyles
+    @stack('styles')
 </head>
 
-<body id="ns-body">
+<body id="ns-body" class="@yield('body-class', '')">
 
     {{-- NAVBAR --}}
     <livewire:navbar />
