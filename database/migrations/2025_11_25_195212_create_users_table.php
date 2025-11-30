@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->enum('status', ['active','inactive'])->default('active');
             $table->timestamp('last_login')->nullable();
-            $table->string('remember_token', 100)->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }

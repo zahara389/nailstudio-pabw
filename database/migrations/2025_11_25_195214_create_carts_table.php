@@ -11,11 +11,7 @@ return new class extends Migration
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
-            // STATUS CART YANG SUDAH DISESUAIKAN
-            $table->enum('status', ['pending', 'processing', 'shipped','completed'])
-                  ->default('pending');
-
+            $table->enum('status', ['active','checked_out'])->default('active');
             $table->timestamps();
         });
     }
