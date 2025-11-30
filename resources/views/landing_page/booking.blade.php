@@ -155,13 +155,22 @@
                         <input type="text" name="customer_name" required placeholder="Masukkan nama lengkap Anda" class="form-input w-full border-gray-300 rounded-md shadow-sm p-2" value="{{ old('customer_name') }}">
                     </div>
 
-                    <div>
-                        <label class="form-label block text-sm font-medium text-gray-700 mb-1">
-                            <i data-lucide="phone" class="form-icon"></i>
-                            No. WA Aktif
-                        </label>
-                        <input type="tel" name="customer_phone" required placeholder="Wajib untuk konfirmasi!" class="form-input w-full border-gray-300 rounded-md shadow-sm p-2" value="{{ old('customer_phone') }}">
-                    </div>
+                <div>
+    <label class="form-label block text-sm font-medium text-gray-700 mb-1">
+        <i data-lucide="phone" class="form-icon"></i>
+        No. WA Aktif
+    </label>
+    <input type="tel" 
+           name="customer_phone" 
+           required 
+           placeholder="Wajib untuk konfirmasi!" 
+           class="form-input w-full border-gray-300 rounded-md shadow-sm p-2" 
+           value="{{ old('customer_phone') }}"
+           
+           {{-- Batasan sisi KLIEN (Browser): Hanya angka 9-15 digit --}}
+           pattern="[0-9]{9,15}" 
+           title="Nomor telepon hanya boleh berisi angka (9 sampai 15 digit)">
+</div>
                 </div>
                 
                 <div>
