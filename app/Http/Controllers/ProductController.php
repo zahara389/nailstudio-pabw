@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+
+class ProductController extends Controller
+{
+    public function index()
+    {
+        $products = Product::query()
+            ->when(request('status'), fn ($query, $status) => $query->where('status', $status))
+            ->orderBy('namaproduct')
+            ->get();
+
+        if ($products->isEmpty()) {
+            $products = collect($this->sampleProducts())
+                ->map(fn ($attributes) => Product::make($attributes));
+        }
+
+        $presentedProducts = $this->mapForList($products);
+
+        return view('products.index', [
+            'products' => $presentedProducts,
+            'fallbackImage' => $this->fallbackImage(),
+        ]);
+    }
+
+    public function show(string $category, string $slug)
+    {
+        $product = Product::query()
+            ->whereRaw('LOWER(REPLACE(namaproduct, " ", "-")) = ?', [$slug])
+            ->first();
+
+        if (! $product) {
+            $product = Product::make($this->sampleProducts()[0]);
+        }
+
+        $presentedProduct = $this->mapForDetail($product);
+
+        return view('products.show', [
+            'product' => $presentedProduct,
+            'fallbackImage' => $this->fallbackImage(),
+        ]);
+    }
+
+    private function mapForList(Collection $products)
+    {
+        $fallbackImage = $this->fallbackImage();
+        $statusMap = [
+            'published' => ['label' => 'Tersedia', 'classes' => 'bg-emerald-100 text-emerald-600'],
+            'active' => ['label' => 'Tersedia', 'classes' => 'bg-emerald-100 text-emerald-600'],
+            'preorder' => ['label' => 'Pre-order', 'classes' => 'bg-amber-100 text-amber-600'],
+            'draft' => ['label' => 'Segera Hadir', 'classes' => 'bg-slate-100 text-slate-500'],
+        ];
+
+        return $products->values()->map(function (Product $product, int $index) use ($fallbackImage, $statusMap) {
+            $imagePath = $product->image;
+            $imageUrl = $fallbackImage;
+
+            if ($imagePath) {
+                if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                    $imageUrl = $imagePath;
+                } elseif (Str::startsWith($imagePath, ['storage/', 'images/', 'img/', 'uploads/'])) {
+                    $imageUrl = asset($imagePath);
+                } else {
+                    $imageUrl = asset('storage/' . ltrim($imagePath, '/'));
+                }
+            }
+
+            $statusInfo = $statusMap[$product->status] ?? ['label' => 'Status tidak diketahui', 'classes' => 'bg-slate-100 text-slate-500'];
+
+            $product->setAttribute('card_number', str_pad($index + 1, 2, '0', STR_PAD_LEFT));
+            $product->setAttribute('image_url', $imageUrl);
+            $product->setAttribute('status_label', $statusInfo['label']);
+            $product->setAttribute('status_classes', $statusInfo['classes']);
+            $product->setAttribute('stock_label', $product->stock > 0 ? 'Stok ' . max(0, $product->stock) : 'Pre-order');
+            $product->setAttribute('has_discount', $product->discount > 0);
+            $product->setAttribute('added_formatted', $product->added ? $product->added->translatedFormat('d M Y') : null);
+            $product->setAttribute('slug', $this->slugify($product->namaproduct));
+            $product->setAttribute('category_slug', $this->slugify($product->category ?? 'kategori'));
+
+            return $product;
+        });
+    }
+
+    private function mapForDetail(Product $product)
+    {
+        $fallbackImage = $this->fallbackImage();
+        $imagePath = $product->image;
+        $imageUrl = $fallbackImage;
+
+        if ($imagePath) {
+            if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                $imageUrl = $imagePath;
+            } elseif (Str::startsWith($imagePath, ['storage/', 'images/', 'img/', 'uploads/'])) {
+                $imageUrl = asset($imagePath);
+            } else {
+                $imageUrl = asset('storage/' . ltrim($imagePath, '/'));
+            }
+        }
+
+        $product->setAttribute('image_url', $imageUrl);
+        $product->setAttribute('slug', $this->slugify($product->namaproduct));
+        $product->setAttribute('category_slug', $this->slugify($product->category ?? 'kategori'));
+
+        $stockQuantity = max(0, (int) $product->stock);
+        $inStock = $stockQuantity > 0;
+        $product->setAttribute('stock_quantity', $stockQuantity);
+        $product->setAttribute('is_in_stock', $inStock);
+        $product->setAttribute('stock_status_text', $inStock ? 'Stok tersedia' : 'Stok habis');
+        $product->setAttribute('stock_status_badge_class', $inStock ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600');
+        $product->setAttribute('stock_hint', $inStock ? 'Siap dikirim segera' : 'Hubungi kami untuk pre-order atau ketersediaan terbaru');
+
+        $finalPrice = $product->discount > 0 ? $product->discounted_price : $product->price;
+        $product->setAttribute('final_price', $finalPrice);
+        $product->setAttribute('minimum_quantity', 1);
+
+        return $product;
+    }
+
+    private function sampleProducts(): array
+    {
+        return [
+            [
+                'namaproduct' => 'Pink Blossom Gel Art',
+                'category' => 'Premium Gel',
+                'stock' => 12,
+                'price' => 185000,
+                'status' => 'published',
+                'image' => 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=640&q=80',
+                'discount' => 15,
+                'description' => 'Koleksi nail art bertema bunga dengan detail manik yang memesona untuk acara spesial.',
+                'added' => now()->subDays(3),
+            ],
+            [
+                'namaproduct' => 'Aurora Chrome Tips',
+                'category' => 'Chrome Series',
+                'stock' => 0,
+                'price' => 210000,
+                'status' => 'preorder',
+                'image' => 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=640&q=80',
+                'discount' => 0,
+                'description' => 'Efek chrome gradasi ala aurora borealis untuk tampilan futuristik dan elegan.',
+                'added' => now()->subWeek(),
+            ],
+            [
+                'namaproduct' => 'Minimalist Nude Set',
+                'category' => 'Daily Essential',
+                'stock' => 25,
+                'price' => 135000,
+                'status' => 'published',
+                'image' => 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=640&q=80',
+                'discount' => 5,
+                'description' => 'Pilihan warna nude yang lembut dengan detail garis minimalis untuk keseharian.',
+                'added' => now()->subDays(10),
+            ],
+        ];
+    }
+
+    private function fallbackImage(): string
+    {
+        return 'https://via.placeholder.com/640x480?text=Nail+Art';
+    }
+
+    private function slugify(string $value): string
+    {
+        return Str::of($value)->lower()->replace(' ', '-')->slug('-');
+    }
+}

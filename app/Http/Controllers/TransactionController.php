@@ -9,44 +9,35 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    // HAPUS function getAllDummyTransactions() !!
-    // Kita ganti logika index() sepenuhnya memakai Database
-
-    public function index(Request $request)
+    public function index()
     {
-        // PENTING: Mengambil data dari DATABASE sebagai OBJECT
-        // 'with' mengambil relasi detail barang agar hemat query
-        $transactions = Transaction::with('details')
-                        ->latest()
-                        ->paginate(5);
+        // Ambil transaksi + relasi detail
+        $transactions = Transaction::with('details')->latest()->paginate(5);
 
-        // Kirim data ke view
-        // $transactions di sini berisi Object Collection, bukan Array biasa
         return view('admin.transaction-history', compact('transactions'));
     }
 
     public function store(Request $request)
     {
-        // Validasi
         $request->validate([
             'pembeli' => 'required|string',
             'items'   => 'required|array',
         ]);
 
-        // Simpan ke Database
         DB::transaction(function () use ($request) {
+
             $trans = Transaction::create([
                 'pembeli' => $request->pembeli
             ]);
 
             foreach ($request->items as $item) {
-                // Pastikan key array sesuai dengan name di form HTML kamu
-                // Contoh form: name="items[0][nama_product]"
                 TransactionDetail::create([
                     'transaction_id' => $trans->id,
-                    'nama_product'   => $item['nama_product'] ?? $item['namaproduct'] ?? 'Produk', // Handle typo nama key
-                    'price'          => $item['price'],
-                    'qty'            => $item['qty'],
+                    'nama_produk'    => $item['nama_produk'] 
+                                        ?? $item['namaproduct'] 
+                                        ?? 'Produk',
+                    'harga'          => $item['harga'] ?? $item['price'] ?? 0,
+                    'qty'            => $item['qty'] ?? 1,
                 ]);
             }
         });
@@ -56,12 +47,7 @@ class TransactionController extends Controller
 
     public function destroy($id)
     {
-        // Cari data berdasarkan ID di database
-        $trans = Transaction::findOrFail($id);
-        
-        // Hapus (Detail barang otomatis terhapus karena setting on delete cascade di migration)
-        $trans->delete();
-
+        Transaction::findOrFail($id)->delete();
         return back()->with('success', 'Transaksi berhasil dihapus!');
     }
 }

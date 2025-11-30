@@ -11,28 +11,24 @@ class DashboardController extends Controller
     public function index()
     {
         // 1. Data Pesanan Terbaru (Recent Orders)
-        // PERBAIKAN: Menggunakan 'created_at' karena di database tidak ada 'order_date'
-        $recent_orders = Cart::with('user')
+        $recent_orders = Cart::with(['user', 'items'])
                              ->orderBy('created_at', 'desc')
                              ->limit(10)
                              ->get();
         
         // 2. Total Penjualan (Total Sales)
-        // PERBAIKAN: Menghitung manual dari relasi items karena kolom 'total_price' tidak ada di tabel carts
-        // Kita hanya menghitung yang statusnya 'checked_out' (sesuai screenshot database)
-        $carts_checkout = Cart::where('status', 'checked_out')->with('items')->get();
+        $completed_carts = Cart::whereIn('status', ['completed', 'shipped'])
+                               ->with('items')
+                               ->get();
         
-        $total_sales = 0;
-        foreach($carts_checkout as $cart) {
-            // Menjumlahkan (quantity * unit_price) dari setiap item
-            // Pastikan Model CartItem sudah diperbaiki (qty -> quantity, price -> unit_price)
-            $total_sales += $cart->items->sum(function($item) {
-                return $item->quantity * $item->unit_price;
-            });
-        }
+        $total_sales = $completed_carts->sum(function($cart) {
+            return $cart->total_price;
+        });
 
-        // 3. Total Pengunjung (Data Dummy / Simulasi)
-        $total_login = 55;
+        // 3. ✅ Total User yang Order/Aktif Hari Ini (GANTI INI)
+        $total_login = Cart::whereDate('created_at', today())
+                           ->distinct('user_id')
+                           ->count('user_id');
         
         // 4. Total Pendaftar (Menghitung jumlah user terdaftar)
         $total_register = User::count();

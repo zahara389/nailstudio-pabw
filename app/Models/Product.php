@@ -17,18 +17,8 @@ class Product extends Model
 
     // Kolom yang bisa diisi mass assignment
     protected $fillable = [
-        'name',
-        'slug',
-        'category',
-        'stock',
-        'price',
-        'discount',
-        'status',
-        'image',
+        'namaproduct', 'category', 'stock', 'price', 'status', 'image', 'discount', 'added'
     ];
-    
-    // Asumsi: Kita ganti 'is_top_product' menjadi 'status' di controller
-    // Jadi, kita tidak memerlukan kolom is_top_product di Model ini
 
     // Casting tipe data
     protected $casts = [
