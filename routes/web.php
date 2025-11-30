@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FaqMessageController;
 use App\Http\Controllers\LandingPageController;
@@ -21,13 +22,18 @@ Route::get('/products/{category}/{product}', [ProductController::class, 'show'])
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
+// LOGIN REGISTER
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
+
+// ======================= ROUTE DENGAN AUTH =======================
 Route::middleware('auth')->group(function () {
+
+    // BOOKING (WAJIB LOGIN)
     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
@@ -56,6 +62,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('cart')->name('cart.')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('index');
+        Route::post('/items', [CartController::class, 'store'])->name('items.store');
+        Route::patch('/items/{item}', [CartController::class, 'update'])->name('items.update');
+        Route::delete('/items/{item}', [CartController::class, 'destroy'])->name('items.destroy');
+        Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout/pay', [CartController::class, 'processCheckout'])->name('checkout.process');
+    });
+
     Route::prefix('stock-management')->name('stock.')->group(function () {
         Route::get('/', [StockManagementController::class, 'index'])->name('index');
         Route::get('/create', [StockManagementController::class, 'create'])->name('create');
@@ -67,4 +82,5 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update-price', [StockManagementController::class, 'updatePrice'])->name('updatePrice');
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
+
 });
