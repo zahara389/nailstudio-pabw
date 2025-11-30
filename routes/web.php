@@ -83,4 +83,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
 
+    Route::prefix('job-applications')->name('job.')->group(function () {
+        Route::get('/', [JobApplicationController::class, 'index'])->name('index');
+        Route::get('/create', [JobApplicationController::class, 'create'])->name('create');
+        Route::post('/', [JobApplicationController::class, 'store'])->name('store');
+        Route::get('/{id}', [JobApplicationController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [JobApplicationController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [JobApplicationController::class, 'update'])->name('update');
+        Route::delete('/{id}', [JobApplicationController::class, 'destroy'])->name('destroy');
+    });
+
+
 });
