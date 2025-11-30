@@ -21,13 +21,18 @@ Route::get('/products/{category}/{product}', [ProductController::class, 'show'])
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
+// LOGIN REGISTER
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
+
+// ======================= ROUTE DENGAN AUTH =======================
 Route::middleware('auth')->group(function () {
+
+    // BOOKING (WAJIB LOGIN)
     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
@@ -67,4 +72,5 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update-price', [StockManagementController::class, 'updatePrice'])->name('updatePrice');
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
+
 });
