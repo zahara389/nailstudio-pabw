@@ -9,14 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('carts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
-            // STATUS CART YANG SUDAH DISESUAIKAN
-            $table->enum('status', ['pending', 'processing', 'shipped','completed'])
-                  ->default('pending');
-
-            $table->timestamps();
+            $table->enum('status', ['active','checked_out'])->default('active');
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

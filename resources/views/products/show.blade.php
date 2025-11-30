@@ -1,43 +1,37 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $product->namaproduct }} | Nail Studio</title>
+@extends('layouts.app')
+
+@section('title', $product->name . ' | Nail Studio')
+
+@section('body-class', 'gradient-bg min-h-screen')
+
+@push('styles')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="{{ asset('css/products.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-    @livewireStyles
-</head>
-<body id="ns-body" class="gradient-bg min-h-screen">
-    <div class="bg-white/70">
-        <livewire:navbar />
-    </div>
+@endpush
 
+@section('content')
     <main class="mx-auto max-w-6xl px-4 pt-16 pb-24">
         <nav class="flex items-center text-sm text-gray-500">
             <a href="{{ route('landing.index') }}" class="hover:text-pink-500">Beranda</a>
             <span class="mx-2">/</span>
             <a href="{{ route('products.index') }}" class="hover:text-pink-500">Produk</a>
             <span class="mx-2">/</span>
-            <span class="text-gray-700">{{ $product->namaproduct }}</span>
+            <span class="text-gray-700">{{ $product->name }}</span>
         </nav>
 
         <section class="mt-10 grid gap-8 lg:grid-cols-12">
             <div class="overflow-hidden rounded-3xl bg-white shadow-lg shadow-pink-100 lg:col-span-4">
                 <div class="flex items-center justify-center bg-white" style="aspect-ratio: 1 / 1;">
-                    <img src="{{ $product->image_url ?? $fallbackImage }}" alt="{{ $product->namaproduct }}" class="h-full w-full object-cover">
+                    <img src="{{ $product->image_url ?? $fallbackImage }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                 </div>
             </div>
 
             <div class="flex flex-col gap-6 lg:col-span-5">
                 <div class="space-y-4">
-                    <p class="text-sm font-semibold uppercase tracking-widest text-pink-500">{{ $product->category ?? 'Nail Art' }}</p>
-                    <h1 class="text-3xl font-bold text-gray-900">{{ $product->namaproduct }}</h1>
+                    <p class="text-sm font-semibold uppercase tracking-widest text-pink-500">{{ $product->category_label ?? 'Nail Art' }}</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ $product->name }}</h1>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -105,8 +99,8 @@
             </aside>
         </section>
     </main>
-    @livewireScripts
-    <script src="https://unpkg.com/lucide@latest"></script>
+@endsection
+
+@push('scripts')
     <script src="{{ asset('js/navbar.js') }}"></script>
-</body>
-</html>
+@endpush

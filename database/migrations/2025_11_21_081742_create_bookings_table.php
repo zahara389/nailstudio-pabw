@@ -9,18 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('customer_name');
-            $table->string('customer_email');
-            $table->string('customer_phone');
-            $table->string('location');
-            $table->string('service');
-            $table->date('booking_date');
-            $table->time('booking_time');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->dateTime('start_time');
+            $table->dateTime('end_time')->nullable();
+            $table->decimal('total_price', 12, 2);
+            $table->string('payment_method', 50)->nullable();
+            $table->enum('payment_status', ['Pending','Paid','Failed'])->default('Pending');
+            $table->enum('status', ['Scheduled','Completed','Cancelled'])->default('Scheduled');
             $table->text('notes')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

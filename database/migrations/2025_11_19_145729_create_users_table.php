@@ -9,6 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->string('name', 100);
             $table->string('email', 100)->unique();
@@ -19,11 +20,12 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('city', 100)->nullable();
             $table->string('postal_code', 10)->nullable();
-            $table->string('photo')->nullable();
+            $table->string('photo', 255)->nullable();
             $table->enum('status', ['active','inactive'])->default('active');
             $table->timestamp('last_login')->nullable();
-            $table->string('remember_token', 100)->nullable();
-            $table->timestamps();
+            $table->rememberToken();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

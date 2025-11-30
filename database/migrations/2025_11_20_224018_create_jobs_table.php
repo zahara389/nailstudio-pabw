@@ -9,10 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jobs', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('job_category_id')->constrained('job_categories')->onDelete('restrict');
-            $table->string('title');
-            $table->string('slug')->unique();
+            $table->string('title', 255);
+            $table->string('slug', 255)->unique();
             $table->text('description');
             $table->text('requirements')->nullable();
             $table->string('location', 150);
@@ -21,7 +22,8 @@ return new class extends Migration
             $table->enum('status', ['open','closed','draft'])->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->timestamp('expires_at')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('faqs', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->text('question');
-            $table->text('answer')->nullable();
-            $table->enum('status', ['pending', 'answered'])->default('pending');
+            $table->string('question', 255);
+            $table->text('answer');
             $table->foreignId('admin_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

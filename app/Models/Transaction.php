@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-class Transaction extends Model
+class Transaction extends Order
 {
-    use HasFactory;
+    protected $table = 'orders';
 
-    protected $fillable = ['pembeli'];
+    protected $fillable = [
+        'user_id',
+        'order_number',
+        'total_amount',
+        'payment_method',
+        'proof_of_payment_path',
+        'order_status',
+        'discount_amount',
+    ];
 
     public function details()
     {
-        return $this->hasMany(TransactionDetail::class, 'transaction_id');
+        return $this->hasMany(TransactionDetail::class, 'order_id');
     }
 }

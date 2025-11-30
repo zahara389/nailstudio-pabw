@@ -9,12 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('users')) {
-            Schema::create('users', function (Blueprint $table) {
-                $table->id();
-                $table->string('name', 100);
-                $table->string('email', 100)->unique();
-                $table->string('username', 50)->unique();
-                $table->string('password');
+            // Superseded by earlier users migration.
                 $table->enum('role', ['admin','member'])->default('member');
                 $table->string('phone', 20)->nullable();
                 $table->text('address')->nullable();
@@ -22,7 +17,7 @@ return new class extends Migration
                 $table->string('postal_code', 10)->nullable();
                 $table->string('photo')->nullable();
                 $table->enum('status', ['active','inactive'])->default('active');
-                $table->timestamp('last_login')->nullable();
+            // No-op
                 $table->rememberToken();
                 $table->timestamps();
             });

@@ -11,20 +11,19 @@ class Booking extends Model
 
     protected $fillable = [
         'user_id',
-        
-        // Data Kontak
-        'customer_name',    
-        'customer_email',
-        'customer_phone', 
-        
-        // Detail Booking
-        'location',
-        'service',
-        'booking_date', 
-        'booking_time',
-        
+        'start_time',
+        'end_time',
+        'total_price',
+        'payment_method',
+        'payment_status',
+        'status',
         'notes',
-        'status', 
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'total_price' => 'decimal:2',
     ];
 
     /**

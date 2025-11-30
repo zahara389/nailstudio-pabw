@@ -12,8 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reviews', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->unsignedTinyInteger('rating');
+            $table->text('comment')->nullable();
+            $table->string('photo_path', 255)->nullable();
+            $table->unsignedTinyInteger('price_rating')->nullable();
+            $table->unsignedTinyInteger('quality_rating')->nullable();
+            $table->integer('like_count')->default(0);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
