@@ -1,30 +1,3 @@
-  // Data Lowongan Kerja
-        const jobs = [
-            {
-                id: 1,
-                title: 'Nail Artist Junior',
-                type: 'Full-time',
-                location: 'Jakarta Selatan',
-                description: 'Mencari nail artist berbakat dengan passion di bidang nail art. Pengalaman minimal 1 tahun dengan teknik dasar gel, manicure, dan pedicure.',
-                requirements: ['Min. 1 tahun pengalaman', 'Menguasai teknik gel nails', 'Kreatif dan detail-oriented']
-            },
-            {
-                id: 2,
-                title: 'Receptionist',
-                type: 'Full-time',
-                location: 'Jakarta Selatan',
-                description: 'Bertanggung jawab dalam mengelola jadwal appointment, customer service, dan operasional front desk dengan attitude yang ramah dan profesional.',
-                requirements: ['Pengalaman customer service', 'Komunikasi baik', 'Mampu multitasking']
-            },
-            {
-                id: 3,
-                title: 'Content Creator',
-                type: 'Part-time',
-                location: 'Hybrid',
-                description: 'Membuat konten kreatif untuk social media, fotografi nail art, dan video tutorial. Passion di beauty industry dan familiar dengan Instagram/TikTok.',
-                requirements: ['Portfolio konten beauty', 'Editing foto & video', 'Update trend social media']
-            }
-        ];
 
         // Fungsi untuk membuat HTML job card
         function createJobCard(job) {

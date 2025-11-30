@@ -16,15 +16,18 @@ class AuthController extends Controller
     // ----------------------------------------------------------
     public function showLoginForm()
     {
+       
+      
+        // Jika user sudah login, arahkan berdasarkan role
         if (Auth::check()) {
             return Auth::user()->role === 'admin'
                 ? redirect()->route('dashboard.index')
-                // PERBAIKAN: Arahkan user ke landing.index (bukan booking.index)
-                : redirect()->route('landing.index'); 
+                : redirect('/');
         }
 
         return view('admin.login');
     }
+
 
     // ----------------------------------------------------------
     // 2. LOGIN PROCESS (POST /login)
