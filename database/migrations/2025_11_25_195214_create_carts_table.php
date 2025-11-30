@@ -13,11 +13,8 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-<<<<<<<< HEAD:database/migrations/2025_11_25_195314_create_carts_table.php
-========
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['active','checked_out'])->default('active');
->>>>>>>> tazkya:database/migrations/2025_11_25_195214_create_carts_table.php
             $table->timestamps();
         });
     }

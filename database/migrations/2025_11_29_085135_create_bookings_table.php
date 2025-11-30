@@ -14,19 +14,19 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
 
-            // Kunci Asing
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            // Kunci Asing (Diubah menjadi nullable untuk tamu/guest)
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); 
             
-            // Kolom Kontak Pelanggan (Dari input manual user)
+            // Kolom Kontak Pelanggan
             $table->string('customer_name');
             $table->string('customer_email');
-            $table->string('customer_phone');
+            $table->string('customer_phone', 15); // Batasi panjang di DB
             
             // Detail Booking
             $table->string('location');
             $table->string('service');
             
-            // Kolom Tanggal dan Waktu (Nama yang konsisten dengan Controller)
+            // Kolom Tanggal dan Waktu
             $table->date('booking_date');
             $table->time('booking_time');
             
@@ -36,6 +36,9 @@ return new class extends Migration
             $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
             
             $table->timestamps();
+
+            // INDEKS UNIK: Pastikan kombinasi tanggal, waktu, dan status aktif tidak bentrok
+            $table->unique(['booking_date', 'booking_time', 'status']);
         });
     }
 

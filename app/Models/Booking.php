@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,20 +12,19 @@ class Booking extends Model
 
     protected $fillable = [
         'user_id',
-        'start_time',
-        'end_time',
-        'total_price',
-        'payment_method',
-        'payment_status',
-        'status',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'location',
+        'service',
+        'booking_date',
+        'booking_time',
         'notes',
+        'status', 
     ];
 
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-        'total_price' => 'decimal:2',
-    ];
+    // Tidak ada $casts yang diperlukan karena semua data sudah dalam format string atau date/time sederhana.
+    protected $casts = [];
 
     /**
      * Relasi dengan User.
