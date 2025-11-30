@@ -40,7 +40,6 @@
             </a>
         </li>
 
-        <!-- Menu Baru: Job Applications -->
         <li class="{{ request()->routeIs('job.index') ? 'active' : '' }}">
             <a href="{{ route('job.index') }}">
                 <i class='bx bxs-briefcase'></i>
