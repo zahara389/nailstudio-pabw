@@ -1,9 +1,10 @@
 body {
     font-family: 'Poppins', sans-serif;
+    background-color: #ff80bf;
 }
 
 .gradient-bg {
-    background: linear-gradient(135deg, #fde2e4 0%, #f9c5d1 25%, #f7d9e6 50%, #e7f0ff 100%);
+    background: linear-gradient(135deg, #ff80bf 0%, #f9c5d1 25%, #f7d9e6 50%, #e7f0ff 100%);
 }
 
 .product-card {
