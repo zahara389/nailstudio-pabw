@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FaqMessageController;
 use App\Http\Controllers\LandingPageController;
@@ -59,6 +60,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/history', [TransactionController::class, 'index'])->name('history');
         Route::post('/store', [TransactionController::class, 'store'])->name('store');
         Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('cart')->name('cart.')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('index');
+        Route::post('/items', [CartController::class, 'store'])->name('items.store');
+        Route::patch('/items/{item}', [CartController::class, 'update'])->name('items.update');
+        Route::delete('/items/{item}', [CartController::class, 'destroy'])->name('items.destroy');
+        Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout/pay', [CartController::class, 'processCheckout'])->name('checkout.process');
     });
 
     Route::prefix('stock-management')->name('stock.')->group(function () {
