@@ -97,7 +97,7 @@ class ProductAdminController extends Controller
 
         $request->validate([
             'namaproduct' => [
-                'required', 'string', 'max:100', 
+            'required', 'string', 'max:100', 
                 Rule::unique('products', 'name')->ignore($product->id)
             ],
             'category'    => ['required', Rule::in(['nail polish','nail tools','nail care','nail kit'])],

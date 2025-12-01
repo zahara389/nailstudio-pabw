@@ -1,4 +1,3 @@
-
 <section id="sidebar">
     <a href="{{ url('/') }}" class="brand" style="background-color: white;">
         <img src="{{ asset('images/logonails.png')}}" width=75 height=75 ></img>
@@ -40,8 +39,15 @@
                 <span class="text">Management Stock & Harga</span>
             </a>
         </li>
-        {{-- Tambahkan link menu lainnya di sini --}}
+
+        <li class="{{ request()->routeIs('job.index') ? 'active' : '' }}">
+            <a href="{{ route('job.index') }}">
+                <i class='bx bxs-briefcase'></i>
+                <span class="text">Job Applications</span>
+            </a>
+        </li>
     </ul>
+
     <ul class="side-menu">
         <li>
             <a href="{{ route('logout') }}" class="logout">
@@ -50,5 +56,4 @@
             </a>
         </li>
     </ul>
-
 </section>

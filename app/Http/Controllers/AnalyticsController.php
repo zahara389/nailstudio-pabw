@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Orders;      // PERBAIKAN: Gunakan Orders (jamak)
+use App\Models\Orders;      
 use App\Models\Product;
-use App\Models\OrderItems;  // PERBAIKAN: Gunakan OrderItems (jamak)
+use App\Models\OrderItems;  
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 

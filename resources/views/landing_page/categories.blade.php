@@ -16,7 +16,7 @@
                         <div class="category-icon-wrapper icon-pink">
                             <i data-lucide="sparkles" class="w-6 h-6 text-[#030213]"></i>
                         </div>
-                        <h3 class="category-title">Gel Polish</h3>
+                        <h3 class="category-title">Nail Polish</h3>
                         <p class="category-subtitle">Long-lasting shine</p>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
                         <div class="category-icon-wrapper icon-blue">
                             <i data-lucide="brush" class="w-6 h-6 text-[#030213]"></i>
                         </div>
-                        <h3 class="category-title">Nail Art Tools</h3>
+                        <h3 class="category-title">Nail Tools</h3>
                         <p class="category-subtitle">Professional equipment</p>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                         <div class="category-icon-wrapper icon-blue">
                             <i data-lucide="gem" class="w-6 h-6 text-[#030213]"></i>
                         </div>
-                        <h3 class="category-title">Accessories</h3>
+                        <h3 class="category-title">Nail Kit</h3>
                         <p class="category-subtitle">Beauty essentials</p>
                     </div>
                 </div>
