@@ -13,6 +13,8 @@
 
     @include('landing_page.categories')
 
+    @include('landing_page.see-more-products')
+
     @include('landing_page.booking')
 
     @include('landing_page.team')
