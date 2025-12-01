@@ -23,7 +23,4 @@
 
 @endsection
 
-{{-- 4. Gunakan @push untuk menambahkan script spesifik halaman --}}
-@push('scripts')
-    <script src="{{ asset('js/landing_page_logic.js') }}"></script>
-@endpush
+{{-- Script umum sudah dimuat melalui layouts/app.blade.php --}}

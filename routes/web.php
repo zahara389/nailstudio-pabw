@@ -14,7 +14,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockManagementController;
 use App\Http\Controllers\TransactionController;
 
-
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');

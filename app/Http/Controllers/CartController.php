@@ -114,7 +114,7 @@ class CartController extends Controller
         return back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
-    public function update(Request $request, CartItem $item): RedirectResponse
+    public function update(Request $request, CartItem $item)
     {
         $this->authorizeItem($request, $item);
 
@@ -132,16 +132,18 @@ class CartController extends Controller
             'quantity' => $quantity,
         ]);
 
-        return back()->with('success', 'Jumlah produk di keranjang diperbarui.');
+        return $this->respondWithCartState($request, $item->cart, 'Jumlah produk di keranjang diperbarui.');
     }
 
-    public function destroy(Request $request, CartItem $item): RedirectResponse
+    public function destroy(Request $request, CartItem $item)
     {
         $this->authorizeItem($request, $item);
 
+        $cart = $item->cart;
+
         $item->delete();
 
-        return back()->with('success', 'Produk dihapus dari keranjang.');
+        return $this->respondWithCartState($request, $cart, 'Produk dihapus dari keranjang.');
     }
 
     public function processCheckout(Request $request): JsonResponse
@@ -281,6 +283,27 @@ class CartController extends Controller
     private function fallbackImage(): string
     {
         return 'https://via.placeholder.com/640x480?text=Nail+Art';
+    }
+
+    private function respondWithCartState(Request $request, ?Cart $cart, string $message)
+    {
+        if ($request->expectsJson()) {
+            $cart?->loadMissing('items');
+            $items = $cart?->items ?? collect();
+
+            $count = $items->sum(fn (CartItem $cartItem) => $cartItem->quantity);
+            $subtotal = $items->sum(fn (CartItem $cartItem) => $cartItem->quantity * $cartItem->unit_price);
+
+            return response()->json([
+                'message' => $message,
+                'cart' => [
+                    'count' => $count,
+                    'subtotal' => $subtotal,
+                ],
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 
     private function configureMidtrans(): void
