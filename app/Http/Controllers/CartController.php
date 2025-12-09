@@ -15,11 +15,13 @@ use Midtrans\Snap;
 
 class CartController extends Controller
 {
+    // Pastikan semua route cart hanya bisa diakses user login
     public function __construct()
     {
         $this->middleware('auth');
     }
 
+    // Halaman utama keranjang
     public function index(Request $request)
     {
         $cart = $this->getActiveCart($request);
@@ -35,8 +37,10 @@ class CartController extends Controller
             'subtotal' => $subtotal,
             'isEmpty' => $items->isEmpty(),
         ]);
+        
     }
 
+    // Halaman checkout sebelum Midtrans
     public function checkout(Request $request)
     {
         $cart = $this->getActiveCart($request);
@@ -57,6 +61,7 @@ class CartController extends Controller
         ]);
     }
 
+    // Tambah produk ke keranjang
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -114,6 +119,7 @@ class CartController extends Controller
         return back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
+    // Update kuantitas item tertentu
     public function update(Request $request, CartItem $item)
     {
         $this->authorizeItem($request, $item);
@@ -135,6 +141,7 @@ class CartController extends Controller
         return $this->respondWithCartState($request, $item->cart, 'Jumlah produk di keranjang diperbarui.');
     }
 
+    // Hapus item dari keranjang
     public function destroy(Request $request, CartItem $item)
     {
         $this->authorizeItem($request, $item);
@@ -146,6 +153,7 @@ class CartController extends Controller
         return $this->respondWithCartState($request, $cart, 'Produk dihapus dari keranjang.');
     }
 
+    // Generate Snap token untuk proses pembayaran Midtrans
     public function processCheckout(Request $request): JsonResponse
     {
         $cart = $this->getActiveCart($request);
@@ -235,6 +243,7 @@ class CartController extends Controller
         }
     }
 
+    // Pastikan item milik user terkait
     private function authorizeItem(Request $request, CartItem $item): void
     {
         $item->loadMissing('cart');
@@ -244,6 +253,7 @@ class CartController extends Controller
         }
     }
 
+    // Hitung harga final produk (diskon atau harga default)
     private function resolveUnitPrice(Product $product): float
     {
         $finalPrice = $product->final_price ?? $product->price;
@@ -251,6 +261,7 @@ class CartController extends Controller
         return (float) $finalPrice;
     }
 
+    // Siapkan atribut presentasi untuk view cart
     private function prepareCartItemPresentation(CartItem $item): void
     {
         $product = $item->product;
@@ -263,6 +274,7 @@ class CartController extends Controller
         $product->setAttribute('category_label', Str::headline($product->category ?? 'Produk'));
     }
 
+    // Normalisasi path gambar produk
     private function resolveProductImage(?string $imagePath): string
     {
         if (! $imagePath) {
@@ -280,11 +292,13 @@ class CartController extends Controller
         return asset('storage/' . ltrim($imagePath, '/'));
     }
 
+    // Placeholder ketika gambar tidak ada
     private function fallbackImage(): string
     {
         return 'https://via.placeholder.com/640x480?text=Nail+Art';
     }
 
+    // Response seragam untuk AJAX/non-AJAX setelah update keranjang
     private function respondWithCartState(Request $request, ?Cart $cart, string $message)
     {
         if ($request->expectsJson()) {
@@ -306,6 +320,7 @@ class CartController extends Controller
         return back()->with('success', $message);
     }
 
+    // Konfigurasi kredensial Midtrans
     private function configureMidtrans(): void
     {
         MidtransConfig::$serverKey = config('midtrans.server_key');
@@ -315,6 +330,7 @@ class CartController extends Controller
         MidtransConfig::$is3ds = true;
     }
 
+    // Ambil keranjang aktif milik user
     private function getActiveCart(Request $request): ?Cart
     {
         return Cart::with(['items.product'])

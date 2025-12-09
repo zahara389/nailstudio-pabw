@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    // Tampilkan daftar produk untuk halaman katalog
     public function index()
     {
         $products = Product::query()
@@ -28,6 +29,7 @@ class ProductController extends Controller
         ]);
     }
 
+    // Detail produk per slug + kategori
     public function show(string $category, string $slug)
     {
         $product = Product::query()
@@ -46,6 +48,7 @@ class ProductController extends Controller
         ]);
     }
 
+    // Format atribut tambahan untuk kartu produk list
     private function mapForList(Collection $products)
     {
         $fallbackImage = $this->fallbackImage();
@@ -86,6 +89,7 @@ class ProductController extends Controller
         });
     }
 
+    // Format atribut tambahan untuk halaman detail
     private function mapForDetail(Product $product)
     {
         $fallbackImage = $this->fallbackImage();
@@ -121,6 +125,7 @@ class ProductController extends Controller
         return $product;
     }
 
+    // Data fallback jika database kosong
     private function sampleProducts(): array
     {
         return [
@@ -163,11 +168,13 @@ class ProductController extends Controller
         ];
     }
 
+    // URL gambar cadangan
     private function fallbackImage(): string
     {
         return 'https://via.placeholder.com/640x480?text=Nail+Art';
     }
 
+    // Utility slug sederhana
     private function slugify(string $value): string
     {
         return Str::of($value)->lower()->replace(' ', '-')->slug('-');
