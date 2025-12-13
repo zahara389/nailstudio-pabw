@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    {{-- SUMMARY TOP --}}
+    
     <ul class="box-info">
         <li>
             <i class='bx bxs-calendar-check'></i>
@@ -44,7 +44,7 @@
         </li>
     </ul>
 
-    {{-- TABLE --}}
+    
     <div class="table-container">
         <h3>Recent Orders</h3>
         <table>

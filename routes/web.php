@@ -95,3 +95,7 @@ Route::middleware('auth')->group(function () {
 
 
 });
+
+Route::post('/test-post', function () {
+    return response('TEST BERHASIL WEB ROUTE', 200);
+});

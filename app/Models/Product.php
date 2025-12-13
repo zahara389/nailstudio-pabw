@@ -83,10 +83,7 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    /*
-     * Query Scopes
-     */
-
+    
     public function scopeSearch($query, string $term)
     {
         $like = '%' . strtolower($term) . '%';

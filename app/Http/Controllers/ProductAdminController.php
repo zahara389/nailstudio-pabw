@@ -14,11 +14,9 @@ class ProductAdminController extends Controller
     {
         $products = Product::orderBy('created_at', 'desc')->get();
         
-        // Format products untuk view
         $formattedProducts = $products->map(function($product) {
             $priceDiscounted = $product->final_price;
             
-            // Tentukan status class dan text
             $statusClass = 'status-draft';
             $statusText = ucfirst($product->status);
             
