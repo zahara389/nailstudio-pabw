@@ -14,7 +14,6 @@
             { name: 'Pedicure & Foot Care', url: '#', img: 'https://placehold.co/40x40/d81b60/ffffff?text=%F0%9F%91%A3', alt: 'Pedicure Set' },
         ];
         
-        let mockCartItems = []; 
         const MOCK_FAV_COUNT = 0; 
         const MOCK_IS_LOGGED_IN = true;
         
@@ -25,12 +24,11 @@
         const categoryModal = document.getElementById('category-modal');
         const cartModal = document.getElementById('cart-modal');
         const universalBackdrop = document.getElementById('universal-modal-backdrop');
-        const cartCountBadge = document.getElementById('cart-count-badge');
         const favBadge = document.getElementById('favorite-badge');
-        const cartItemsContainer = document.getElementById('cart-items-modal');
-        const cartSubtotal = document.getElementById('cart-subtotal');
         const cartBtn = document.getElementById('cart-btn');
         const bodyElement = document.getElementById('ns-body');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+        const currencyFormatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
         // --- MESSAGE HANDLER (Replaces alert()) ---
         function showMessage(text) {
@@ -105,24 +103,200 @@
         }
 
         function loadCartModal() {
-            let total = 0;
-            const cartHtml = mockCartItems.length === 0 
-                ? '<p class="ns-cart-empty-message">Your cart is empty.</p>'
-                : ''; 
+            const badge = document.getElementById('cart-count-badge');
+            if (!badge) {
+                return;
+            }
 
-            cartItemsContainer.innerHTML = cartHtml;
-            cartSubtotal.textContent = `$${total.toFixed(2)}`;
-            updateCartBadge(mockCartItems.length);
+            const countFromServer = parseInt(badge.dataset.cartCount || badge.textContent || '0', 10);
+            badge.dataset.cartCount = countFromServer;
+            updateCartBadge(countFromServer);
+        }
+
+        function getCartItemElement(id) {
+            return document.querySelector(`[data-cart-item="${id}"]`);
+        }
+
+        function clampQuantity(value, max) {
+            const numeric = parseInt(value, 10);
+            const safeValue = Number.isNaN(numeric) ? 1 : numeric;
+            return Math.min(Math.max(safeValue, 1), max);
+        }
+
+        function syncCartRow(itemEl, quantity) {
+            if (!itemEl) {
+                return;
+            }
+
+            const input = itemEl.querySelector('[data-cart-qty-input]');
+            if (input) {
+                input.value = quantity;
+            }
+
+            const label = itemEl.querySelector('[data-cart-quantity-label]');
+            if (label) {
+                const category = itemEl.dataset.cartCategory ?? label.textContent.split('•')[0].trim();
+                label.textContent = `${category} • Qty ${quantity}`;
+            }
+
+            const unitPrice = parseFloat(itemEl.dataset.cartUnitPrice || '0');
+            const lineTotal = itemEl.querySelector('[data-cart-line-total]');
+            if (lineTotal) {
+                lineTotal.textContent = currencyFormatter.format(unitPrice * quantity);
+            }
+
+            itemEl.dataset.cartQuantity = quantity;
+        }
+
+        function updateMiniCartTotals(cartData) {
+            if (!cartData) {
+                return;
+            }
+
+            if (typeof cartData.count !== 'undefined') {
+                updateCartBadge(cartData.count);
+            }
+
+            if (typeof cartData.subtotal !== 'undefined') {
+                const subtotalTarget = document.querySelector('[data-cart-subtotal]');
+                if (subtotalTarget) {
+                    subtotalTarget.textContent = currencyFormatter.format(cartData.subtotal);
+                    subtotalTarget.dataset.cartSubtotal = cartData.subtotal;
+                }
+            }
+        }
+
+        function refreshNavbarComponent() {
+            if (window.Livewire?.dispatch) {
+                window.Livewire.dispatch('cart-updated');
+            } else if (window.Livewire?.emit) {
+                window.Livewire.emit('cart-updated');
+            }
+        }
+
+        async function mutateCart(itemEl, url, method, payload, fallbackMessage) {
+            if (!url) {
+                return;
+            }
+
+            try {
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                };
+
+                if (payload) {
+                    headers['Content-Type'] = 'application/json';
+                }
+
+                const response = await fetch(url, {
+                    method,
+                    headers,
+                    credentials: 'same-origin',
+                    body: payload ? JSON.stringify(payload) : null,
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal memperbarui keranjang.');
+                }
+
+                if (method === 'DELETE' && itemEl) {
+                    itemEl.remove();
+                }
+
+                updateMiniCartTotals(data.cart);
+                showMessage(data.message || fallbackMessage || 'Keranjang diperbarui.');
+                refreshNavbarComponent();
+            } catch (error) {
+                showMessage(error.message || 'Terjadi kesalahan saat memproses keranjang.');
+                if (itemEl) {
+                    itemEl.classList.remove('ns-cart-item--pending');
+                }
+            }
+        }
+
+        async function updateCartQuantity(id, requestedQty) {
+            const itemEl = getCartItemElement(id);
+            if (!itemEl) {
+                return;
+            }
+
+            const maxQty = parseInt(itemEl.dataset.cartMax || '99', 10);
+            const nextQty = clampQuantity(requestedQty, maxQty);
+
+            if (Number(requestedQty) !== nextQty) {
+                showMessage(nextQty >= maxQty ? 'Jumlah melebihi stok yang tersedia.' : 'Jumlah minimal adalah 1.');
+            }
+
+            syncCartRow(itemEl, nextQty);
+            await mutateCart(
+                itemEl,
+                itemEl.dataset.cartUpdateUrl,
+                'PATCH',
+                { quantity: nextQty },
+                'Jumlah produk di keranjang diperbarui.'
+            );
+        }
+
+        function cartPlus(id) {
+            const itemEl = getCartItemElement(id);
+            if (!itemEl) {
+                return;
+            }
+
+            const current = parseInt(itemEl.dataset.cartQuantity || '1', 10);
+            const maxQty = parseInt(itemEl.dataset.cartMax || '99', 10);
+
+            if (current >= maxQty) {
+                showMessage('Jumlah melebihi stok yang tersedia.');
+                return;
+            }
+
+            updateCartQuantity(id, current + 1);
+        }
+
+        function cartMinus(id) {
+            const itemEl = getCartItemElement(id);
+            if (!itemEl) {
+                return;
+            }
+
+            const current = parseInt(itemEl.dataset.cartQuantity || '1', 10);
+
+            if (current <= 1) {
+                showMessage('Jumlah minimal adalah 1.');
+                return;
+            }
+
+            updateCartQuantity(id, current - 1);
+        }
+
+        function cartQty(id, qty) {
+            updateCartQuantity(id, qty);
+        }
+
+        function cartDelete(id) {
+            const itemEl = getCartItemElement(id);
+            if (!itemEl) {
+                return;
+            }
+
+            itemEl.classList.add('ns-cart-item--pending');
+            mutateCart(itemEl, itemEl.dataset.cartDeleteUrl, 'DELETE', null, 'Produk dihapus dari keranjang.');
         }
         
-        function cartPlus(id) { showMessage("Simulasi: Fitur penambahan kuantitas dinonaktifkan untuk tampilan ini."); }
-        function cartMinus(id) { showMessage("Simulasi: Fitur pengurangan kuantitas dinonaktifkan untuk tampilan ini."); }
-        function cartQty(id, qty) { showMessage("Simulasi: Fitur update kuantitas dinonaktifkan untuk tampilan ini."); }
-        function cartDelete(id) { showMessage("Simulasi: Fitur hapus item dinonaktifkan untuk tampilan ini."); }
-        
         function updateCartBadge(count) {
-            cartCountBadge.textContent = count;
-            cartCountBadge.style.display = count > 0 ? 'flex' : 'none';
+            const badge = document.getElementById('cart-count-badge');
+            if (!badge) {
+                return;
+            }
+
+            badge.dataset.cartCount = count;
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
         }
 
         // --- ACTION HANDLERS ---

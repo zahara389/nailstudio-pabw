@@ -30,11 +30,60 @@
             <h2 class="ns-text-xl-semibold">Your Cart</h2>
             <button onclick="closeCartModal()" class="ns-close-btn" aria-label="Close cart"><i class="fas fa-times"></i></button>
         </div>
-        <div class="ns-cart-body" id="cart-items-modal"><p class="ns-cart-empty-message">Your cart is empty.</p></div>
+        <div class="ns-cart-body" id="cart-items-modal">
+            @if (empty($cartItems))
+                <p class="ns-cart-empty-message">Keranjang Anda masih kosong.</p>
+            @else
+                <div class="ns-cart-items-wrapper">
+                    @foreach ($cartItems as $item)
+                        <div
+                            class="ns-cart-item-row"
+                            data-cart-item="{{ $item['id'] }}"
+                            data-cart-max="{{ $item['max_quantity'] }}"
+                            data-cart-update-url="{{ route('cart.items.update', $item['id']) }}"
+                            data-cart-delete-url="{{ route('cart.items.destroy', $item['id']) }}"
+                            data-cart-unit-price="{{ $item['unit_price'] }}"
+                            data-cart-category="{{ $item['category_label'] }}"
+                            data-cart-quantity="{{ $item['quantity'] }}"
+                            style="padding:0.75rem 0; border-bottom:1px solid #f3f4f6;"
+                        >
+                            <div style="display:flex; gap:0.75rem; align-items:center;">
+                                <div style="width:64px; height:64px; border-radius:0.75rem; overflow:hidden; background:#fdf2f8; flex-shrink:0;">
+                                    <img src="{{ $item['image_url'] }}" alt="{{ $item['product_name'] }}" style="width:100%; height:100%; object-fit:cover;" />
+                                </div>
+                                <div style="flex:1; min-width:0;">
+                                    <p style="font-size:0.9rem; font-weight:600; color:#111827; margin:0;">{{ $item['product_name'] }}</p>
+                                    <p style="font-size:0.75rem; color:#6b7280; margin:0.15rem 0 0;" data-cart-quantity-label>{{ $item['category_label'] }} • Qty {{ $item['quantity'] }}</p>
+                                </div>
+                                <div style="font-size:0.9rem; font-weight:600; color:#ec4899; text-align:right;" data-cart-line-total>Rp {{ number_format($item['line_total'], 0, ',', '.') }}</div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-top:0.65rem;">
+                                <div style="display:inline-flex; align-items:center; gap:0.35rem; background:#f9fafb; border-radius:999px; padding:0.2rem 0.6rem;">
+                                    <button type="button" class="ns-qty-btn" onclick="cartMinus({{ $item['id'] }})" aria-label="Kurangi">-</button>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="{{ $item['max_quantity'] }}"
+                                        value="{{ $item['quantity'] }}"
+                                        data-cart-qty-input
+                                        onchange="cartQty({{ $item['id'] }}, this.value)"
+                                        style="width:48px; border:0; background:transparent; text-align:center; font-weight:600; color:#111827;"
+                                    />
+                                    <button type="button" class="ns-qty-btn" onclick="cartPlus({{ $item['id'] }})" aria-label="Tambah">+</button>
+                                </div>
+
+                                <button type="button" class="ns-remove-btn" onclick="cartDelete({{ $item['id'] }})">Hapus</button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
         <div id="ns-cart-footer">
-            <div class="ns-cart-subtotal"><span>Subtotal:</span><span id="cart-subtotal" class="ns-text-pink-600">$0.00</span></div>
-            <button onclick="showCheckoutMessage()" class="ns-btn ns-btn-primary ns-mb-2">Proceed to Checkout</button>
-            <button onclick="showViewCartMessage()" class="ns-btn ns-btn-secondary">View Cart Page</button>
+            <div class="ns-cart-subtotal"><span>Subtotal:</span><span id="cart-subtotal" class="ns-text-pink-600" data-cart-subtotal="{{ $cartSubtotal }}">Rp {{ number_format($cartSubtotal, 0, ',', '.') }}</span></div>
+            <a href="{{ route('cart.checkout') }}" class="ns-btn ns-btn-primary ns-mb-2 text-center">Proceed to Checkout</a>
+            <a href="{{ route('cart.index') }}" class="ns-btn ns-btn-secondary text-center">View Cart Page</a>
         </div>
     </div>
 
@@ -50,7 +99,7 @@
                 <input type="search" id="searchInput" name="q" placeholder="Search products ..." class="ns-search-input" aria-label="Search products and brands" required minlength="2"/>
             </form>
                     <button aria-label="Favorites" class="ns-icon-button ns-icon-button-lg" onclick="showFavoritesMessage()"><i class="far fa-heart"></i><span id="favorite-badge" class="ns-badge">0</span></button>
-                    <button aria-label="Cart" id="cart-btn" class="ns-icon-button ns-icon-button-lg"><i class="fas fa-shopping-bag"></i><span id="cart-count-badge" class="ns-badge">0</span></button>
+                    <button aria-label="Cart" id="cart-btn" class="ns-icon-button ns-icon-button-lg"><i class="fas fa-shopping-bag"></i><span id="cart-count-badge" class="ns-badge" data-cart-count="{{ $cartItemCount }}" @if($cartItemCount < 1) style="display:none;" @endif>{{ $cartItemCount }}</span></button>
                     <a href="#" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account"><i class="far fa-user ns-icon-button-lg"></i></a>
         </div>
     </header>

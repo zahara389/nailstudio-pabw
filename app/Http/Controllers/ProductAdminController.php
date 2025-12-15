@@ -14,11 +14,9 @@ class ProductAdminController extends Controller
     {
         $products = Product::orderBy('created_at', 'desc')->get();
         
-        // Format products untuk view
         $formattedProducts = $products->map(function($product) {
             $priceDiscounted = $product->final_price;
             
-            // Tentukan status class dan text
             $statusClass = 'status-draft';
             $statusText = ucfirst($product->status);
             
@@ -97,7 +95,7 @@ class ProductAdminController extends Controller
 
         $request->validate([
             'namaproduct' => [
-                'required', 'string', 'max:100', 
+            'required', 'string', 'max:100', 
                 Rule::unique('products', 'name')->ignore($product->id)
             ],
             'category'    => ['required', Rule::in(['nail polish','nail tools','nail care','nail kit'])],

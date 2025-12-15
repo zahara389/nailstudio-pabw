@@ -13,6 +13,8 @@
 
     @include('landing_page.categories')
 
+    @include('landing_page.see-more-products')
+
     @include('landing_page.booking')
 
     @include('landing_page.team')
@@ -22,7 +24,4 @@
 
 @endsection
 
-{{-- 4. Gunakan @push untuk menambahkan script spesifik halaman --}}
-@push('scripts')
-    <script src="{{ asset('js/landing_page_logic.js') }}"></script>
-@endpush
+{{-- Script umum sudah dimuat melalui layouts/app.blade.php --}}

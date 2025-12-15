@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     <title>@yield('title', 'Premium Nail Art Studio')</title>
 
@@ -41,7 +42,7 @@
 
     @livewireScripts
 
-    <script src="{{ asset('js/nama_file_js_anda.js') }}"></script>
+    <script src="{{ asset('js/landing_page_logic.js') }}"></script>
 
     <script>
         function scrollToSection(id) {

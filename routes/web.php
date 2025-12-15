@@ -18,7 +18,6 @@ use App\Http\Controllers\JobController;
 
 
 
-
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -88,6 +87,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+
 // ===================== RUTE LOWONGAN PEKERJAAN PUBLIK =====================
 
 // Rute melihat lowongan
@@ -112,3 +112,8 @@ Route::delete('/{id}', [JobController::class, 'destroy'])->name('destroy');
     });        
        
        
+
+Route::post('/test-post', function () {
+    return response('TEST BERHASIL WEB ROUTE', 200);
+});
+

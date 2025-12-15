@@ -10,12 +10,8 @@ class CartItem extends Model
     
     use HasFactory;
 
-    // PERBAIKAN 1: Sesuaikan nama tabel dengan database (plural)
     protected $table = 'cart_items'; 
 
-    // PERBAIKAN 2: Sesuaikan nama kolom dengan database
-    // qty -> quantity
-    // price -> unit_price
     protected $fillable = ['cart_id', 'product_id', 'quantity', 'unit_price'];
 
     protected $casts = [
