@@ -19,6 +19,7 @@
 
     @include('landing_page.lowongan-pekerjaan')
 
+
 @endsection
 
 {{-- 4. Gunakan @push untuk menambahkan script spesifik halaman --}}

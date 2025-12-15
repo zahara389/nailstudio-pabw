@@ -10,30 +10,24 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    // ... Metode create() tidak berubah ...
     public function create()
     {
         $timeSlots = [
-            '09:00', '10:00', '11:00', '12:00', 
-            '13:00', '14:00', '15:00', '16:00', '17:00'
+            '10:00', '12:00',  '14:00',  '16:00', '18:00'
         ];
         return view('landing_page.booking', compact('timeSlots'));
     }
 
     /**
-     * Menyimpan data pemesanan ke database (POST)
+     * Menyimpan data booking ke database 
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input (dengan perbaikan customer_phone)
+        // 1. Validasi Input 
         $validated = $request->validate([
             'customer_name'  => ['required', 'string', 'max:255'],
             'customer_email' => ['required', 'email', 'max:255'],
-            
-            // PERBAIKAN: Menambahkan regex untuk membatasi hanya angka
-            // /^[0-9]+$/ memastikan input hanya terdiri dari angka 0 sampai 9.
             'customer_phone' => ['required', 'string', 'max:15', 'regex:/^[0-9]+$/'], 
-            
             'location'       => ['required', 'string', 'max:255'],
             'service'        => ['required', 'string', 'max:255'],
             'date'           => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:today'], 
@@ -42,7 +36,7 @@ class BookingController extends Controller
             'agreement'      => ['required', 'accepted'], 
         ]);
         
-        // 2. Cek Bentrok Jadwal (Logika tidak berubah)
+        // 2. Cek Bentrok Jadwal
         $is_booked = Booking::where('booking_date', $validated['date'])
                             ->where('booking_time', $validated['time'])
                             ->whereIn('status', ['pending', 'confirmed']) 
@@ -54,7 +48,7 @@ class BookingController extends Controller
              ]);
         }
         
-        // 3. Penyimpanan Data ke Database (Logika tidak berubah)
+        // 3. Penyimpanan Data ke Database 
         Booking::create([
             'user_id'         => Auth::id(), 
             'customer_name'   => $validated['customer_name'],

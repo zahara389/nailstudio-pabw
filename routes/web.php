@@ -13,6 +13,10 @@ use App\Http\Controllers\ProductAdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockManagementController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\JobController;
+
+
+
 
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
@@ -82,16 +86,29 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update-price', [StockManagementController::class, 'updatePrice'])->name('updatePrice');
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
-
-    Route::prefix('job-applications')->name('job.')->group(function () {
-        Route::get('/', [JobApplicationController::class, 'index'])->name('index');
-        Route::get('/create', [JobApplicationController::class, 'create'])->name('create');
-        Route::post('/', [JobApplicationController::class, 'store'])->name('store');
-        Route::get('/{id}', [JobApplicationController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [JobApplicationController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [JobApplicationController::class, 'update'])->name('update');
-        Route::delete('/{id}', [JobApplicationController::class, 'destroy'])->name('destroy');
-    });
-
-
 });
+
+// ===================== RUTE LOWONGAN PEKERJAAN PUBLIK =====================
+
+// Rute melihat lowongan
+Route::prefix('lowongan')->group(function () {
+    Route::get('/', [JobController::class, 'publicIndex'])->name('lowongan.index');
+    Route::get('/{job}', [JobController::class, 'show'])->name('lowongan.show');
+});
+
+// Form dan Submit
+Route::get('/apply/{jobId}', [JobController::class, 'showApplicationForm'])->name('job.apply');
+Route::post('/apply', [JobController::class, 'storeApplication'])->name('job.submit');
+
+// Akses publik ke admin lowongan
+Route::prefix('admin/jobs')->name('job.')->group(function () {
+Route::get('/', [JobController::class, 'index'])->name('index'); 
+Route::get('/create', [JobController::class, 'create'])->name('create');
+Route::post('/', [JobController::class, 'store'])->name('store');
+Route::get('/{id}', [JobController::class, 'showAdmin'])->name('show'); 
+Route::get('/{id}/edit', [JobController::class, 'edit'])->name('edit');
+Route::put('/{id}', [JobController::class, 'update'])->name('update');
+Route::delete('/{id}', [JobController::class, 'destroy'])->name('destroy');
+    });        
+       
+       
