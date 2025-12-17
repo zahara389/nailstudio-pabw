@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FaqMessageController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ProductAdminController;
 use App\Http\Controllers\ProductController;
@@ -16,7 +17,9 @@ use App\Http\Controllers\TransactionController;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{category?}', [ProductController::class, 'index'])
+    ->where('category', '(nail-polish|nail-tools|nail-care|nail-kit)')
+    ->name('products.index');
 Route::get('/products/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
