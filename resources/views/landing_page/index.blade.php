@@ -21,6 +21,7 @@
 
     @include('landing_page.lowongan-pekerjaan')
 
+
 @endsection
 
 {{-- Script umum sudah dimuat melalui layouts/app.blade.php --}}

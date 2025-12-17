@@ -1,0 +1,181 @@
+/* Reset & base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #fff;
+  color: #333;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+/* Header */
+.header-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.main-title {
+  font-family: serif;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  font-size: 1.125rem;
+  color: #8a8a8a;
+}
+
+/* Grid Layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media(min-width:768px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Card */
+.card {
+  border: 2px solid #ff80bf33;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+  background-color: #fff;
+}
+.image-card img.nail-image {
+  width: 100%;
+  height: 20rem;
+  object-fit: cover;
+}
+
+/* Tambah jarak antara foto dan card benefit */
+.image-card {
+  margin-bottom: 3rem; /* jarak 3rem */
+}
+
+/* Benefits Card */
+.benefits-card {
+  background: linear-gradient(to bottom right, #ff80bf1a, #d8b4fe4d);
+}
+.card-header {
+  padding: 1rem;
+}
+.card-title {
+  font-size: 1.25rem;
+  color: #ff80bf;
+}
+.card-content {
+  padding: 1rem;
+}
+.benefit-item {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+}
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #ff80bf;
+  border-radius: 50%;
+  margin-top: 0.25rem;
+}
+.benefit-item p {
+  color: #4a4a4a;
+}
+
+/* Form Section */
+.form-section {
+  box-shadow: 0 15px 25px rgba(0,0,0,0.1);
+}
+.form-header {
+  background: linear-gradient(to right, #ff80bf0d, #d8b4fe33);
+  padding: 1rem;
+}
+.form-title {
+  font-size: 1.5rem;
+  color: #333;
+}
+.form-description {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+.form {
+  padding: 1.5rem 1rem;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.required {
+  color: #ff80bf;
+}
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="file"],
+textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+input[type="file"] {
+  display: none;
+}
+textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+.file-name {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  color: #ff80bf;
+}
+
+/* Button */
+.submit-btn {
+  width: 100%;
+  background-color: #FFADBD; ;
+  color: #fff;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+.submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Success Message */
+.success-message {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.hidden {
+  display: none;
+}
+.check-icon {
+  width: 5rem;
+  height: 5rem;
+  color: #ff80bf;
+  margin: 0 auto 1rem;
+}

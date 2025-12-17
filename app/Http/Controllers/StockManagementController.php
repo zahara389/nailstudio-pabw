@@ -21,25 +21,24 @@ class StockManagementController extends Controller
         $status = $request->query('status');
         $sortStock = $request->query('sort_stock');
 
-        // Build query dengan filters
         $query = Product::query();
 
-        // Search berdasarkan nama produk
+       
         if ($search) {
             $query->search($search);
         }
 
-        // Filter berdasarkan kategori
+        
         if ($category) {
             $query->byCategory($category);
         }
 
-        // Filter berdasarkan status
+        
         if ($status) {
             $query->byStatus($status);
         }
 
-        // Sort berdasarkan stock
+        
         if ($sortStock === 'asc') {
             $query->orderBy('stock', 'asc');
         } elseif ($sortStock === 'desc') {
@@ -48,10 +47,10 @@ class StockManagementController extends Controller
             $query->orderBy('id', 'desc');
         }
 
-        // Pagination
+        
         $products = $query->paginate($perPage);
         
-        // Data untuk dropdown filter
+       
         $categories = Product::select('category')
             ->distinct()
             ->orderBy('category')
@@ -111,7 +110,7 @@ class StockManagementController extends Controller
                 'status' => $request->status ?? 'draft',
             ];
             
-            // Handle upload gambar
+            
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();

@@ -5,7 +5,7 @@
 
     <h3 class="mb-4">Stock Management</h3>
 
-    <!-- Filter -->
+    
     <form method="GET" action="{{ route('stock.index') }}" class="mb-3">
         <div class="row g-2">
             <div class="col-md-4">
@@ -26,7 +26,7 @@
         </div>
     </form>
 
-    <!-- Table -->
+   
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-hover align-middle">
@@ -78,7 +78,7 @@
                                 <i class="bi bi-pencil"></i>
                             </button>
 
-                            <!-- Edit Price Button -->
+                           
                             <button class="btn btn-sm btn-primary"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editPriceModal{{ $product->id }}">
@@ -88,7 +88,7 @@
                         </td>
                     </tr>
 
-                    <!-- Modal Edit Stock -->
+                    
                     <div class="modal fade" id="editStockModal{{ $product->id }}">
                         <div class="modal-dialog">
                             <form action="{{ route('stock.updateStock', $product->id) }}" method="POST">
@@ -115,7 +115,7 @@
                         </div>
                     </div>
 
-                    <!-- Modal Edit Price -->
+                    
                     <div class="modal fade" id="editPriceModal{{ $product->id }}">
                         <div class="modal-dialog">
                             <form action="{{ route('stock.updatePrice', $product->id) }}" method="POST">
@@ -146,7 +146,7 @@
                 </tbody>
             </table>
 
-            <!-- Pagination -->
+           
             <div class="d-flex justify-content-center mt-3">
                 {{ $products->links() }}
             </div>

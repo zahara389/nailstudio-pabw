@@ -4,24 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Job extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'job_category_id',
-        'title',
-        'slug',
-        'description',
+        'job_category_id', 
+        'title', 
+        'description', 
         'requirements',
-        'location',
-        'employment_type',
+        'location', 
+        'employment_type', 
         'salary_range',
-        'status',
-        'published_at',
+        'status', 
+        'published_at', 
         'expires_at',
     ];
 
@@ -30,13 +27,8 @@ class Job extends Model
         'expires_at' => 'datetime',
     ];
 
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(JobCategory::class, 'job_category_id');
-    }
-
-    public function applications(): HasMany
-    {
-        return $this->hasMany(JobApplication::class);
     }
 }

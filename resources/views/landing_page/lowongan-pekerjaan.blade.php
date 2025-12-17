@@ -1,182 +1,189 @@
-<?php
+@php
+/**
+ * 1. Bagian PHP: Memastikan Data diolah sekali.
+ * Data $jobs_data hanya berisi 1 array untuk setiap lowongan.
+ */
+$jobs_data = $jobs->map(function ($job) {
+    $req = [];
+    if (!empty($job->requirements)) {
+        // Logika parsing yang robust
+        $decoded = json_decode($job->requirements, true);
+        if (is_array($decoded)) {
+            $req = $decoded;
+        } else {
+            $req = array_filter(array_map('trim', explode(',', $job->requirements)));
+        }
+    }
 
-$jobs = [
-    [
-        'id' => 1,
-        'title' => 'Nail Artist Junior',
-        'type' => 'Full-time',
-        'location' => 'Jakarta Selatan',
-        'description' => 'Mencari nail artist berbakat dengan passion di bidang nail art. Pengalaman minimal 1 tahun dengan teknik dasar gel, manicure, dan pedicure.',
-        'requirements' => ['Min. 1 tahun pengalaman', 'Menguasai teknik gel nails', 'Kreatif dan detail-oriented']
-    ],
-    [
-        'id' => 2,
-        'title' => 'Receptionist',
-        'type' => 'Full-time',
-        'location' => 'Jakarta Selatan',
-        'description' => 'Bertanggung jawab dalam mengelola jadwal appointment, customer service, dan operasional front desk dengan attitude yang ramah dan profesional.',
-        'requirements' => ['Pengalaman customer service', 'Komunikasi baik', 'Mampu multitasking']
-    ],
-    [
-        'id' => 3,
-        'title' => 'Content Creator',
-        'type' => 'Part-time',
-        'location' => 'Hybrid',
-        'description' => 'Membuat konten kreatif untuk social media, fotografi nail art, dan video tutorial. Passion di beauty industry dan familiar dengan Instagram/TikTok.',
-        'requirements' => ['Portfolio konten beauty', 'Editing foto & video', 'Update trend social media']
-    ]
-];
-?>
-<!-- CAREERS SECTION -->
-    <section id="careers" class="career-section">
-        <div class="max-w-7xl mx-auto">
-            <!-- Header -->
-            <div class="career-header">
-                <div class="career-badge">
-                    💼 Join Our Team
-                </div>
-                <h2 class="section-title font-serif career-title">Career Opportunities</h2>
-                <p class="section-subtitle career-subtitle">
-                    Bergabunglah dengan tim kami dan berkembang bersama dalam industri beauty yang dinamis dan kreatif
-                </p>
-            </div>
+    return [
+        'id' => $job->id, // PENTING: ID ini digunakan untuk link Apply Now
+        'title' => $job->title,
+        'type' => strtoupper(str_replace('_', ' ', $job->employment_type)),
+        'location' => $job->location,
+        'description' => $job->description,
+        'requirements' => array_values($req),
+    ];
+})->toArray();
+@endphp
 
-            <!-- Jobs Grid Container -->
-            <div id="jobs-grid" class="career-jobs-grid">
-                
-            </div>
-
-            <!-- CTA Footer -->
-            <div class="career-cta-text">
-                <p class="text-gray-600 mb-4 text-lg">
-                    Tidak menemukan posisi yang sesuai? Kirim CV Anda ke:
-                </p>
-                <a 
-                    href="mailto:careers@nailsstudio.com"
-                    class="career-cta-btn"
-                >
-                    nailartstudio@gmail.com
-                </a>
-            </div>
+{{-- 
+==================== 2. Struktur HTML Static ====================
+================================================================
+--}}
+<section id="careers" class="career-section">
+    <div class="max-w-7xl mx-auto">
+        <div class="career-header">
+            <div class="career-badge">💼 Join Our Team</div>
+            <h2 class="section-title font-serif career-title">Career Opportunities</h2>
+            <p class="section-subtitle career-subtitle">
+                Bergabunglah dengan tim kami dan berkembang bersama dalam industri beauty yang dinamis dan kreatif
+            </p>
         </div>
-    </section>
-    <script>
-        
-        // Fungsi untuk membuat HTML job card
-        function createJobCard(job) {
-            const card = document.createElement('div');
-            card.className = 'career-job-card group'; 
 
-            // Icon Box
-            const iconBox = document.createElement('div');
-            iconBox.className = 'career-icon-box group-hover:scale-110';
-            iconBox.innerHTML = '<i data-lucide="briefcase"></i>'; 
-            
-            // Title 
-            const titleH3 = document.createElement('h3');
-            titleH3.className = 'career-job-title';
-            titleH3.textContent = job.title;
+        {{-- Jaringan Lowongan (Container) --}}
+        <div id="jobs-grid" class="career-jobs-grid">
+            {{-- Elemen ini harus KOSONG dari Job Card HTML Statis --}}
+        </div>
 
-            // Tags
-            const tagsDiv = document.createElement('div');
-            tagsDiv.className = 'career-chips-group';
+        <div class="career-cta-text">
+            <p class="text-gray-600 mb-4 text-lg">
+                Tidak menemukan posisi yang sesuai? Kirim CV Anda ke:
+            </p>
+            <a href="mailto:nailartstudio@gmail.com" class="career-cta-btn">nailartstudio@gmail.com</a>
+        </div>
+    </div>
+</section>
 
-            // Type Tag
-            const typeTag = document.createElement('span');
-            typeTag.className = 'career-chip career-chip-clock';
-            typeTag.innerHTML = `<i data-lucide="clock" class="career-chip-clock"></i> <span>${job.type}</span>`;
-            
-            // Location Tag
-            const locationTag = document.createElement('span');
-            locationTag.className = 'career-chip career-chip-map';
-            locationTag.innerHTML = `<i data-lucide="map-pin" class="career-chip-map"></i> <span>${job.location}</span>`;
+{{-- ==================== 3. JavaScript untuk Rendering (DIUBAH TOTAL) ==================== --}}
+@push('scripts')
+<script>
+    const jobs = @json($jobs_data); 
 
-            tagsDiv.appendChild(typeTag);
-            tagsDiv.appendChild(locationTag);
-            
-            // Description
-            const descriptionP = document.createElement('p');
-            descriptionP.className = 'career-description';
-            descriptionP.textContent = job.description;
+    function createJobCard(job) {
+        const card = document.createElement('div');
+        card.className = 'career-job-card group';
 
-            // Requirements
-            const reqDiv = document.createElement('div');
-            reqDiv.className = 'career-requirements';
+        const iconBox = document.createElement('div');
+        iconBox.className = 'career-icon-box group-hover:scale-110';
+        iconBox.innerHTML = '<i data-lucide="briefcase"></i>';
 
-            const reqTitle = document.createElement('div');
-            reqTitle.className = 'career-req-title';
-            reqTitle.textContent = 'Requirements:';
-            
-            const reqList = document.createElement('ul');
-            reqList.className = 'career-req-list';
-            
+        const titleH3 = document.createElement('h3');
+        titleH3.className = 'career-job-title';
+        titleH3.textContent = job.title;
+
+        const tagsDiv = document.createElement('div');
+        tagsDiv.className = 'career-chips-group';
+
+        const typeTag = document.createElement('span');
+        typeTag.className = 'career-chip career-chip-clock';
+        typeTag.innerHTML = `<i data-lucide="clock"></i> <span>${job.type}</span>`;
+
+        const locationTag = document.createElement('span');
+        locationTag.className = 'career-chip career-chip-map';
+        locationTag.innerHTML = `<i data-lucide="map-pin"></i> <span>${job.location}</span>`;
+
+        tagsDiv.appendChild(typeTag);
+        tagsDiv.appendChild(locationTag);
+
+        const descriptionP = document.createElement('p');
+        descriptionP.className = 'career-description';
+        descriptionP.textContent = job.description;
+
+        const reqDiv = document.createElement('div');
+        reqDiv.className = 'career-requirements';
+
+        const reqTitle = document.createElement('div');
+        reqTitle.className = 'career-req-title';
+        reqTitle.textContent = 'Requirements:';
+
+        const reqList = document.createElement('ul');
+        reqList.className = 'career-req-list';
+
+        if (Array.isArray(job.requirements) && job.requirements.length > 0) {
             job.requirements.forEach(req => {
                 const li = document.createElement('li');
-                li.className = 'career-req-list-item'; 
-                
+                li.className = 'career-req-list-item';
+
                 const checkIcon = document.createElement('span');
                 checkIcon.className = 'career-req-check';
                 checkIcon.textContent = '✓';
 
                 const textSpan = document.createElement('span');
-                textSpan.textContent = req;
-                
+                textSpan.textContent = req.trim(); 
+
                 li.appendChild(checkIcon);
                 li.appendChild(textSpan);
                 reqList.appendChild(li);
             });
-            
-            reqDiv.appendChild(reqTitle);
-            reqDiv.appendChild(reqList);
-
-            // Apply Button
-            const applyButton = document.createElement('button');
-            applyButton.className = 'career-apply-btn flex items-center justify-center gap-2 group-hover:scale-105';
-            applyButton.innerHTML = `Apply Now <i data-lucide="arrow-right"></i>`;
-
-            card.appendChild(iconBox);
-            card.appendChild(titleH3);
-            card.appendChild(tagsDiv);
-            card.appendChild(descriptionP);
-            card.appendChild(reqDiv);
-            card.appendChild(applyButton);
-
-            return card;
+        } else {
+            const li = document.createElement('li');
+            li.className = 'career-req-list-item';
+            li.textContent = 'No specific requirements';
+            reqList.appendChild(li);
         }
 
-        // Fungsi utama untuk inisialisasi
-        window.onload = function () {
-            // 1. Initialize Lucide Icons for static content
-            lucide.createIcons();
-            
-            // 2. Render Job Cards
+        reqDiv.appendChild(reqTitle);
+        reqDiv.appendChild(reqList);
+
+        // ⭐ MODIFIKASI: Mengganti mailto dengan link route Laravel /apply/{jobId}
+        const applyButton = document.createElement('a');
+        applyButton.href = `/apply/${job.id}`; // Mengarahkan ke route GET /apply/ID
+        applyButton.className = 'career-apply-btn flex items-center justify-center gap-2 group-hover:scale-105';
+        applyButton.innerHTML = `Apply Now <i data-lucide="arrow-right"></i>`;
+
+        card.appendChild(iconBox);
+        card.appendChild(titleH3);
+        card.appendChild(tagsDiv);
+        card.appendChild(descriptionP);
+        card.appendChild(reqDiv);
+        card.appendChild(applyButton);
+
+        return card;
+    }
+
+    // ⭐ LIVEWIRE HOOK: Menggantikan DOMContentLoaded untuk mencegah duplikasi rendering
+    if (typeof Livewire !== 'undefined') {
+        Livewire.hook('element.initialized', ({ component, el }) => {
+            // Hanya target elemen jobs-grid pada render pertama
+            if (el.id === 'jobs-grid' && !el.hasAttribute('data-rendered')) {
+                const jobsGrid = el;
+
+                // Baris Anti-Duplikasi: Membersihkan konten grid
+                jobsGrid.innerHTML = ''; 
+
+                if (jobs && jobs.length > 0) {
+                    jobs.forEach(job => {
+                        const card = createJobCard(job);
+                        jobsGrid.appendChild(card);
+                    });
+                } else {
+                    jobsGrid.innerHTML = '<p class="text-center col-span-full text-gray-500 text-lg py-10">Saat ini belum ada lowongan pekerjaan yang dibuka.</p>';
+                }
+                
+                // Tandai elemen sudah dirender
+                el.setAttribute('data-rendered', 'true');
+
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                }
+            }
+        });
+    } else {
+        // Fallback jika tidak menggunakan Livewire, tapi tetap gunakan DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
             const jobsGrid = document.getElementById('jobs-grid');
             if (jobsGrid) {
-                jobs.forEach(job => {
-                    const card = createJobCard(job);
-                    jobsGrid.appendChild(card);
-                });
+                jobsGrid.innerHTML = ''; 
+                if (jobs && jobs.length > 0) {
+                    jobs.forEach(job => {
+                        jobsGrid.appendChild(createJobCard(job));
+                    });
+                }
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                }
             }
-            
-            // 3. Re-initialize Lucide Icons after adding new dynamic elements
-            lucide.createIcons();
-        };
-
-
-        // Smooth Scroll Function (dipertahankan dari kode sebelumnya)
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                console.log(`Section ${id} not found in this demo.`);
-            }
-        }
-
-        // Date Input Min Value (Today)
-        const dateInput = document.getElementById('bookingDate');
-        if (dateInput) {
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.min = today;
-        }
-        </script>
+        });
+    }
+</script>
+@endpush

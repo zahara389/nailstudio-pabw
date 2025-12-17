@@ -13,10 +13,10 @@ class JobApplication extends Model
     protected $fillable = [
         'job_id',
         'user_id',
-        'applicant_name',
+        'applicant_name', 
         'email',
         'phone',
-        'cv_filename',
+        'cv_filename',    
         'description',
         'status',
     ];
