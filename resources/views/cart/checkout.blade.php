@@ -152,11 +152,11 @@
                     window.snap.pay(data.snap_token, {
                         onSuccess: function () {
                             showMessage('Pembayaran berhasil! Mengarahkan ke riwayat transaksi...', false);
-                            window.location.href = '{{ route('transaction.history') }}';
+                            window.location.href = "{{ route('transaction.history') }}";
                         },
                         onPending: function () {
                             showMessage('Pembayaran dalam proses. Kamu bisa melihat statusnya di riwayat transaksi.', false);
-                            window.location.href = '{{ route('transaction.history') }}';
+                            window.location.href = "{{ route('transaction.history') }}";
                         },
                         onError: function () {
                             showMessage('Pembayaran gagal. Silakan coba lagi atau gunakan metode lain.');
