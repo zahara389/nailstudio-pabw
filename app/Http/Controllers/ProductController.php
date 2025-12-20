@@ -8,16 +8,30 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    // Tampilkan daftar produk untuk halaman katalog
-    public function index()
+    // Tampilkan daftar produk per kategori
+    public function index(?string $category = null)
     {
+        $categorySlug = $category;
+        $allowedCategories = ['nail polish', 'nail tools', 'nail care', 'nail kit'];
+        $categoryValue = null;
+
+        if ($categorySlug !== null) {
+            $categoryValue = Str::of($categorySlug)->lower()->replace('-', ' ')->toString();
+
+            if (! in_array($categoryValue, $allowedCategories, true)) {
+                abort(404);
+            }
+        }
+
         $products = Product::query()
+            ->when($categoryValue, fn ($query, $value) => $query->where('category', $value))
             ->when(request('status'), fn ($query, $status) => $query->where('status', $status))
             ->orderBy('name')
             ->get();
 
         if ($products->isEmpty()) {
             $products = collect($this->sampleProducts())
+                ->when($categoryValue, fn ($items) => $items->filter(fn ($attributes) => ($attributes['category'] ?? null) === $categoryValue))
                 ->map(fn ($attributes) => Product::make($attributes));
         }
 
@@ -26,6 +40,8 @@ class ProductController extends Controller
         return view('products.index', [
             'products' => $presentedProducts,
             'fallbackImage' => $this->fallbackImage(),
+            'categorySlug' => $categorySlug,
+            'categoryLabel' => $categoryValue ? Str::headline($categoryValue) : null,
         ]);
     }
 

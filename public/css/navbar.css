@@ -20,11 +20,12 @@
     font-size: 0.75rem; 
     padding-top: 0.5rem; 
     padding-bottom: 0.5rem; 
+    -webkit-user-select: none;
     user-select: none;
     border-radius: 0 0 10px 10px; 
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar { -ms-overflow-style: none; }
 
 /* |----------------------------------------------------|
 | 🛠️ HEADER UTAMA (FINAL & AKURAT) 🛠️ |
@@ -64,6 +65,7 @@
     font-weight: 600; 
     font-size: 1.3rem; 
     color: black;
+    -webkit-user-select: none;
     user-select: none;
     transition: color 0.2s;
 }
@@ -166,6 +168,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-user-select: none;
     user-select: none;
 }
 .ns-badge[style*="display: none"] { display: none !important; }
@@ -221,7 +224,7 @@
 #category-modal .modal-header h2 { font-size: 1.25rem; font-weight: 600; }
 #category-modal .modal-body { padding: 1.5rem; }
 #category-modal::-webkit-scrollbar { display: none; }
-#category-modal { -ms-overflow-style: none; scrollbar-width: none; }
+#category-modal { -ms-overflow-style: none; }
 
 #close-category-btn {
     color: #6b7280; 
