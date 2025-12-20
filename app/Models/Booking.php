@@ -23,12 +23,9 @@ class Booking extends Model
         'status', 
     ];
 
-    // Tidak ada $casts yang diperlukan karena semua data sudah dalam format string atau date/time sederhana.
     protected $casts = [];
 
-    /**
-     * Relasi dengan User.
-     */
+  
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

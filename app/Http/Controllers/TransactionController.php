@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -49,7 +50,7 @@ class TransactionController extends Controller
         return DB::transaction(function () use ($validated) {
             $userId = $validated['user_id']
                 ?? $this->resolveUserId($validated['pembeli'] ?? null)
-                ?? auth()->id();
+                ?? Auth::id();
 
             if (!$userId) {
                 throw ValidationException::withMessages([

@@ -1,0 +1,102 @@
+/* ============================================
+   GLOBAL STYLE RESET & BASE
+=============================================== */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Utility */
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #374151; /* gray-700 */
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.2s ease;
+    font-size: 15px;
+}
+
+.form-input:focus {
+    border-color: #6366f1; /* indigo-500 */
+    box-shadow: 0px 0px 0px 3px rgba(99, 102, 241, 0.25);
+    outline: none;
+}
+
+/* Textarea */
+textarea.form-input {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Card Wrapper */
+.card {
+    border-radius: 14px;
+    padding: 24px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Buttons */
+.btn-success {
+    background: #10b981; /* emerald-500 */
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-success:hover {
+    background: #0d9b6c;
+}
+
+.btn-secondary {
+    background: #6b7280; /* gray-500 */
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #5a616d;
+}
+
+/* Alert Error Box */
+.alert {
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+}
+
+/* Title Styling */
+.main-content h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937; /* gray-800 */
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+    .card {
+        padding: 18px;
+    }
+}

@@ -201,8 +201,8 @@
                     </label>
                 </div>
 
-                <button type="submit" class="submit-button w-full text-white font-bold py-2 px-4 rounded-md transition duration-150" style="background-color: #ff80bf;">
-                    Confirm & Send Booking
+                <button type="submit" class="submit-button w-full text-white font-bold py-2 px-4 rounded-md transition duration-150" style="background-color: #FFADBD;">
+                Confirm & Send Booking
                 </button>
                 
                 <p class="text-xs text-center text-gray-500 mt-4">

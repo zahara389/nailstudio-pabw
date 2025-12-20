@@ -4,18 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'slug',
-    ];
+    protected $fillable = ['name'];
 
-    public function jobs(): HasMany
+
+    protected static function boot()
+    {
+        parent::boot();
+    }
+
+    public function jobs()
     {
         return $this->hasMany(Job::class);
     }

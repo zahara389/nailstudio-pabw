@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             TransactionSeeder::class,
             OrdersSeeder::class,
+            JobCategorySeeder::class,
         ]);
     }
 }

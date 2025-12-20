@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Produk Nail Art')
+@section('title', ($categoryLabel ? 'Katalog ' . $categoryLabel : 'Katalog Produk Nail Art') . ' | Nail Studio')
 
 @section('body-class', 'gradient-bg min-h-screen')
 
@@ -15,8 +15,13 @@
     <section class="mx-auto max-w-7xl px-4 py-16">
         <div class="mb-12 text-center">
             <p class="text-sm font-semibold uppercase tracking-widest text-pink-500">Katalog Nail Art</p>
-            <h1 class="mt-3 text-3xl font-bold text-gray-900 md:text-4xl">Temukan Gaya Nail Art Favoritmu</h1>
-            <p class="mt-4 text-base text-gray-600 md:text-lg">Pilih dari koleksi eksklusif kami yang dirancang untuk berbagai gaya dan kebutuhan perawatan kuku.</p>
+            @if (!empty($categoryLabel))
+                <h1 class="mt-3 text-3xl font-bold text-gray-900 md:text-4xl">{{ $categoryLabel }}</h1>
+                <p class="mt-4 text-base text-gray-600 md:text-lg">Pilih dari koleksi {{ strtolower($categoryLabel) }} kami yang dirancang untuk berbagai gaya dan kebutuhan perawatan kuku.</p>
+            @else
+                <h1 class="mt-3 text-3xl font-bold text-gray-900 md:text-4xl">Temukan Gaya Nail Art Favoritmu</h1>
+                <p class="mt-4 text-base text-gray-600 md:text-lg">Pilih dari koleksi eksklusif kami yang dirancang untuk berbagai gaya dan kebutuhan perawatan kuku.</p>
+            @endif
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

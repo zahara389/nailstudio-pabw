@@ -16,7 +16,7 @@
         <nav class="flex items-center text-sm text-gray-500">
             <a href="{{ route('landing.index') }}" class="hover:text-pink-500">Beranda</a>
             <span class="mx-2">/</span>
-            <a href="{{ route('products.index') }}" class="hover:text-pink-500">Produk</a>
+            <a href="{{ route('products.index', ['category' => $product->category_slug]) }}" class="hover:text-pink-500">{{ $product->category_label ?? 'Produk' }}</a>
             <span class="mx-2">/</span>
             <span class="text-gray-700">{{ $product->name }}</span>
         </nav>

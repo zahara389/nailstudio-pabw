@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/landing_page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
 
     @livewireStyles
     @stack('styles')

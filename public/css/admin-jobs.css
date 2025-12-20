@@ -1,0 +1,85 @@
+/* Styling Khusus untuk Manajemen Lowongan Pekerjaan (Admin) */
+
+/* Container Utama */
+.admin-job-container {
+    padding: 20px;
+}
+
+/* Kartu Pembungkus Tabel */
+.job-card-container {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Tabel */
+.job-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Header Tabel: Putih dengan Teks Pink Gelap */
+.job-table thead {
+    background-color: white; 
+    border-bottom: 3px solid #ddd; /* Garis bawah tipis (bukan merah tebal) */
+}
+
+.job-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0c0004; /* Teks Pink Gelap */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-right: 2px solid #a29f9f; /* GARIS PEMISAH VERTIKAL */
+}
+
+/* Isi Tabel */
+.job-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.job-table td {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    border-right: 1px solid #eee; /* GARIS PEMISAH VERTIKAL */
+}
+
+/* Styling Khusus Kolom Aksi */
+.job-table th:last-child,
+.job-table td:last-child {
+    border-right: none; /* Hilangkan garis di kolom terakhir (Aksi) */
+}
+
+/* Styling Badge Status (dan tipe lainnya) */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-open { background-color: #d4edda; color: #155724; }
+.status-closed { background-color: #f8d7da; color: #721c24; }
+.status-draft { background-color: #f5f5f5; color: #757575; }
+
+.type-badge { /* Digunakan untuk badge Tipe Pekerjaan */
+    background-color: #f3e5f5;
+    color: #6a1b9a;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Styling Aksi dan Pagination (Sama seperti sebelumnya) */
+.action-link { color: #4db6ac; text-decoration: none; margin-right: 10px; }
+.action-delete-btn { color: #e57373; border: none; background: none; cursor: pointer; }
+.job-pagination { padding: 15px; border-top: 1px solid #eee; background-color: #f9f9f9; text-align: right; }
+.empty-state-cell { padding: 40px 15px !important; text-align: center; font-size: 16px; color: #999; background-color: #fafafa; border-radius: 0 0 8px 8px; }
