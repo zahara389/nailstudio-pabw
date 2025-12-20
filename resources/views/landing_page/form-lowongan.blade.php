@@ -3,136 +3,183 @@
 @section('title', 'Form Lamaran Kerja')
 
 @section('content')
-    <title>Form Lamaran Kerja</title>
-    
-    <link rel="stylesheet" href="{{ asset('styles.css') }}"> 
-    <script defer src="{{ asset('script.js') }}"></script>
-    
-    <style>
-        /* CSS MINIMAL UNTUK DEMO FORM - JIKA STYLES.CSS HILANG */
-        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
-        .card { padding: 20px; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .form-group { margin-bottom: 15px; }
-        .required { color: red; }
-        input[type="text"], input[type="email"], input[type="tel"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        textarea { resize: vertical; height: 100px; }
-        .submit-btn { padding: 10px 20px; background-color: #f7a8b8; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .submit-btn:hover { background-color: #e68fa3; }
-        .success-message { display: none; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
-        .nail-image { width: 100%; height: auto; border-radius: 6px; }
-        .benefit-item { display: flex; align-items: center; margin-bottom: 10px; }
-        .dot { width: 8px; height: 8px; background-color: #f7a8b8; border-radius: 50%; margin-right: 10px; }
-        .file-name { font-size: 14px; color: #666; margin-top: 5px; }
-        .error-message { color: red; font-size: 12px; margin-top: 5px; }
-    </style>
-</head>
-    <div class="container">
-        <div class="header-section">
-            <h1 class="main-title">Join Our Team</h1>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-pink: #FFADBD;
+        --primary-hover: #e69ba9;
+        --soft-pink: #fff0f3;
+        --lavender: #d8b4fe;
+    }
+
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+
+    .glass-card {
+        background: rgba(255,255,255,.92);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,173,189,.25);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(255,173,189,.25);
+    }
+
+    .custom-upload {
+        border: 2px dashed #cbd5e1;
+        transition: .25s;
+    }
+
+    .custom-upload:hover {
+        border-color: var(--primary-pink);
+        background: var(--soft-pink);
+    }
+
+    .btn-primary {
+        background: var(--primary-pink);
+        transition: .3s;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-hover);
+        transform: scale(1.02);
+        box-shadow: 0 12px 30px rgba(255,173,189,.45);
+    }
+</style>
+
+<div class="min-h-screen py-10 px-4 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+
+        {{-- HEADER --}}
+        <header class="text-center mb-12">
+            <h1 class="font-serif text-5xl italic mb-3">Join Our Team</h1>
+
             @if(isset($job))
-                <h2 style="color: #f7a8b8;">Melamar untuk posisi: {{ $job->title }}</h2>
+                <h2 class="text-lg text-[#FFADBD] font-medium uppercase tracking-wide mb-2">
+                    Melamar untuk posisi: {{ $job->title }}
+                </h2>
             @endif
-            <p class="subtitle">
+
+            <div class="w-20 h-1 bg-[#FFADBD] mx-auto mb-4"></div>
+
+            <p class="text-gray-500 max-w-xl mx-auto">
                 Ciptakan karya seni di ujung jari bersama nail art studio terbaik
             </p>
-        </div>
+        </header>
 
-        <div class="grid-container">
-            <div class="image-section">
-                <div class="card image-card">
-                    <img src="https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&q=80" alt="Nail Art Studio" class="nail-image">
-                </div>
-                <div class="card benefits-card">
-                    <div class="card-header"><h2 class="card-title">Kenapa Bergabung dengan Kami?</h2></div>
-                    <div class="card-content">
-                        <div class="benefit-item"><div class="dot"></div><p>Lingkungan kerja yang kreatif dan supportif</p></div>
-                        <div class="benefit-item"><div class="dot"></div><p>Pelatihan dan pengembangan skill berkelanjutan</p></div>
-                        <div class="benefit-item"><div class="dot"></div><p>Kompensasi yang kompetitif</p></div>
-                        <div class="benefit-item"><div class="dot"></div><p>Kesempatan berkarya dengan produk premium</p></div>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+            {{-- LEFT --}}
+            <div class="lg:col-span-5 space-y-6">
+                <img src="https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&q=80"
+                     class="rounded-2xl shadow-xl h-72 w-full object-cover">
+
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50 border">
+                    <h3 class="font-serif text-xl mb-4">Kenapa Bergabung?</h3>
+                    <ul class="space-y-2 text-gray-700 text-sm">
+                        <li>• Lingkungan kerja kreatif & supportif</li>
+                        <li>• Pelatihan & pengembangan skill</li>
+                        <li>• Kompensasi kompetitif & bonus</li>
+                        <li>• Produk premium kelas dunia</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="form-section card">
-                <div class="card-header form-header">
-                    <h2 class="form-title">Form Lamaran Kerja</h2>
-                    <p class="form-description">Isi form di bawah ini dengan lengkap dan benar</p>
-                </div>
-                <div class="card-content">
-                    {{-- Pesan Sukses/Error dari Controller --}}
-                    @if (session('success'))
-                        <div class="success-message" style="display:block;">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <h3>Terima Kasih!</h3>
-                            <p>{{ session('success') }}</p>
-                        </div>
-                    @endif
-                    @if (session('error'))
-                        <div class="success-message" style="display:block; background-color: #f8d7da; color: #721c24; border-color: #f5c6cb;">
-                            <h3>Gagal!</h3>
-                            <p>{{ session('error') }}</p>
-                        </div>
-                    @endif
-                    
-                    <form id="job-form" class="form" method="POST" action="{{ route('job.submit') }}" enctype="multipart/form-data">
-                        @csrf 
+            {{-- RIGHT : FORM --}}
+            <div class="lg:col-span-7">
+                <div class="glass-card rounded-2xl shadow-xl overflow-hidden">
 
-                        <input type="hidden" name="job_id" value="{{ $jobId ?? '' }}"> 
-                        
-                        {{-- Validasi job_id hilang --}}
-                        @error('job_id') <p class="error-message">Lowongan tidak valid atau hilang. Silakan kembali ke halaman utama.</p> @enderror
-
-                        <div class="form-group">
-                            <label for="name">Nama Lengkap <span class="required">*</span></label>
-                            <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap Anda" value="{{ old('name') }}" required>
-                            @error('name') <p class="error-message">{{ $message }}</p> @enderror
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" placeholder="nama@email.com" value="{{ old('email') }}" required>
-                            @error('email') <p class="error-message">{{ $message }}</p> @enderror
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone">Nomor Telepon <span class="required">*</span></label>
-                            <input type="tel" id="phone" name="phone" placeholder="08xx xxxx xxxx" value="{{ old('phone') }}" required>
-                            @error('phone') <p class="error-message">{{ $message }}</p> @enderror
-                        </div>
-                        
-                        {{-- Kotak upload CV --}}
-                    <div class="form-group">
-                        <label for="cv">Upload CV <span class="required">*</span></label>
-                        <div class="cv-box">
-                            <input type="file" id="cv" name="cv_file" accept=".pdf" required>
-                        </div>
-                        <p id="file-name" class="file-name">Pilih file CV (PDF)</p>
-                        @error('cv_file') <p class="error-message">{{ $message }}</p> @enderror
+                    <div class="bg-gradient-to-r from-[#FFADBD]/10 to-[#D8B4FE]/10 px-6 py-4 border-b">
+                        <h2 class="text-xl font-semibold">Form Lamaran Kerja</h2>
+                        <p class="text-sm text-gray-500">Lengkapi data diri Anda</p>
                     </div>
-                        
-                        <div class="form-group">
-                            <label for="description">Deskripsi Diri <span class="required">*</span></label>
-                            <textarea id="description" name="description" placeholder="Ceritakan tentang diri Anda..." required>{{ old('description') }}</textarea>
-                            @error('description') <p class="error-message">{{ $message }}</p> @enderror
+
+                    <form method="POST"
+                          action="{{ route('job.submit') }}"
+                          enctype="multipart/form-data"
+                          class="p-6 space-y-4">
+
+                        @csrf
+                        <input type="hidden" name="job_id" value="{{ $jobId ?? '' }}">
+
+                        {{-- NAMA + TELEPON --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold">Nama Lengkap *</label>
+                                <input type="text" name="name" value="{{ old('name') }}"
+                                       class="form-input w-full px-3 py-2.5 rounded-lg bg-gray-50 border"
+                                       required>
+                                @error('name') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-semibold">Nomor Telepon *</label>
+                                <input type="tel" name="phone" value="{{ old('phone') }}"
+                                       class="form-input w-full px-3 py-2.5 rounded-lg bg-gray-50 border"
+                                       required>
+                                @error('phone') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                            </div>
                         </div>
-                        
-                        <button type="submit" class="submit-btn">Kirim Lamaran</button>
+
+                        {{-- EMAIL --}}
+                        <div>
+                            <label class="text-sm font-semibold">Email *</label>
+                            <input type="email" name="email" value="{{ old('email') }}"
+                                   class="form-input w-full px-3 py-2.5 rounded-lg bg-gray-50 border"
+                                   required>
+                            @error('email') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- CV --}}
+                        <div>
+                            <label class="text-sm font-semibold">Upload CV (PDF) *</label>
+                            <label class="custom-upload flex items-center justify-center gap-3 px-4 py-4 rounded-lg cursor-pointer mt-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <span id="file-label" class="text-sm text-gray-600">
+                                    Klik untuk pilih file
+                                </span>
+                                <input type="file" name="cv_file" accept=".pdf"
+                                       class="hidden" onchange="updateFileName(this)" required>
+                            </label>
+                            @error('cv_file') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- DESKRIPSI --}}
+                        <div>
+                            <label class="text-sm font-semibold">Deskripsi Diri *</label>
+                            <textarea name="description" rows="3"
+                                      class="form-input w-full px-3 py-2.5 rounded-lg bg-gray-50 border"
+                                      required>{{ old('description') }}</textarea>
+                            @error('description') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                        </div>
+
+                        <button type="submit"
+                                class="btn-primary w-full text-white font-semibold py-3 rounded-xl">
+                            Kirim Lamaran
+                        </button>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
-    
-    {{-- Script untuk menampilkan nama file yang dipilih (Asumsi ini tidak ada di script.js) --}}
-    <script>
-        document.getElementById('cv').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Pilih file CV (PDF)';
-            document.getElementById('file-name').textContent = fileName;
-        });
-        
-        // Asumsi logic success message sudah ditangani oleh Controller/Blade session.
-    </script>
-</body>
-</html>
+</div>
+
+<script>
+function updateFileName(input) {
+    const label = document.getElementById('file-label');
+    if (input.files.length > 0) {
+        label.innerText = input.files[0].name;
+        label.classList.add('text-pink-500');
+    }
+}
+</script>
 @endsection

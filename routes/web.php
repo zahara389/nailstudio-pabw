@@ -19,6 +19,16 @@ use App\Http\Controllers\JobController;
 
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
+// Halaman Metode Pembayaran (Payment Options)
+Route::get('/payment-options', function () {
+    return view('landing_page.payment');
+})->name('payment.index');
+
+Route::get('/about-us', function () {
+    return view('landing_page.aboute');
+})->name('about.index');
+
+
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
