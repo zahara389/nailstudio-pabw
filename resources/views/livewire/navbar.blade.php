@@ -18,9 +18,24 @@
             <nav id="ns-nav-menu">
                             <a href="#" class="ns-nav-link"><i class="far fa-user ns-icon-lg-centered"></i> Sign in</a>
                 <a href="#" class="ns-nav-link"><i class="far fa-heart ns-icon-lg-centered"></i> Wishlist</a>
-                <a href="#" class="ns-nav-link ns-link-justify"><div class="ns-link-content"><i class="far fa-credit-card ns-icon-lg-centered"></i> Payment Options</div><i class="fas fa-plus ns-icon-plus"></i></a>
+                <a href="{{ route('payment.index') }}" 
+   onclick="closeCategoryModal()" 
+   class="ns-nav-link ns-link-justify">
+    <div class="ns-link-content">
+        <i class="far fa-credit-card ns-icon-lg-centered"></i> 
+        Payment Options
+    </div>
+    <i class="fas fa-chevron-right"></i>
+</a>
                 <a href="#" class="ns-nav-link ns-link-justify"><div class="ns-link-content"><i class="far fa-question-circle ns-icon-lg-centered"></i> Customer Service</div><i class="fas fa-plus ns-icon-plus"></i></a>
-                <a href="#" class="ns-nav-link ns-link-justify"><div class="ns-link-content"><i class="far fa-smile ns-icon-lg-centered"></i> About Us</div><i class="fas fa-plus ns-icon-plus"></i></a>
+                {{-- LINK KE HALAMAN ABOUT US --}}
+<a href="{{ route('about.index') }}" onclick="closeCategoryModal()" class="ns-nav-link ns-link-justify">
+    <div class="ns-link-content">
+        <i class="far fa-smile ns-icon-lg-centered"></i> 
+        About Us
+    </div>
+    <i class="fas fa-chevron-right ns-icon-plus" style="font-size: 0.8rem; opacity: 0.5;"></i>
+</a>
             </nav>
         </div>
     </div>

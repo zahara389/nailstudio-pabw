@@ -1,0 +1,368 @@
+
+        :root {
+            /* Palette Profesional */
+            --primary: #db2777; 
+            --primary-dark: #be185d;
+            --bg-page: #f8fafc;
+            --bg-surface: #ffffff;
+            --text-heading: #0f172a;
+            --text-body: #64748b;
+            --border: #e2e8f0;
+            
+            /* Card Theme */
+            --card-gradient: linear-gradient(135deg, #0f172a 0%, #331022 100%);
+            
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            --shadow-subtle: 0 10px 30px -10px rgba(0,0,0,0.05);
+            --shadow-hover: 0 20px 40px -10px rgba(219, 39, 119, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-body);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* --- 1. HERO SECTION: ULTRA CLEAN & FOCUSED --- */
+        .hero-section {
+            position: relative;
+            padding: 8rem 0 6rem;
+            text-align: center;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        /* Background Texture Halus */
+        .hero-bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
+            opacity: 0.3;
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.75rem; 
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-body);
+            max-width: 620px;
+            margin: 0 auto 4rem;
+            line-height: 1.6;
+        }
+
+        /* 4. Partner Logos Row (REAL EXTERNAL IMAGES) */
+        .partner-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem; 
+            flex-wrap: wrap;
+            padding: 1.5rem 2rem;
+        }
+
+        .partner-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: grayscale(100%);
+            opacity: 0.6;
+            height: 45px; 
+        }
+
+        /* Pengaturan gambar agar rapi dan proporsional */
+        .partner-logo {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        /* Specific sizing tweaks for visual balance among different aspect ratios */
+        .logo-mastercard { max-height: 36px; }
+        .logo-visa { max-height: 22px; } 
+        .logo-gopay { max-height: 24px; }
+        .logo-dana { max-height: 26px; }
+
+        .partner-link:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero-section { padding: 5rem 0 3rem; }
+            h1 { font-size: 2.75rem; }
+            .partner-row { 
+                gap: 1.5rem; 
+                margin-top: 1rem; 
+            }
+            .partner-link { height: 32px; } /* Lebih kecil di mobile */
+            .logo-mastercard { max-height: 28px; }
+            .logo-visa { max-height: 18px; }
+            .logo-gopay { max-height: 20px; }
+            .logo-dana { max-height: 20px; }
+        }
+        /* --- END HERO CSS --- */
+
+
+        /* --- 2. Payment Grid (Menu) --- */
+        .section-payment {
+            padding-bottom: 5rem;
+            padding-top: 4rem;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 4rem;
+        }
+
+        .option-card {
+            background: var(--bg-surface);
+            padding: 1.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .icon-circle {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.25rem;
+            color: white;
+        }
+        /* Gradients for icons */
+        .bg-1 { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .bg-2 { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+        .bg-3 { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .bg-4 { background: linear-gradient(135deg, #db2777, #9d174d); }
+
+        .option-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-heading); }
+        .option-card p { font-size: 0.8rem; line-height: 1.4; color: var(--text-body); }
+        
+        .arrow-hint {
+            position: absolute; top: 1.75rem; right: 1.75rem;
+            color: var(--primary); opacity: 0; transition: 0.3s;
+        }
+        .option-card:hover .arrow-hint { opacity: 1; transform: translateX(5px); }
+
+
+        /* --- 3. Clean Layout Split --- */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* Memberikan porsi lebih besar untuk kartu bank */
+            gap: 4rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) { .split-layout { grid-template-columns: 1fr; } }
+
+        /* Left Side: Info List (Clean Text) */
+        .info-group h2 {
+            font-size: 1.75rem;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+        .info-desc { margin-bottom: 2rem; }
+
+        .info-item {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #e2e8f0;
+        }
+        .info-item h3 { font-size: 1rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.25rem; }
+        .info-item p { font-size: 0.9rem; margin: 0; }
+
+        /* Right Side: Bank Cards (Luxe & Minimal) */
+        .bank-wrapper {
+            position: relative;
+        }
+
+        .luxe-card {
+            background: var(--card-gradient);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+        }
+
+        /* Abstract Circle Decoration - Subtle */
+        .luxe-card::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.25), transparent 70%);
+            pointer-events: none;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: start; margin-bottom: 2.5rem;
+        }
+        .bank-name { font-weight: 800; font-size: 1.25rem; font-style: italic; letter-spacing: 0.05em; }
+        .chip { width: 42px; height: 30px; background: linear-gradient(135deg, #fbbf24, #b45309); border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
+
+        .card-number-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .rek-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem; font-weight: 700; letter-spacing: 0.05em;
+        }
+        
+        .btn-copy-minimal {
+            background: rgba(255,255,255,0.1);
+            color: white; border: none; padding: 8px 12px;
+            border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+            backdrop-filter: blur(4px);
+        }
+        .btn-copy-minimal:hover { background: rgba(255,255,255,0.25); }
+
+        .card-owner { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; display: block; margin-bottom: 4px; }
+        .owner-name { font-weight: 600; font-size: 0.95rem; }
+
+        /* Confirmation Note - Bersih & Rapi */
+        .wa-box {
+            background: #fff;
+            border: 1px solid #fbcfe8;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: var(--text-heading);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+        .wa-icon { color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+
+        /* --- 4. Loyalty Section --- */
+        .loyalty-section {
+            text-align: center;
+            padding: 6rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+        
+        .loyalty-title { font-size: 2rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem; }
+        .loyalty-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem; max-width: 800px; margin: 3rem auto;
+        }
+        .loyalty-item {
+            padding: 1.5rem; border: 1px dashed var(--border); border-radius: var(--radius-md);
+            transition: 0.3s;
+        }
+        .loyalty-item:hover { border-color: var(--primary); background: #fff1f2; }
+        .points { font-size: 2rem; font-weight: 800; color: var(--primary); display: block; margin-bottom: 0.25rem; }
+        
+        .btn-cta {
+            display: inline-block; background: var(--text-heading); color: white;
+            padding: 14px 32px; border-radius: 100px; font-weight: 600; text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-cta:hover { background: var(--primary); transform: translateY(-2px); }
+
+        /* Modals & Toast */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px); z-index: 2000;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .modal-box {
+            background: white; width: 100%; max-width: 450px; padding: 2.5rem;
+            border-radius: var(--radius-lg); transform: scale(0.95); transition: 0.3s;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #0f172a; color: white; padding: 10px 20px; border-radius: 50px;
+            font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;
+            opacity: 0; transition: 0.4s; z-index: 3000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        @media (max-width: 640px) {
+            h1 { font-size: 2.25rem; }
+            .card-number-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .rek-number { font-size: 1.25rem; }
+            .split-layout { gap: 3rem; }
+        }
+    

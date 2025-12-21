@@ -7,68 +7,49 @@
 
     <title>@yield('title', 'Premium Nail Art Studio')</title>
 
-    {{-- GLOBAL CSS --}}
+    {{-- Fonts & Core Scripts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 
+    {{-- Global Styles --}}
     <link rel="stylesheet" href="{{ asset('css/landing_page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
-
+    
     @livewireStyles
-    @stack('styles')
+    @stack('styles') {{-- Tempat CSS Khusus Halaman --}}
 </head>
 
 <body id="ns-body" class="@yield('body-class', '')">
 
-    {{-- NAVBAR --}}
     <livewire:navbar />
 
+    {{-- Bagian ini akan diisi oleh konten dari halaman payment --}}
     <main>
         @yield('content')
     </main>
 
-    {{-- FOOTER --}}
     <livewire:footer />
 
-    @stack('scripts')
-
     @livewireScripts
-
     <script src="{{ asset('js/landing_page_logic.js') }}"></script>
+    
+    @stack('scripts') {{-- Tempat Script Khusus Halaman --}}
 
     <script>
-        function scrollToSection(id) {
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             if (window.lucide) lucide.createIcons();
         });
     </script>
 
-    {{-- POPUP SUKSES / ERROR --}}
+    {{-- Alert Sessions --}}
     @if (session('alert'))
-        <script>
-            alert("{{ session('alert') }}");
-        </script>
+        <script>alert("{{ session('alert') }}");</script>
     @endif
-
-    {{-- POPUP -> REDIRECT LOGIN --}}
-    @if (session('alert_login'))
-        <script>
-            alert("{{ session('alert_login') }}");
-            window.location.href = "{{ route('login') }}";
-        </script>
-    @endif
-
 </body>
 </html>
