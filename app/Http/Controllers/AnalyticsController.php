@@ -3,182 +3,138 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Orders;      
+use App\Models\Order;       
 use App\Models\Product;
-use App\Models\OrderItems;  
+use App\Models\OrderItem;   
+use App\Models\Visitor;     
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class AnalyticsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // 1. SALES ANALYTICS
-        $salesData = $this->getSalesAnalytics();
         
-        // 2. VISITOR STATISTICS
+        $filter = $request->get('filter', 'year');
+
+        $salesData = $this->getSalesAnalytics($filter);
+        
         $visitorData = $this->getVisitorStatistics();
         
-        // 3. PRODUCT PERFORMANCE
         $productData = $this->getTopProducts();
         
-        // 4. ORDER STATUS
         $orderStatusData = $this->getOrderStatusDistribution();
         
-        // 5. SUMMARY CARDS
         $summary = $this->getSummaryData();
 
-        return view('admin/analytics', [
-            'bulan' => $salesData['bulan'],
-            'penjualan' => $salesData['penjualan'],
-            'visitor_day' => $visitorData['visitor_day'],
+        return view('admin.analytics', [
+            'filter'        => $filter,
+            'bulan'         => $salesData['labels'],
+            'penjualan'     => $salesData['data'],
+            'visitor_day'   => $visitorData['visitor_day'],
             'visitor_count' => $visitorData['visitor_count'],
             'product_label' => $productData['product_label'],
-            'product_qty' => $productData['product_qty'],
-            'all_status' => $orderStatusData['all_status'],
-            'status_count' => $orderStatusData['status_count'],
-            'summary' => $summary,
+            'product_qty'   => $productData['product_qty'],
+            'all_status'    => $orderStatusData['all_status'],
+            'status_count'  => $orderStatusData['status_count'],
+            'summary'       => $summary,
         ]);
     }
 
-    // 1. Sales Analytics - Penjualan per Bulan
-    private function getSalesAnalytics()
+    private function getSalesAnalytics($filter)
     {
-        $currentYear = Carbon::now()->year;
-        
-        $sales = Orders::selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
-            ->whereYear('created_at', $currentYear)
-            // PERBAIKAN: Sesuaikan dengan kolom DB 'order_status' dan value 'Complete'
-            ->where('order_status', 'Complete') 
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
+        $labels = [];
+        $data = [];
 
-        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $penjualan = [];
+        if ($filter == 'weeks') {
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i);
+                $labels[] = $date->format('d M');
+                $data[] = (int) Order::where('order_status', 'Completed')
+                            ->whereDate('created_at', $date->toDateString())
+                            ->sum('total_amount');
+            }
+        } elseif ($filter == 'month') {
+            for ($i = 1; $i <= 4; $i++) {
+                $labels[] = "Minggu " . $i;
+                $start = Carbon::now()->startOfMonth()->addWeeks($i-1);
+                $end = ($i == 4) ? Carbon::now()->endOfMonth() : Carbon::now()->startOfMonth()->addWeeks($i)->subDay();
+                
+                $data[] = (int) Order::where('order_status', 'Completed')
+                            ->whereBetween('created_at', [$start, $end])
+                            ->sum('total_amount');
+            }
+        } else {
+            $sales = Order::selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+                ->whereYear('created_at', Carbon::now()->year)
+                ->where('order_status', 'Completed')
+                ->groupBy('month')->pluck('total', 'month')->toArray();
 
-        for ($i = 1; $i <= 12; $i++) {
-            $penjualan[] = isset($sales[$i]) ? (int) $sales[$i] : 0;
+            $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            foreach (range(1, 12) as $m) {
+                $data[] = (int) ($sales[$m] ?? 0);
+            }
         }
 
-        return [
-            'bulan' => $bulan,
-            'penjualan' => $penjualan
-        ];
+        return ['labels' => $labels, 'data' => $data];
     }
 
-    // 2. Visitor Statistics (Tidak berubah, asumsi table log terpisah)
     private function getVisitorStatistics()
     {
-        // Pastikan table 'visitor_logs' benar-benar ada, jika tidak kode ini akan error.
-        // Jika belum ada, kita pakai dummy data dulu agar tidak error.
-        
-        try {
-            $visitors = DB::table('visitor_logs')
-                ->selectRaw('DATE(visited_at) as date, COUNT(*) as count')
-                ->where('visited_at', '>=', Carbon::now()->subDays(7))
-                ->groupBy('date')
-                ->orderBy('date')
-                ->pluck('count', 'date')
-                ->toArray();
-        } catch (\Exception $e) {
-            $visitors = []; // Fallback jika tabel tidak ada
-        }
+        $visitors = Visitor::selectRaw('visit_date as date, COUNT(*) as count')
+            ->where('visit_date', '>=', Carbon::now()->subDays(6))
+            ->groupBy('date')->pluck('count', 'date')->toArray();
 
-        $visitor_day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        $visitor_day = [];
         $visitor_count = [];
 
-        $startDate = Carbon::now()->subDays(6);
-        for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->copy()->addDays($i)->format('Y-m-d');
-            $visitor_count[] = $visitors[$date] ?? 0;
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $visitor_day[] = $date->format('D');
+            $visitor_count[] = $visitors[$date->format('Y-m-d')] ?? 0;
         }
 
-        // Dummy data jika kosong (agar grafik terlihat)
-        if (array_sum($visitor_count) == 0) {
-            $visitor_count = []; // Angka kecil saja
-        }
-
-        return [
-            'visitor_day' => $visitor_day,
-            'visitor_count' => $visitor_count
-        ];
+        return ['visitor_day' => $visitor_day, 'visitor_count' => $visitor_count];
     }
 
-    // 3. Top Products - Produk Terlaris
-    private function getTopProducts($limit = 5)
+    private function getTopProducts()
     {
-        // PERBAIKAN: Gunakan OrderItems
-        $topProducts = OrderItems::select('products.name', DB::raw('SUM(order_items.quantity) as total_qty'))
+        $top = OrderItem::select('products.name', DB::raw('SUM(order_items.quantity) as total_qty'))
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
-            // PERBAIKAN: Sesuaikan kolom status
-            ->where('orders.order_status', 'Complete') 
+            ->where('orders.order_status', 'Completed') 
             ->groupBy('products.id', 'products.name')
-            ->orderByDesc('total_qty')
-            ->limit($limit)
-            ->get();
-
-        $product_label = [];
-        $product_qty = [];
-
-        foreach ($topProducts as $product) {
-            $product_label[] = $product->name;
-            $product_qty[] = (int) $product->total_qty;
-        }
+            ->orderByDesc('total_qty')->limit(5)->get();
 
         return [
-            'product_label' => $product_label,
-            'product_qty' => $product_qty
+            'product_label' => $top->pluck('name')->toArray(),
+            'product_qty'   => $top->pluck('total_qty')->toArray()
         ];
     }
 
-    // 4. Order Status Distribution
     private function getOrderStatusDistribution()
     {
-        // PERBAIKAN: Gunakan Orders dan kolom 'order_status'
-        $statusCounts = Orders::selectRaw('order_status, COUNT(*) as count')
-            ->groupBy('order_status')
-            ->pluck('count', 'order_status')
-            ->toArray();
+        $statusCounts = Order::selectRaw('order_status, COUNT(*) as count')
+            ->groupBy('order_status')->pluck('count', 'order_status')->toArray();
 
-        // PERBAIKAN: Mapping sesuai Enum di DB
-        $statusMapping = [
-            'Complete'   => 'Completed',
-            'Pending'    => 'Pending',
-            'Processing' => 'Processing',
-            'Shipped'    => 'Shipped'
-        ];
-
-        $all_status = [];
+        // Urutan Tetap untuk Warna Sinkron
+        $all_status = ['Completed', 'Pending', 'Processing', 'Shipped', 'Cancelled'];
         $status_count = [];
 
-        foreach ($statusMapping as $key => $label) {
-            $all_status[] = $label;
-            $status_count[] = $statusCounts[$key] ?? 0;
+        foreach ($all_status as $status) {
+            $status_count[] = $statusCounts[$status] ?? 0;
         }
 
-        return [
-            'all_status' => $all_status,
-            'status_count' => $status_count
-        ];
+        return ['all_status' => $all_status, 'status_count' => $status_count];
     }
 
-    // 5. Summary Data
     private function getSummaryData()
     {
         return [
-            // PERBAIKAN: Sesuaikan Model dan Kolom
-            'total_sales'     => Orders::where('order_status', 'Complete')->sum('total_amount') ?: 0,
-            'total_orders'    => Orders::count() ?: 0,
-            'total_products'  => Product::count() ?: 0,
-            
-            // Asumsi table users punya kolom role. Jika error, hapus where('role'...)
-            'total_customers' => DB::table('users')->where('role', 'customer')->count() ?: 0,
-            
-            'pending_orders'  => Orders::where('order_status', 'Pending')->count() ?: 0,
-            'low_stock_products' => Product::where('stock', '<=', 10)->count() ?: 0,
+            'total_sales'     => Order::where('order_status', 'Completed')->sum('total_amount'),
+            'total_orders'    => Order::count(),
+            'total_customers' => DB::table('users')->where('role', 'member')->count(),
+            'pending_orders'  => Order::where('order_status', 'Pending')->count(),
         ];
     }
 }

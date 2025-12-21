@@ -12,7 +12,12 @@
         </div>
     </div>
 
-    
+    @if(session('success'))
+        <div style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; margin-bottom: 20px;">
+            <i class='bx bxs-check-circle'></i> {{ session('success') }}
+        </div>
+    @endif
+
     <ul class="box-info">
         <li>
             <i class='bx bxs-calendar-check'></i>
@@ -44,9 +49,10 @@
         </li>
     </ul>
 
-    
     <div class="table-container">
-        <h3>Recent Orders</h3>
+        <div class="table-header">
+            <h3 class="title-text">Recent Orders</h3>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -60,79 +66,61 @@
                     <th>Action</th>
                 </tr>
             </thead>
-
             <tbody>
-                @foreach ($recent_orders as $order)
+                @forelse ($recent_orders as $order)
                     <tr>
-                        <td>#{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
-
-                        <td>{{ $order->user->name ?? 'User Dihapus' }}</td>
-
-                        <td>{{ $order->created_at->format('d-m-Y') }}</td>
-
+                        <td class="dark-text">#{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</td>
                         <td>
-                            <ul>
-                                @if($order->items->count())
-                                    @foreach ($order->items->take(2) as $item)
-                                        <li>{{ $item->product->name ?? 'Produk' }} x {{ $item->quantity }}</li>
-                                    @endforeach
-
-                                    @if($order->items->count() > 2)
-                                        <li>... dan {{ $order->items->count() - 2 }} lainnya</li>
-                                    @endif
-
-                                @else
-                                    <li>-</li>
+                            <div class="customer-name">{{ $order->user->name ?? 'Guest' }}</div>
+                            <small class="customer-email">{{ $order->user->email ?? '' }}</small>
+                        </td>
+                        <td class="dark-text">{{ $order->created_at->format('d-m-Y') }}</td>
+                        <td class="dark-text">
+                            <ul class="item-list">
+                                @foreach ($order->items->take(2) as $item)
+                                    <li>{{ $item->product->name ?? 'Produk' }} (x{{ $item->quantity }})</li>
+                                @endforeach
+                                @if($order->items->count() > 2)
+                                    <li class="more-items">+{{ $order->items->count() - 2 }} lainnya...</li>
                                 @endif
                             </ul>
                         </td>
-
-                        <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
-
+                        <td class="price-text">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
                         <td>
                             @if ($order->proof_of_payment_path)
-                                <a href="{{ asset($order->proof_of_payment_path) }}" 
-                                   target="_blank" 
-                                   class="text-blue-600 underline">
-                                   View
+                                <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" class="proof-link">
+                                    View Image
                                 </a>
                             @else
-                                <span class="text-gray-400 text-sm">None</span>
+                                <span class="no-proof">No Proof</span>
                             @endif
                         </td>
-
-                        {{-- STATUS DROPDOWN --}}
                         <td>
                             <form method="post" action="{{ route('dashboard.updateStatus') }}">
                                 @csrf 
                                 <input type="hidden" name="order_id" value="{{ $order->id }}">
-
-                                <select name="new_status"
-                                        class="status-select status-{{ strtolower($order->order_status) }}"
-                                        onchange="this.form.submit()">
-
-                                    @php
-                                        $statuses = ['Pending','Processing','Shipped','Completed','Cancelled'];
-                                    @endphp
-
-                                    @foreach ($statuses as $status)
-                                        <option value="{{ $status }}" 
-                                            {{ $order->order_status === $status ? 'selected' : '' }}>
-                                            {{ ucfirst($status) }}
+                                <select name="new_status" class="status-select status-{{ strtolower($order->order_status) }}" onchange="this.form.submit()">
+                                    @foreach (['Pending','Processing','Shipped','Completed','Cancelled'] as $status)
+                                        <option value="{{ $status }}" {{ $order->order_status === $status ? 'selected' : '' }}>
+                                            {{ $status }}
                                         </option>
                                     @endforeach
                                 </select>
                             </form>
                         </td>
-
                         <td>
-                                     <a href="{{ route('dashboard.orders.show', $order->id) }}" 
-                               class="btn-detail-black-text text-sm bg-pink-600 px-3 py-1 rounded hover:bg-pink-700 transition">
-                               Detail
+                            <a href="{{ route('dashboard.orders.show', $order->id) }}" class="btn-detail">
+                                Detail
                             </a>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            Belum ada pesanan masuk.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -140,55 +128,109 @@
 
 @section('styles')
 <style>
-/* Header tabel hitam */
-.table-container th {
-    color: #000 !important;
-}
+    /* 1. MENGHITAMKAN TEXT (Koreksi Utama) */
+    .table-container .title-text {
+        color: #000000 !important;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
 
-/* Button detail */
-.btn-detail-black-text {
-    color: #000 !important;
-}
+    /* Header Tabel Hitam */
+    .table-container table thead tr th {
+        color: #000000 !important;
+        font-weight: 800 !important; /* Sangat Tebal */
+        border-bottom: 2px solid #eee;
+        padding: 12px;
+    }
 
-/* Dropdown umum */
-.status-select {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 600;
-}
+    /* Isi Tabel Hitam */
+    .dark-text, .customer-name, .price-text {
+        color: #000000 !important;
+        font-weight: 500;
+    }
 
-/* STATUS COLORS */
-.status-pending { 
-    background-color: #ffe5e5 !important; 
-    color: #cc0000 !important; 
-    border-color: #cc0000 !important; 
-}
+    .customer-name {
+        font-weight: 700;
+    }
 
-.status-processing { 
-    background-color: #fff8cd !important; 
-    color: #b8860b !important; 
-    border-color: #b8860b !important; 
-}
+    .customer-email {
+        color: #444 !important; /* Abu gelap agar tetap terbaca */
+    }
 
-.status-shipped { 
-    background-color: #d6ecff !important; 
-    color: #00509e !important; 
-    border-color: #00509e !important; 
-}
+    .no-proof {
+        color: #000000 !important; /* Hitam sesuai permintaan */
+        font-weight: bold;
+        opacity: 0.6;
+    }
 
-.status-completed { 
-    background-color: #d5ffd5 !important; 
-    color: #007f00 !important; 
-    border-color: #007f00 !important; 
-}
+    /* 2. STYLING TABEL & LIST */
+    .table-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
 
-.status-cancelled {
-    background-color: #fde2e1 !important;
-    color: #b31b1b !important;
-    border-color: #b31b1b !important;
-}
+    .item-list {
+        list-style: none; 
+        padding: 0; 
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .more-items {
+        color: #777 !important;
+        font-style: italic;
+    }
+
+    /* 3. BUTTONS & LINKS */
+    .btn-detail {
+        background-color: #fce4ec;
+        color: #e91e63 !important;
+        padding: 6px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        transition: 0.3s;
+        border: 1px solid #f8bbd0;
+        display: inline-block;
+    }
+
+    .btn-detail:hover {
+        background-color: #e91e63;
+        color: #fff !important;
+    }
+
+    .proof-link {
+        color: #e91e63;
+        text-decoration: underline;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* 4. STATUS DROPDOWN COLORS */
+    .status-select {
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        outline: none;
+        border: 1px solid transparent;
+    }
+    
+    .status-pending { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
+    .status-processing { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+    .status-shipped { background: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; }
+    .status-completed { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+    .status-cancelled { background: #ffebee; color: #c62828; border-color: #ffcdd2; }
+
+    .empty-state {
+        text-align: center; 
+        padding: 50px; 
+        color: #999;
+        font-weight: 600;
+    }
 </style>
 @endsection
