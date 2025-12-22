@@ -3,6 +3,7 @@
 // routes/api.php
 use App\Http\Controllers\Api\ProductAPIController;
 use App\Http\Controllers\Api\UsersApiController;
+use App\Http\Controllers\Api\ProfileAPIController;
 use Illuminate\Support\Facades\Route;
 
 // Rute Resource dasar
@@ -19,3 +20,10 @@ Route::apiResource('users', UsersApiController::class);
 
 // Rute tambahan untuk users
 Route::get('users/paginate', [UsersApiController::class, 'paginate']);
+
+// ================= PROFILE API =================
+Route::prefix('profile')->group(function () {
+	Route::get('/', [ProfileAPIController::class, 'show']);
+	Route::get('/addresses', [ProfileAPIController::class, 'addresses']);
+	Route::get('/orders', [ProfileAPIController::class, 'orders']);
+});

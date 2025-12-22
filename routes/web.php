@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockManagementController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\ProfileController;
 
 
 
@@ -98,6 +99,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update-price', [StockManagementController::class, 'updatePrice'])->name('updatePrice');
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
+
+    // Halaman Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
 });
 
 

@@ -115,7 +115,7 @@
             </form>
                     <button aria-label="Favorites" class="ns-icon-button ns-icon-button-lg" onclick="showFavoritesMessage()"><i class="far fa-heart"></i><span id="favorite-badge" class="ns-badge">0</span></button>
                     <button aria-label="Cart" id="cart-btn" class="ns-icon-button ns-icon-button-lg"><i class="fas fa-shopping-bag"></i><span id="cart-count-badge" class="ns-badge" data-cart-count="{{ $cartItemCount }}" @if($cartItemCount < 1) style="display:none;" @endif>{{ $cartItemCount }}</span></button>
-                    <a href="#" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account"><i class="far fa-user ns-icon-button-lg"></i></a>
+                <a href="{{ route('profile.index') }}" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account"><i class="far fa-user ns-icon-button-lg"></i></a>
         </div>
     </header>
 

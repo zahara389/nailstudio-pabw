@@ -1,0 +1,58 @@
+/*
+ * CSS kustom untuk halaman profil dan halaman terkait lainnya.
+ *
+ * Aturan gaya ini dipindahkan dari tag <style> pada file PHP
+ * sehingga lebih terorganisir dan mudah dirawat. Jika Anda menambahkan
+ * custom CSS lainnya untuk account settings, address ataupun checkout,
+ * tambahkan di berkas ini agar tetap konsisten.
+ */
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #fce7f3 0%, #d6e0ff 100%);
+    min-height: 100vh;
+}
+
+.profile-photo-container {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+}
+
+.profile-photo-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f9a8d4;
+    background: #fff;
+}
+
+.edit-photo-btn {
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    background: #fff;
+    border-radius: 50%;
+    border: 1.5px solid #f9a8d4;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ec4899;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    transition: background 0.2s;
+    z-index: 2;
+}
+
+.edit-photo-btn:hover {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.edit-photo-btn input[type="file"] {
+    display: none;
+}
