@@ -29,6 +29,10 @@ Route::get('/about-us', function () {
     return view('landing_page.aboute');
 })->name('about.index');
 
+Route::get('/customer-service', function () {
+    return view('landing_page.about');
+})->name('about');
+
 
 
 Route::get('/products/{category?}', [ProductController::class, 'index'])
