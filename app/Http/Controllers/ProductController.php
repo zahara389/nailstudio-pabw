@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Visitor; // 1. WAJIB IMPORT MODEL VISITOR
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -11,6 +12,14 @@ class ProductController extends Controller
     // Tampilkan daftar produk per kategori
     public function index(?string $category = null)
     {
+        // 2. LOGIKA MENCATAT VISITOR
+        // Baris ini akan mencatat IP address pengunjung berdasarkan tanggal hari ini.
+        // Jika IP yang sama mengakses di hari yang sama, data tidak akan diduplikasi (firstOrCreate).
+        Visitor::firstOrCreate([
+            'ip_address' => request()->ip(),
+            'visit_date' => now()->toDateString(),
+        ]);
+
         $categorySlug = $category;
         $allowedCategories = ['nail polish', 'nail tools', 'nail care', 'nail kit'];
         $categoryValue = null;
@@ -48,6 +57,9 @@ class ProductController extends Controller
     // Detail produk per slug + kategori
     public function show(string $category, string $slug)
     {
+        // Opsional: Jika Anda ingin menghitung kunjungan saat melihat detail produk juga,
+        // Anda bisa memindahkan logika Visitor::firstOrCreate ke sini atau ke Middleware.
+        
         $product = Product::query()
             ->where('slug', $slug)
             ->first();
@@ -64,7 +76,8 @@ class ProductController extends Controller
         ]);
     }
 
-    // Format atribut tambahan untuk kartu produk list
+    // ... (Sisa method mapForList, mapForDetail, sampleProducts, fallbackImage, dan slugify tetap sama)
+    
     private function mapForList(Collection $products)
     {
         $fallbackImage = $this->fallbackImage();
@@ -105,7 +118,6 @@ class ProductController extends Controller
         });
     }
 
-    // Format atribut tambahan untuk halaman detail
     private function mapForDetail(Product $product)
     {
         $fallbackImage = $this->fallbackImage();
@@ -141,7 +153,6 @@ class ProductController extends Controller
         return $product;
     }
 
-    // Data fallback jika database kosong
     private function sampleProducts(): array
     {
         return [
@@ -184,13 +195,11 @@ class ProductController extends Controller
         ];
     }
 
-    // URL gambar cadangan
     private function fallbackImage(): string
     {
         return 'https://via.placeholder.com/640x480?text=Nail+Art';
     }
 
-    // Utility slug sederhana
     private function slugify(string $value): string
     {
         return Str::of($value)->lower()->replace(' ', '-')->slug('-');

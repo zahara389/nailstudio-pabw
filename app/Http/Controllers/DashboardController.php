@@ -4,32 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Visitor; 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
+       
         $recentOrders = Order::with(['user', 'items.product'])
             ->latest()
             ->limit(10)
             ->get();
-
+        
         $totalSales = Order::whereIn('order_status', ['Completed', 'Shipped'])
             ->sum('total_amount');
-
-        $activeCustomersToday = Order::whereDate('created_at', today())
-            ->distinct('user_id')
-            ->count('user_id');
+      
+        $visitorsToday = Visitor::whereDate('visit_date', today())->count();
 
         $totalRegisteredUsers = User::count();
 
         return view('admin.dashboard', [
             'recent_orders' => $recentOrders,
             'total_sales' => $totalSales,
-            'total_login' => $activeCustomersToday,
+            'total_login' => $visitorsToday,
             'total_register' => $totalRegisteredUsers,
         ]);
     }
@@ -45,17 +45,14 @@ class DashboardController extends Controller
         $order->order_status = $validated['new_status'];
         $order->save();
 
-        return redirect()
-            ->route('dashboard.index')
-            ->with('success', 'Status pesanan berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Status pesanan #' . $order->id . ' berhasil diperbarui!');
     }
 
     public function showDetail($id): View
     {
+        // Mengambil detail pesanan tanpa memanggil relasi 'images' yang tidak ada di Model Product
         $order = Order::with(['user', 'items.product'])->findOrFail($id);
-
-        return view('admin.detail-order', [
-            'order' => $order,
-        ]);
+        
+        return view('admin.detail-order', compact('order'));
     }
 }
