@@ -114,15 +114,23 @@
             <a href="#" id="ns-logo">Nails Studio</a>
         </div>
             
-        <div id="ns-header-right">
-                    <form id="searchForm" onsubmit="handleSearch(event)" class="ns-search-form">
-                <button type="submit" class="ns-search-btn"><i class="fas fa-search ns-icon-search"></i></button>
-                <input type="search" id="searchInput" name="q" placeholder="Search products ..." class="ns-search-input" aria-label="Search products and brands" required minlength="2"/>
-            </form>
-                    <button aria-label="Favorites" class="ns-icon-button ns-icon-button-lg" onclick="showFavoritesMessage()"><i class="far fa-heart"></i><span id="favorite-badge" class="ns-badge">0</span></button>
-                    <button aria-label="Cart" id="cart-btn" class="ns-icon-button ns-icon-button-lg"><i class="fas fa-shopping-bag"></i><span id="cart-count-badge" class="ns-badge" data-cart-count="{{ $cartItemCount }}" @if($cartItemCount < 1) style="display:none;" @endif>{{ $cartItemCount }}</span></button>
-                <a href="{{ route('profile.index') }}" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account"><i class="far fa-user ns-icon-button-lg"></i></a>
-        </div>
+    <div id="ns-header-right" style="display:flex; align-items:center; gap:20px; margin-left:auto; padding-right:32px;">
+        <form id="searchForm" onsubmit="handleSearch(event)" class="ns-search-form" style="margin-right:16px;">
+            <button type="submit" class="ns-search-btn"><i class="fas fa-search ns-icon-search"></i></button>
+            <input type="search" id="searchInput" name="q" placeholder="Search products ..." class="ns-search-input" aria-label="Search products and brands" required minlength="2" />
+        </form>
+        <button aria-label="Favorites" class="ns-icon-button ns-icon-button-lg" onclick="showFavoritesMessage()">
+            <i class="far fa-heart"></i>
+            <span id="favorite-badge" class="ns-badge">0</span>
+        </button>
+        <button aria-label="Cart" id="cart-btn" class="ns-icon-button ns-icon-button-lg">
+            <i class="fas fa-shopping-bag"></i>
+            <span id="cart-count-badge" class="ns-badge" data-cart-count="{{ $cartItemCount }}" @if($cartItemCount < 1) style="display:none;" @endif>{{ $cartItemCount }}</span>
+        </button>
+        <a href="{{ route('profile.index') }}" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account">
+            <i class="far fa-user ns-icon-button-lg"></i>
+        </a>
+    </div>
     </header>
 
     <div id="message-box" class="ns-message-box">
