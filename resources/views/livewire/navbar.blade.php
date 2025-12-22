@@ -27,7 +27,13 @@
     </div>
     <i class="fas fa-chevron-right"></i>
 </a>
-                <a href="#" class="ns-nav-link ns-link-justify"><div class="ns-link-content"><i class="far fa-question-circle ns-icon-lg-centered"></i> Customer Service</div><i class="fas fa-plus ns-icon-plus"></i></a>
+                <a href="{{ route('about') }}" class="ns-nav-link ns-link-justify">
+    <div class="ns-link-content">
+        <i class="far fa-question-circle ns-icon-lg-centered"></i> 
+        Customer Service
+    </div>
+    <i class="fas fa-plus ns-icon-plus"></i>
+</a>
                 {{-- LINK KE HALAMAN ABOUT US --}}
 <a href="{{ route('about.index') }}" onclick="closeCategoryModal()" class="ns-nav-link ns-link-justify">
     <div class="ns-link-content">
