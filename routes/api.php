@@ -22,8 +22,8 @@ Route::apiResource('users', UsersApiController::class);
 Route::get('users/paginate', [UsersApiController::class, 'paginate']);
 
 // ================= PROFILE API =================
-Route::prefix('profile')->group(function () {
-	Route::get('/', [ProfileAPIController::class, 'show']);
-	Route::get('/addresses', [ProfileAPIController::class, 'addresses']);
-	Route::get('/orders', [ProfileAPIController::class, 'orders']);
+Route::prefix('profile')->name('api.profile.')->group(function () {
+	Route::get('/', [ProfileAPIController::class, 'show'])->name('show');
+	Route::get('/addresses', [ProfileAPIController::class, 'addresses'])->name('addresses');
+	Route::get('/orders', [ProfileAPIController::class, 'orders'])->name('orders');
 });

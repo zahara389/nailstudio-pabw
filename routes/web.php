@@ -16,6 +16,7 @@ use App\Http\Controllers\StockManagementController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Http\Request;
 
 
 
@@ -104,8 +105,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/bulk-delete', [StockManagementController::class, 'bulkDelete'])->name('bulkDelete');
     });
 
-    // Halaman Profile
+    // Halaman Profile: render UI langsung
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+    // Opsi eksplisit tetap ada jika diperlukan
+    Route::get('/profile/view', [ProfileController::class, 'index'])->name('profile.view');
 });
 
 

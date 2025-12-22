@@ -127,7 +127,7 @@
             <i class="fas fa-shopping-bag"></i>
             <span id="cart-count-badge" class="ns-badge" data-cart-count="{{ $cartItemCount }}" @if($cartItemCount < 1) style="display:none;" @endif>{{ $cartItemCount }}</span>
         </button>
-        <a href="{{ route('profile.index') }}" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account">
+        <a href="{{ route('api.profile.show') }}" id="profile-link" class="ns-icon-button ns-icon-button-lg" aria-label="Account">
             <i class="far fa-user ns-icon-button-lg"></i>
         </a>
     </div>
