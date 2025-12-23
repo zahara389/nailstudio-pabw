@@ -16,6 +16,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockManagementController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\CustomerServiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 
@@ -32,9 +33,11 @@ Route::get('/about-us', function () {
     return view('landing_page.aboute');
 })->name('about.index');
 
-Route::get('/customer-service', function () {
-    return view('landing_page.about');
-})->name('about');
+// Route untuk nampilin halaman
+Route::get('/customer-service', [CustomerServiceController::class, 'index'])->name('about');
+
+// Route untuk PROSES kirim pesan (Tambahkan baris ini!)
+Route::post('/customer-service/send', [CustomerServiceController::class, 'store'])->name('contact.send');
 
 
 

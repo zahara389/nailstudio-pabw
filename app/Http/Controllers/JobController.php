@@ -43,7 +43,7 @@ class JobController extends Controller
         return view('landing_page.lowongan-pekerjaan.show', compact('job'));
     }
 
-    //PUBLIC ACCESS 
+    // PUBLIC ACCESS 
     public function showApplicationForm($jobId)
     {
         $job = Job::where('id', $jobId)
@@ -67,13 +67,16 @@ class JobController extends Controller
 
         $cvPath = null;
         
-        // 2. Upload CV dan Inisiasi DB Transaction
         try {
+            // ================== PERUBAHAN INTI ==================
+            // Simpan CV dengan NAMA FILE ASLI (TANPA HASH)
             $cvFile = $request->file('cv_file');
-            $cvPath = $cvFile->store('cvs', 'public'); 
+            $originalName = $cvFile->getClientOriginalName();
+            $cvPath = $cvFile->storeAs('cvs', $originalName, 'public');
+            // ====================================================
 
             // 3. Simpan Data Lamaran 
-            \App\Models\JobApplication::create([
+            JobApplication::create([
                 'job_id'         => $request->job_id,
                 'user_id'        => auth()->check() ? auth()->id() : null, 
                 'applicant_name' => $request->name,
@@ -82,20 +85,26 @@ class JobController extends Controller
                 'description'    => $request->description,
                 'cv_filename'    => $cvPath, 
             ]);
-            return redirect('/')->with('success', 'Lamaran Anda telah berhasil dikirim! Kami akan segera menghubungi Anda.');
+
+            return redirect('/')
+                ->with('success', 'Lamaran Anda telah berhasil dikirim! Kami akan segera menghubungi Anda.');
 
         } catch (\Exception $e) {
 
             if ($cvPath) {
                 Storage::disk('public')->delete($cvPath);
             }
+
             Log::error("Job Application Final Store Failed: " . $e->getMessage()); 
-            return back()->withInput()->with('error', 'Gagal! Kesalahan saat menyimpan data. Cek log untuk detail.');
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal! Kesalahan saat menyimpan data.');
         }
     }
 
+    // ================= ADMIN =================
 
-    // ADMIN 
     public function index()
     {
         $jobs = Job::with('category')

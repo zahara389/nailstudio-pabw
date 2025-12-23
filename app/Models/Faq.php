@@ -2,23 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Faq extends Model
 {
     use HasFactory;
 
-    protected $table = 'faqs'; // Sesuaikan dengan nama tabel di migration
+    // Nama tabel di database
+    protected $table = 'faqs';
 
+    // Kolom yang boleh diisi (Mass Assignment)
     protected $fillable = [
         'question',
         'answer',
-        'admin_id',
+        'order'
     ];
-
-    public function admin()
-    {
-        return $this->belongsTo(User::class, 'admin_id');
-    }
 }
