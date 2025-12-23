@@ -55,6 +55,7 @@ class User extends Authenticatable
     public function bookings(): HasMany { return $this->hasMany(Booking::class); }
     public function questions(): HasMany { return $this->hasMany(UserQuestion::class); }
     public function jobApplications(): HasMany { return $this->hasMany(JobApplication::class); }
+    public function addresses(): HasMany { return $this->hasMany(Address::class); }
 
 
     public function isAdmin(): bool
