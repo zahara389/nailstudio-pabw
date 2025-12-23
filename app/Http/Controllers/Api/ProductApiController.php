@@ -57,7 +57,7 @@ class ProductAPIController extends Controller
     }
 
     /**
-     * Tampilkan detail produk tertentu.
+     * Tampilkan detail produk tertentu berdasarkan ID.
      * GET: /api/products/{id}
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
@@ -100,6 +100,61 @@ class ProductAPIController extends Controller
             'image_url' => asset($product->image ?? 'images/products/default.jpg'),
         ];
 
+
+        return response()->json($formattedProduct);
+    }
+
+    /**
+     * Tampilkan detail produk berdasarkan category slug dan product slug.
+     * GET: /api/products/{category}/{slug}
+     * @param string $category
+     * @param string $slug
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showBySlug(string $category, string $slug)
+    {
+        // Konversi category slug ke format database (e.g., 'nail-polish' -> 'nail polish')
+        $categoryValue = str_replace('-', ' ', $category);
+
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->where('category', $categoryValue)
+            ->first();
+
+        if (!$product) {
+            return response()->json(['message' => 'Product tidak ditemukan'], 404);
+        }
+
+        // Format data produk yang akan ditampilkan
+        $statusClass = 'status-draft';
+        $statusText = ucfirst($product->status);
+
+        if ($product->status === 'published') {
+            $statusClass = 'status-published';
+        } elseif ($product->status === 'low stock') {
+            $statusClass = 'status-low';
+            $statusText = 'Low Stock';
+        }
+
+        $formattedProduct = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'category' => Str::headline($product->category),
+            'raw_category' => $product->category,
+            'category_slug' => str_replace(' ', '-', $product->category),
+            'description' => $product->description,
+            'stock' => (int) $product->stock,
+            'price' => (float) $product->price,
+            'discount' => (float) $product->discount,
+            'price_discounted' => (float) $product->final_price,
+            'status' => $product->status,
+            'status_text' => $statusText,
+            'status_class' => $statusClass,
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at,
+            'image_url' => asset($product->image ?? 'images/products/default.jpg'),
+        ];
 
         return response()->json($formattedProduct);
     }
