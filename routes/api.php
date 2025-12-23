@@ -6,14 +6,30 @@ use App\Http\Controllers\Api\UsersApiController;
 use App\Http\Controllers\Api\ProfileAPIController;
 use Illuminate\Support\Facades\Route;
 
-// Rute Resource dasar
-Route::apiResource('products', ProductAPIController::class)->names('api.products');
-
-// Rute tambahan untuk products
+// Rute tambahan untuk products (harus di atas resource route)
 Route::get('products/search/{keyword}', [ProductAPIController::class, 'search']);
 Route::get('products/filter/category/{category}', [ProductAPIController::class, 'filterByCategory']);
 Route::get('products/filter/status/{status}', [ProductAPIController::class, 'filterByStatus']);
 Route::get('products/paginate', [ProductAPIController::class, 'paginate']);
+
+// Support category slug: /api/products/{category-slug}
+Route::get('products/{category}', [ProductAPIController::class, 'filterByCategory'])
+    ->where('category', '(nail-polish|nail-tools|nail-care|nail-kit)');
+
+// Support detail produk dengan category dan slug: /api/products/{category}/{slug}
+Route::get('products/{category}/{slug}', [ProductAPIController::class, 'showBySlug'])
+    ->where('category', '(nail-polish|nail-tools|nail-care|nail-kit)')
+    ->name('api.products.showBySlug');
+
+// Rute Resource dasar (pastikan di bawah agar tidak override route custom)
+Route::apiResource('products', ProductAPIController::class)
+    ->names('api.products')
+    ->except(['show']); // Exclude show karena bentrok dengan category route
+
+// Show by ID (hanya numeric)
+Route::get('products/{product}', [ProductAPIController::class, 'show'])
+    ->where('product', '[0-9]+')
+    ->name('api.products.show');
 
 // Rute Resource untuk users
 Route::apiResource('users', UsersApiController::class)->names('api.users');
