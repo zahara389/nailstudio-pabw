@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        // Tabel FAQ (Untuk nampilin pertanyaan)
+        // 1. Tabel FAQ (Kelola Pertanyaan Sering Ditanyakan)
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
             $table->string('question');
@@ -16,18 +16,20 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabel Contacts (Untuk simpan pesan masuk)
+        // 2. Tabel Contacts (Pesan User & Balasan Admin)
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('message');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('message'); 
+            $table->text('admin_reply')->nullable();
+            $table->boolean('is_read')->default(false); 
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('faqs');
         Schema::dropIfExists('contacts');
+        Schema::dropIfExists('faqs');
     }
 };
