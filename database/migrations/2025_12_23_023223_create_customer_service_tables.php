@@ -8,15 +8,18 @@ return new class extends Migration
 {
     public function up()
     {
-        // Tabel FAQ (Untuk nampilin pertanyaan)
+        // Tabel FAQ (Digunakan untuk pesan masuk dan tampilan FAQ)
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->text('answer');
+            // user_id dibuat nullable jika pengirim pesan adalah tamu (guest)
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->text('question'); // Menggunakan text karena pesan bisa panjang
+            $table->text('answer')->nullable(); // Nullable karena awalnya belum dijawab
+            $table->string('status')->default('pending'); // 'pending' atau 'answered'
             $table->timestamps();
         });
 
-        // Tabel Contacts (Untuk simpan pesan masuk)
+        // Tabel Contacts (Opsional: Tetap dibuat jika kamu ingin backup data pesan terpisah)
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -27,6 +30,7 @@ return new class extends Migration
 
     public function down()
     {
+        // Urutan drop harus benar jika ada foreign key
         Schema::dropIfExists('faqs');
         Schema::dropIfExists('contacts');
     }

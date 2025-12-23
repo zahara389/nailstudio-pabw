@@ -9,13 +9,17 @@ class Faq extends Model
 {
     use HasFactory;
 
-    // Nama tabel di database
-    protected $table = 'faqs';
-
-    // Kolom yang boleh diisi (Mass Assignment)
+    // Tambahkan kolom-kolom baru di sini
     protected $fillable = [
+        'user_id',
         'question',
         'answer',
-        'order'
+        'status'
     ];
+
+    // Tambahkan relasi ke User agar controller tidak error saat memanggil with('user')
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
