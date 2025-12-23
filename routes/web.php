@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
@@ -91,6 +92,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/items/{item}', [CartController::class, 'destroy'])->name('items.destroy');
         Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
         Route::post('/checkout/pay', [CartController::class, 'processCheckout'])->name('checkout.process');
+        Route::post('/checkout/qris', [CartController::class, 'processQrisPayment'])->name('checkout.qris');
+    });
+
+    // Address Routes
+    Route::prefix('address')->name('address.')->group(function () {
+        Route::get('/', [AddressController::class, 'index'])->name('index');
+        Route::post('/', [AddressController::class, 'store'])->name('store');
+        Route::put('/{address}', [AddressController::class, 'update'])->name('update');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('stock-management')->name('stock.')->group(function () {

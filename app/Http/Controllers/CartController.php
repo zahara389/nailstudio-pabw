@@ -338,4 +338,102 @@ class CartController extends Controller
             ->where('status', 'active')
             ->first();
     }
+
+    /**
+     * Process QRIS payment dengan upload bukti bayar
+     * Mengurangi stok dan membuat order
+     */
+    public function processQrisPayment(Request $request): RedirectResponse
+    {
+        $cart = $this->getActiveCart($request);
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return back()->with('alert', 'Keranjang kosong atau tidak ditemukan.');
+        }
+
+        $validated = $request->validate([
+            'selected_address' => ['required', 'exists:addresses,id'],
+            'bukti_bayar' => ['required', 'image', 'max:5120'], // max 5MB
+        ]);
+
+        try {
+            // Verifikasi address milik user
+            $address = $request->user()->addresses()->findOrFail($validated['selected_address']);
+
+            // Check stok semua item
+            foreach ($cart->items as $cartItem) {
+                $productStock = $cartItem->product?->stock;
+
+                if ($productStock === null || $productStock < $cartItem->quantity) {
+                    return back()->withErrors([
+                        'stock' => 'Stok untuk ' . ($cartItem->product->name ?? 'produk') . ' tidak mencukupi.',
+                    ]);
+                }
+            }
+
+            // Upload bukti bayar
+            $proofPath = null;
+            if ($request->hasFile('bukti_bayar')) {
+                $file = $request->file('bukti_bayar');
+                $proofPath = $file->store('proof_of_payments', 'public');
+            }
+
+            // Hitung total
+            $subtotal = $cart->items->sum(fn (CartItem $item) => $item->quantity * $item->unit_price);
+
+            // Start transaction
+            \DB::beginTransaction();
+
+            try {
+                // Create order
+                $order = $request->user()->orders()->create([
+                    'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . Str::random(6),
+                    'total_amount' => $subtotal,
+                    'payment_method' => 'qris',
+                    'proof_of_payment_path' => $proofPath,
+                    'order_status' => 'pending',
+                ]);
+
+                // Reduce stock dan create order items
+                foreach ($cart->items as $cartItem) {
+                    $product = $cartItem->product;
+
+                    // Create order item
+                    $order->items()->create([
+                        'product_id' => $product->id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $cartItem->unit_price,
+                    ]);
+
+                    // Reduce stock
+                    $product->decrement('stock', $cartItem->quantity);
+                }
+
+                // Update cart status menjadi completed
+                $cart->update(['status' => 'completed']);
+
+                // Clear all items dari cart
+                $cart->items()->delete();
+
+                \DB::commit();
+
+                return redirect()->route('transaction.history')
+                    ->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
+
+            } catch (\Throwable $e) {
+                \DB::rollBack();
+                throw $e;
+            }
+
+        } catch (\Throwable $e) {
+            Log::error('QRIS payment error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user()->id,
+            ]);
+
+            return back()->withErrors([
+                'payment' => 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+            ]);
+        }
+    }
 }
