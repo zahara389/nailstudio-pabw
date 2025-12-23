@@ -1,3 +1,4 @@
+(function() {
   // --- MOCK DATA & CONFIGURATION ---
         // Placeholder image untuk kategori
         const mockCategories = [
@@ -92,17 +93,6 @@
             `).join('');
         }
         
-        // Fungsi simulasi yang menampilkan pesan (bukan interaksi backend)
-        function handleSearch(event) {
-            event.preventDefault();
-            const query = document.getElementById("searchInput").value.trim();
-            if (query.length < 2) {
-                showMessage("Mohon ketik minimal 2 karakter untuk pencarian.");
-                return;
-            }
-            showMessage(`Simulasi: Mencari "${query}". Fitur dinonaktifkan.`);
-        }
-
         function showCheckoutMessage() { closeCartModal(); showMessage('Simulasi: Redirect ke Checkout dinonaktifkan untuk tampilan ini.'); }
         function showViewCartMessage() { closeCartModal(); showMessage('Simulasi: Redirect ke Cart Page dinonaktifkan untuk tampilan ini.'); }
         function showFavoritesMessage() { showMessage('Simulasi: Redirect ke Wishlist dinonaktifkan. Jumlah Wishlist: 0'); }
@@ -112,6 +102,15 @@
             badgeElement.textContent = count;
             badgeElement.style.display = count > 0 ? 'flex' : 'none';
         }
+
+        // Make functions globally accessible
+        window.openCategoryModal = openCategoryModal;
+        window.closeCategoryModal = closeCategoryModal;
+        window.openCartModal = openCartModal;
+        window.closeCartModal = closeCartModal;
+        window.closeAllModals = closeAllModals;
+        window.showFavoritesMessage = showFavoritesMessage;
+        window.showMessage = showMessage;
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
@@ -124,6 +123,29 @@
 
             initCategoryMenu();
 
+            // Handle search form submission
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            
+            console.log('Search form:', searchForm);
+            console.log('Search input:', searchInput);
+            
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submitted!');
+                    const query = searchInput.value.trim();
+                    console.log('Query:', query);
+                    if (query.length < 2) {
+                        showMessage("Mohon ketik minimal 2 karakter untuk pencarian.");
+                        return;
+                    }
+                    window.location.href = `/products/search?q=${encodeURIComponent(query)}`;
+                });
+            } else {
+                console.error('Search form not found!');
+            }
+
             cartBtn.addEventListener('click', function(e) {
                 // Membuka Cart Modal saat diklik
                 openCartModal();
@@ -135,3 +157,4 @@
                 }
             });
         });
+})();

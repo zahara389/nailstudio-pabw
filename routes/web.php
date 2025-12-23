@@ -44,6 +44,7 @@ Route::post('/customer-service/send', [CustomerServiceController::class, 'store'
 Route::get('/products/{category?}', [ProductController::class, 'index'])
     ->where('category', '(nail-polish|nail-tools|nail-care|nail-kit)')
     ->name('products.index');
+Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/products/{category}/{product}', [ProductController::class, 'show'])->name('products.show');
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');

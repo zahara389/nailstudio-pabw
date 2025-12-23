@@ -115,7 +115,7 @@
         </div>
             
     <div id="ns-header-right" style="display:flex; align-items:center; gap:20px; margin-left:auto; padding-right:32px;">
-        <form id="searchForm" onsubmit="handleSearch(event)" class="ns-search-form" style="margin-right:16px;">
+        <form id="searchForm" class="ns-search-form" style="margin-right:16px;">
             <button type="submit" class="ns-search-btn"><i class="fas fa-search ns-icon-search"></i></button>
             <input type="search" id="searchInput" name="q" placeholder="Search products ..." class="ns-search-input" aria-label="Search products and brands" required minlength="2" />
         </form>

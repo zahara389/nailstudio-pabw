@@ -76,6 +76,41 @@ class ProductController extends Controller
         ]);
     }
 
+    // Search products
+    public function search()
+    {
+        $query = request('q', '');
+        $searchTerm = trim($query);
+        
+        Visitor::firstOrCreate([
+            'ip_address' => request()->ip(),
+            'visit_date' => now()->toDateString(),
+        ]);
+
+        if (strlen($searchTerm) < 2) {
+            return redirect()->route('products.index')
+                ->with('message', 'Mohon ketik minimal 2 karakter untuk pencarian.');
+        }
+
+        // Search in name, category, and description
+        $products = Product::query()
+            ->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('category', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            })
+            ->get();
+
+        $presentedProducts = $this->mapForList($products);
+
+        return view('products.search', [
+            'products' => $presentedProducts,
+            'searchQuery' => $searchTerm,
+            'resultCount' => $products->count(),
+            'fallbackImage' => $this->fallbackImage(),
+        ]);
+    }
+
     // ... (Sisa method mapForList, mapForDetail, sampleProducts, fallbackImage, dan slugify tetap sama)
     
     private function mapForList(Collection $products)

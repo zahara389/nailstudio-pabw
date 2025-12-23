@@ -37,6 +37,7 @@
     <livewire:footer />
 
     @livewireScripts
+    <script src="{{ asset('js/navbar.js') }}"></script>
     <script src="{{ asset('js/landing_page_logic.js') }}"></script>
     
     @stack('scripts') {{-- Tempat Script Khusus Halaman --}}
