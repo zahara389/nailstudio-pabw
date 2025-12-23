@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\ProfileAPIController;
 use Illuminate\Support\Facades\Route;
 
 // Rute Resource dasar
-Route::apiResource('products', ProductAPIController::class);
+Route::apiResource('products', ProductAPIController::class)->names('api.products');
 
 // Rute tambahan untuk products
 Route::get('products/search/{keyword}', [ProductAPIController::class, 'search']);
@@ -16,7 +16,7 @@ Route::get('products/filter/status/{status}', [ProductAPIController::class, 'fil
 Route::get('products/paginate', [ProductAPIController::class, 'paginate']);
 
 // Rute Resource untuk users
-Route::apiResource('users', UsersApiController::class);
+Route::apiResource('users', UsersApiController::class)->names('api.users');
 
 // Rute tambahan untuk users
 Route::get('users/paginate', [UsersApiController::class, 'paginate']);
