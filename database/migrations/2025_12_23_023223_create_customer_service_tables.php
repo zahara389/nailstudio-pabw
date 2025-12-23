@@ -19,19 +19,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabel Contacts (Opsional: Tetap dibuat jika kamu ingin backup data pesan terpisah)
-        Schema::create('contacts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('message');
-            $table->timestamps();
-        });
-    }
 
     public function down()
     {
         // Urutan drop harus benar jika ada foreign key
         Schema::dropIfExists('faqs');
         Schema::dropIfExists('contacts');
+        Schema::dropIfExists('faqs');
     }
 };
