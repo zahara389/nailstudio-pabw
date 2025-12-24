@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,24 +31,32 @@ class ProfileController extends Controller
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Data yang dikirim ke Blade
+        $user = $request->user();
+
+        $addresses = $user
+            ? $user->addresses()->latest()->get()
+            : collect();
+
+        $recentOrders = $user
+            ? Order::query()
+                ->where('user_id', $user->id)
+                ->latest()
+                ->take(5)
+                ->get()
+            : collect();
+
+        $userData = $this->getUserData();
+
         $data = [
-            'user'         => $this->getUserData(),
-            'addresses'    => [
-                ['id' => 1, 'address' => 'Jl. Telekomunikasi', 'type' => 'shipping'],
-                ['id' => 2, 'address' => 'Jl. Mawar', 'type' => 'shipping'],
-                ['id' => 3, 'address' => 'Jl. Sukapura No.10', 'type' => 'shipping'],
-            ],
-            'orderHistory' => [
-                ['id' => 101, 'date' => '2025-06-01', 'status' => 'Completed', 'total' => '150000'],
-                ['id' => 102, 'date' => '2025-06-15', 'status' => 'Processing', 'total' => '89000'],
-            ],
+            'user' => $userData,
+            'addresses' => $addresses,
+            'recentOrders' => $recentOrders,
             // Data tambahan untuk navbar (sesuaikan dengan layout kamu)
-            'categories'   => [], 
-            'isLoggedIn'   => Auth::check(),
-            'profile_img'  => $this->getUserData()['photo']
+            'categories' => [],
+            'isLoggedIn' => Auth::check(),
+            'profile_img' => $userData['photo'],
         ];
 
         return view('profile.index', $data);
