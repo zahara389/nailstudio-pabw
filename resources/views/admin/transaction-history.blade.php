@@ -59,6 +59,11 @@
                             <td>
                                 <div>{{ $order->payment_method ?? 'Manual Transfer' }}</div>
                                 <div class="badge-status badge-status--{{ strtolower($order->order_status) }}">{{ $order->order_status }}</div>
+                                @if($order->proof_of_payment_path)
+                                    <div class="mt-2">
+                                        <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" class="text-pink-600 underline">Lihat Bukti</a>
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong>

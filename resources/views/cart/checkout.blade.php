@@ -5,6 +5,29 @@
 @section('content')
 <div class="max-w-3xl mx-auto py-10 px-4">
     <h1 class="text-2xl font-bold mb-6 text-pink-700">Checkout</h1>
+
+    @if (session('success'))
+        <div class="mb-6 p-4 rounded-lg border border-green-200 bg-green-50 text-green-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('alert'))
+        <div class="mb-6 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800">
+            {{ session('alert') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="mb-6 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700">
+            <p class="font-semibold mb-2">Terjadi kesalahan:</p>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <!-- Order Details Section -->
     <div class="bg-white rounded-lg shadow p-6 mb-8">
@@ -184,17 +207,17 @@
             </div>
 
             <!-- Upload Proof of Payment Form -->
-            <form method="POST" enctype="multipart/form-data" action="{{ route('cart.checkout.qris') }}" class="space-y-4 border-t pt-6" id="buktiForm">
+            <form method="POST" enctype="multipart/form-data" action="{{ route('cart.checkout.qris') }}" class="space-y-4 border-t pt-6" id="buktiForm" onsubmit="return validateQrisForm();">
                 @csrf
                 <input type="hidden" name="selected_address" id="selectedAddress" value="">
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Upload Payment Receipt (Bukti Bayar)</label>
-                    <input type="file" name="bukti_bayar" accept="image/*" required
+                    <input type="file" name="bukti_bayar" accept="image/png,image/jpeg" required
                         class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 transition-colors duration-150 cursor-pointer border border-gray-300 rounded px-3 py-2"
                         id="buktiInput"
                     />
-                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, PDF (Max 5MB)</p>
+                    <p class="text-xs text-gray-500 mt-1">Format: JPG/PNG (Max 5MB)</p>
                 </div>
 
                 <div class="flex justify-end gap-2">
@@ -241,6 +264,23 @@ function handlePaymentSubmit() {
         showQrisModal();
         return false;
     }
+    return true;
+}
+
+function validateQrisForm() {
+    const selectedAddressValue = document.getElementById('selectedAddress').value;
+    const fileInput = document.getElementById('buktiInput');
+
+    if (!selectedAddressValue) {
+        alert('Silakan pilih alamat pengiriman terlebih dahulu!');
+        return false;
+    }
+
+    if (!fileInput || !fileInput.files || !fileInput.files.length) {
+        alert('Silakan upload bukti bayar terlebih dahulu!');
+        return false;
+    }
+
     return true;
 }
 

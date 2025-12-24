@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Midtrans\Config as MidtransConfig;
@@ -382,7 +383,7 @@ class CartController extends Controller
             $subtotal = $cart->items->sum(fn (CartItem $item) => $item->quantity * $item->unit_price);
 
             // Start transaction
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             try {
                 // Create order
@@ -398,30 +399,38 @@ class CartController extends Controller
                 foreach ($cart->items as $cartItem) {
                     $product = $cartItem->product;
 
+                    $quantity = (int) $cartItem->quantity;
+                    $unitPrice = (float) $cartItem->unit_price;
+                    $discountAmount = 0.0;
+                    $subtotalItem = $quantity * max(0, $unitPrice - $discountAmount);
+
                     // Create order item
                     $order->items()->create([
                         'product_id' => $product->id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $cartItem->unit_price,
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'discount_amount' => $discountAmount,
+                        'subtotal_item' => $subtotalItem,
                     ]);
 
                     // Reduce stock
-                    $product->decrement('stock', $cartItem->quantity);
+                    $product->decrement('stock', $quantity);
                 }
 
-                // Update cart status menjadi completed
-                $cart->update(['status' => 'completed']);
+                // Update cart status menjadi checked_out (sesuai enum di migration)
+                $cart->update(['status' => 'checked_out']);
 
                 // Clear all items dari cart
                 $cart->items()->delete();
 
-                \DB::commit();
+                DB::commit();
 
-                return redirect()->route('transaction.history')
+                // Redirect ke halaman Payment Success
+                return redirect()->route('payment.success')
                     ->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
 
             } catch (\Throwable $e) {
-                \DB::rollBack();
+                DB::rollBack();
                 throw $e;
             }
 

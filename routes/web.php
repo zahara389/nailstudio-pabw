@@ -89,6 +89,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('destroy');
     });
 
+    // User Order History
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\OrderHistoryController::class, 'index'])->name('index');
+        Route::get('/{id}', [\App\Http\Controllers\OrderHistoryController::class, 'show'])->name('show');
+    });
+
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('index');
         Route::post('/items', [CartController::class, 'store'])->name('items.store');
@@ -98,6 +104,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/checkout/pay', [CartController::class, 'processCheckout'])->name('checkout.process');
         Route::post('/checkout/qris', [CartController::class, 'processQrisPayment'])->name('checkout.qris');
     });
+
+    // Payment success page
+    Route::get('/payment-success', function () {
+        return view('payment.success');
+    })->name('payment.success');
 
     // Address Routes
     Route::prefix('address')->name('address.')->group(function () {
