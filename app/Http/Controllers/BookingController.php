@@ -18,9 +18,7 @@ class BookingController extends Controller
         return view('landing_page.booking', compact('timeSlots'));
     }
 
-    /**
-     * Menyimpan data booking ke database 
-     */
+    
     public function store(Request $request)
     {
         // 1. Validasi Input 
