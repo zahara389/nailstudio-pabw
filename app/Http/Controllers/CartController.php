@@ -417,8 +417,8 @@ class CartController extends Controller
                     $product->decrement('stock', $quantity);
                 }
 
-                // Update cart status menjadi completed
-                $cart->update(['status' => 'completed']);
+                // Update cart status menjadi checked_out (sesuai enum di migration)
+                $cart->update(['status' => 'checked_out']);
 
                 // Clear all items dari cart
                 $cart->items()->delete();

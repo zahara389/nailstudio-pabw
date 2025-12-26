@@ -12,15 +12,14 @@ use App\Models\User;
 
 class JobController extends Controller
 {
-    // Menampilkan halaman lowongan publik
     public function publicIndex()
     {
         $jobs = Job::where('status', 'open')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('expires_at')
-                    ->orWhere('expires_at', '>=', now());
+                  ->orWhere('expires_at', '>=', now());
             })
             ->orderBy('published_at', 'desc')
             ->get();
@@ -43,47 +42,41 @@ class JobController extends Controller
         return view('landing_page.lowongan-pekerjaan.show', compact('job'));
     }
 
-    // PUBLIC ACCESS 
+    // PUBLIC ACCESS
     public function showApplicationForm($jobId)
     {
         $job = Job::where('id', $jobId)
-                  ->where('status', 'open')
-                  ->firstOrFail();
+            ->where('status', 'open')
+            ->firstOrFail();
 
         return view('landing_page.form-lowongan', compact('jobId', 'job'));
     }
 
     public function storeApplication(Request $request)
     {
-        // 1. Validasi Data 
         $request->validate([
-            'job_id'      => 'required|exists:jobs,id',
+            'job_id'      => 'required|integer|exists:jobs,id',
             'name'        => 'required|string|max:255',
-            'email'       => 'required|email|max:255',
-            'phone'       => 'required|string|max:20',
-            'description' => 'required|string',
-            'cv_file'     => 'required|file|mimes:pdf|max:5048', 
+            'email'       => 'required|string|email|max:255',
+            'phone'       => 'required|string|max:20|regex:/^[0-9+\-\s()]+$/',
+            'description' => 'required|string|max:2000',
+            'cv_file'     => 'required|file|mimes:pdf|max:5048',
         ]);
 
         $cvPath = null;
-        
-        try {
-            // ================== PERUBAHAN INTI ==================
-            // Simpan CV dengan NAMA FILE ASLI (TANPA HASH)
-            $cvFile = $request->file('cv_file');
-            $originalName = $cvFile->getClientOriginalName();
-            $cvPath = $cvFile->storeAs('cvs', $originalName, 'public');
-            // ====================================================
 
-            // 3. Simpan Data Lamaran 
+        try {
+            $originalName = $request->file('cv_file')->getClientOriginalName();
+            $cvPath = $request->file('cv_file')->storeAs('cvs', $originalName, 'public');
+
             JobApplication::create([
                 'job_id'         => $request->job_id,
-                'user_id'        => auth()->check() ? auth()->id() : null, 
+                'user_id'        => auth()->check() ? auth()->id() : null,
                 'applicant_name' => $request->name,
                 'email'          => $request->email,
                 'phone'          => $request->phone,
                 'description'    => $request->description,
-                'cv_filename'    => $cvPath, 
+                'cv_filename'    => $originalName,
             ]);
 
             return redirect('/')
@@ -95,7 +88,7 @@ class JobController extends Controller
                 Storage::disk('public')->delete($cvPath);
             }
 
-            Log::error("Job Application Final Store Failed: " . $e->getMessage()); 
+            Log::error('Job Application Store Failed: ' . $e->getMessage());
 
             return back()
                 ->withInput()
@@ -113,7 +106,7 @@ class JobController extends Controller
 
         return view('admin.jobs.index', compact('jobs'));
     }
-    
+
     public function create()
     {
         $categories = JobCategory::all();
@@ -130,7 +123,7 @@ class JobController extends Controller
             'location' => 'nullable|string',
             'employment_type' => 'nullable|string',
             'salary_range' => 'nullable|string',
-            'status' => 'required|in:draft,open,closed', 
+            'status' => 'required|in:draft,open,closed',
             'published_at' => 'nullable|date',
             'expires_at' => 'nullable|date',
         ]);
@@ -167,9 +160,9 @@ class JobController extends Controller
             'location' => 'nullable|string',
             'employment_type' => 'nullable|string',
             'salary_range' => 'nullable|string',
-            'status' => 'required|in:draft,open,closed', 
+            'status' => 'required|in:draft,open,closed',
             'published_at' => 'nullable|date',
-            'expires_at' => 'nullable|date', 
+            'expires_at' => 'nullable|date',
         ]);
 
         $job->update($validated);

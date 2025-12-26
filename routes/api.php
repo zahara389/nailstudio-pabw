@@ -5,6 +5,10 @@ use App\Http\Controllers\Api\ProductAPIController;
 use App\Http\Controllers\Api\UsersApiController;
 use App\Http\Controllers\Api\ProfileAPIController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\JobApiController;
+use App\Http\Controllers\Api\BookingApiController;
+use App\Http\Controllers\Api\FaqApiController;
+
 
 // Rute tambahan untuk products (harus di atas resource route)
 Route::get('products/search/{keyword}', [ProductAPIController::class, 'search']);
@@ -43,3 +47,14 @@ Route::prefix('profile')->name('api.profile.')->group(function () {
 	Route::get('/addresses', [ProfileAPIController::class, 'addresses'])->name('addresses');
 	Route::get('/orders', [ProfileAPIController::class, 'orders'])->name('orders');
 });
+
+Route::get('jobs', [JobApiController::class, 'index']);
+Route::get('jobs/{id}', [JobApiController::class, 'show']);
+
+Route::post('jobs/apply', [JobApiController::class, 'apply']);
+Route::get('jobs/{jobId}/applications', [JobApiController::class, 'applications']);
+
+Route::get('bookings', [BookingApiController::class, 'index']);
+Route::post('bookings', [BookingApiController::class, 'store']);
+
+Route::get('faqs', [FaqApiController::class, 'index']);
