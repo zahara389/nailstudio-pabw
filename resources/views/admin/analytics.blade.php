@@ -13,7 +13,6 @@
         </div>
     </div>
 
-    {{-- BAGIAN BOX-INFO SUDAH DIHAPUS TOTAL --}}
 
     <div class="analytics-container">
         <div class="chart-grid">
