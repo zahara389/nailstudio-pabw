@@ -8,6 +8,25 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\JobApiController;
 use App\Http\Controllers\Api\BookingApiController;
 use App\Http\Controllers\Api\FaqApiController;
+use App\Http\Controllers\Api\AuthApiController;
+
+// Auth routes (public)
+Route::post('login', [AuthApiController::class, 'login']);
+Route::post('register', [AuthApiController::class, 'register']);
+
+// Protected routes (require auth)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [AuthApiController::class, 'logout']);
+
+    // Profile API
+    Route::prefix('profile')->name('api.profile.')->group(function () {
+        Route::get('/', [ProfileAPIController::class, 'show'])->name('show');
+        Route::get('/addresses', [ProfileAPIController::class, 'addresses'])->name('addresses');
+        Route::get('/orders', [ProfileAPIController::class, 'orders'])->name('orders');
+    });
+
+    // Other protected routes can be added here
+});
 
 
 // Rute tambahan untuk products (harus di atas resource route)
