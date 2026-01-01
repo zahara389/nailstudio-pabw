@@ -80,13 +80,6 @@ Route::post('bookings', [BookingApiController::class, 'store']);
 Route::get('faqs', [FaqApiController::class, 'index']);
 
 
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('orders', [OrderApiController::class, 'store']);
-});
-
-
-
 use App\Http\Controllers\Api\CartApiController;
 
 Route::middleware('auth:sanctum')->group(function () {
