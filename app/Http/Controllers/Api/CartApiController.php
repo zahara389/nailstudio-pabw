@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -6,16 +7,41 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CartApiController extends Controller
 {
+    /**
+     * ===============================
+     * GET /api/cart
+     * ===============================
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user(); // ✅ PALING AMAN
+
+        $cart = Cart::with(['items.product'])
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        return response()->json([
+            'items' => $cart ? $cart->items : [],
+        ]);
+    }
+
+    /**
+     * ===============================
+     * POST /api/cart/add
+     * ===============================
+     */
     public function add(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
+
+        $user = $request->user();
 
         $product = Product::findOrFail($request->product_id);
 
@@ -27,8 +53,8 @@ class CartApiController extends Controller
 
         $cart = Cart::firstOrCreate(
             [
-                'user_id' => $request->user()->id,
-                'status' => 'active',
+                'user_id' => $user->id,
+                'status'  => 'active',
             ],
             ['status' => 'active']
         );
@@ -40,7 +66,7 @@ class CartApiController extends Controller
         } else {
             $cart->items()->create([
                 'product_id' => $product->id,
-                'quantity' => $request->quantity,
+                'quantity'   => $request->quantity,
                 'unit_price' => $product->final_price ?? $product->price,
             ]);
         }
@@ -50,12 +76,65 @@ class CartApiController extends Controller
         ]);
     }
 
-    public function checkout(Request $request)
+    /**
+     * ===============================
+     * PUT /api/cart/item/{id}
+     * ===============================
+     */
+    public function update(Request $request, $id)
     {
-        // Untuk sekarang: cukup trigger logic checkout web
-        // atau redirect ke flow Midtrans/Qris
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $user = $request->user();
+
+        $item = CartItem::with('cart')->findOrFail($id);
+
+        if ($item->cart->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $item->update([
+            'quantity' => $request->quantity,
+        ]);
+
         return response()->json([
-            'message' => 'Checkout diproses, lanjutkan ke pembayaran',
+            'message' => 'Jumlah item diperbarui',
+        ]);
+    }
+
+    /**
+     * ===============================
+     * DELETE /api/cart/item/{id}
+     * ===============================
+     */
+    public function delete(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $item = CartItem::with('cart')->findOrFail($id);
+
+        if ($item->cart->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $item->delete();
+
+        return response()->json([
+            'message' => 'Item dihapus dari keranjang',
+        ]);
+    }
+
+    /**
+     * ===============================
+     * POST /api/cart/checkout
+     * ===============================
+     */
+    public function checkout()
+    {
+        return response()->json([
+            'message' => 'Checkout diproses',
         ]);
     }
 }

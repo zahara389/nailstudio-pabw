@@ -81,10 +81,12 @@ Route::get('faqs', [FaqApiController::class, 'index']);
 
 
 use App\Http\Controllers\Api\CartApiController;
-
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('cart', [CartApiController::class, 'index']);
     Route::post('cart/add', [CartApiController::class, 'add']);
-    Route::put('cart/item/{item}', [CartApiController::class, 'update']);
-    Route::delete('cart/item/{item}', [CartApiController::class, 'delete']);
+    Route::put('cart/item/{id}', [CartApiController::class, 'update']);
+    Route::delete('cart/item/{id}', [CartApiController::class, 'delete']);
     Route::post('cart/checkout', [CartApiController::class, 'checkout']);
 });
+
+
