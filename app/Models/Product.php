@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -59,15 +60,29 @@ class Product extends Model
     // <--- TAMBAHAN PENTING 2: Logic Pembuat URL Gambar --->
     public function getImageUrlAttribute()
     {
-        // Jika ada nama file di database
-        if ($this->image) {
-            // Kita gabungkan menjadi: http://domain.com/images/products/namafile.jpg
-            return asset('images/products/' . $this->image);
+        $imagePath = $this->image;
+
+        if ($imagePath) {
+            if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                return $imagePath;
+            }
+
+            // Jika sudah berupa path relatif yang umum (mis. images/products/xxx.jpg)
+            if (Str::startsWith($imagePath, ['storage/', 'images/', 'img/', 'uploads/'])) {
+                return asset($imagePath);
+            }
+
+            // Jika hanya filename, anggap ada di public/images/products
+            return asset('images/products/' . ltrim($imagePath, '/'));
         }
 
-        // Jika tidak ada gambar, kembalikan placeholder default
-        // Pastikan file 'placeholder-nail.jpg' ada di folder public/images/
-        return asset('images/placeholder-nail.jpg');
+        // Fallback yang aman (hindari broken image)
+        $defaultProductImage = public_path('images/products/default.jpg');
+        if (file_exists($defaultProductImage)) {
+            return asset('images/products/default.jpg');
+        }
+
+        return asset('images/logonails.png');
     }
 
     // --- MUTATORS ---
