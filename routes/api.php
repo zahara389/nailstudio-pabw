@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\JobApiController;
 use App\Http\Controllers\Api\BookingApiController;
 use App\Http\Controllers\Api\FaqApiController;
 use App\Http\Controllers\Api\AuthApiController;
+use App\Http\Controllers\Api\OrderApiController;
 
 // Auth routes (public)
 Route::post('login', [AuthApiController::class, 'login']);
@@ -77,3 +78,20 @@ Route::get('bookings', [BookingApiController::class, 'index']);
 Route::post('bookings', [BookingApiController::class, 'store']);
 
 Route::get('faqs', [FaqApiController::class, 'index']);
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('orders', [OrderApiController::class, 'store']);
+});
+
+
+
+use App\Http\Controllers\Api\CartApiController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('cart/add', [CartApiController::class, 'add']);
+    Route::put('cart/item/{item}', [CartApiController::class, 'update']);
+    Route::delete('cart/item/{item}', [CartApiController::class, 'delete']);
+    Route::post('cart/checkout', [CartApiController::class, 'checkout']);
+});

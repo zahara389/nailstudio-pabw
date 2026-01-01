@@ -34,7 +34,10 @@ class Product extends Model
     protected $appends = [
         'discounted_price',
         'final_price',
+        'image_url', // <--- TAMBAHAN PENTING 1: Agar atribut ini muncul otomatis
     ];
+
+    // --- ACCESSORS (Perhitungan Otomatis) ---
 
     public function getDiscountedPriceAttribute(): float
     {
@@ -53,6 +56,22 @@ class Product extends Model
         return $this->discounted_price;
     }
 
+    // <--- TAMBAHAN PENTING 2: Logic Pembuat URL Gambar --->
+    public function getImageUrlAttribute()
+    {
+        // Jika ada nama file di database
+        if ($this->image) {
+            // Kita gabungkan menjadi: http://domain.com/images/products/namafile.jpg
+            return asset('images/products/' . $this->image);
+        }
+
+        // Jika tidak ada gambar, kembalikan placeholder default
+        // Pastikan file 'placeholder-nail.jpg' ada di folder public/images/
+        return asset('images/placeholder-nail.jpg');
+    }
+
+    // --- MUTATORS ---
+
     public function getNamaproductAttribute(): string
     {
         return $this->attributes['name'] ?? '';
@@ -62,6 +81,8 @@ class Product extends Model
     {
         $this->attributes['name'] = $value;
     }
+
+    // --- RELATIONSHIPS ---
 
     public function reviews()
     {
@@ -83,6 +104,7 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    // --- SCOPES (Filter Query) ---
     
     public function scopeSearch($query, string $term)
     {
@@ -101,4 +123,3 @@ class Product extends Model
         return $query->where('status', $status);
     }
 }
-
