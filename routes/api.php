@@ -19,6 +19,9 @@ Route::post('register', [AuthApiController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthApiController::class, 'logout']);
 
+    // Orders API
+    Route::apiResource('orders', OrderApiController::class)->names('api.orders');
+
     // Profile API
     Route::prefix('profile')->name('api.profile.')->group(function () {
         Route::get('/', [ProfileAPIController::class, 'show'])->name('show');
