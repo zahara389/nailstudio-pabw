@@ -25,6 +25,14 @@ class OrderHistoryController extends Controller
             ->where('user_id', $request->user()->id)
             ->findOrFail($id);
 
-        return view('orders.show', compact('order'));
+        $orderStatus = strtolower((string) ($order->order_status ?? ''));
+
+        // These flags drive the progress animation in resources/views/orders/show.blade.php
+        $isCancelled = $orderStatus === 'cancelled';
+        $isComplete = $orderStatus === 'completed';
+        $isInProgress = in_array($orderStatus, ['shipped', 'completed'], true);
+        $isPacked = in_array($orderStatus, ['processing', 'shipped', 'completed'], true);
+
+        return view('orders.show', compact('order', 'isPacked', 'isInProgress', 'isComplete', 'isCancelled'));
     }
 }
