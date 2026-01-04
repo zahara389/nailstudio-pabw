@@ -136,10 +136,10 @@
                         <p class="text-xs text-gray-500 uppercase font-bold mb-3">Proof of Payment</p>
                         @if ($order->proof_of_payment_path)
                             <div class="relative group cursor-pointer overflow-hidden rounded-xl border">
-                                <img src="{{ asset('storage/' . $order->proof_of_payment_path) }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
-                                <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" 
+                                <img src="{{ route('orders.proof.image', $order->id) }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <a href="{{ route('orders.proof.show', $order->id) }}" 
                                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white font-medium transition-opacity">
-                                    Click to View
+                                    Click to View Details
                                 </a>
                             </div>
                         @else

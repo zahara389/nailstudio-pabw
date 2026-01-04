@@ -18,6 +18,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\CustomerServiceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProofOfPaymentController;
+use App\Http\Controllers\AdminProofOfPaymentController;
 use Illuminate\Http\Request;
 
 
@@ -68,6 +70,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/update-status', [DashboardController::class, 'updateStatus'])->name('dashboard.updateStatus');
     Route::get('/dashboard/orders/{id}', [DashboardController::class, 'showDetail'])->name('dashboard.orders.show');
 
+    // Admin proof of payment (detail + metadata)
+    Route::get('/dashboard/orders/{id}/proof-of-payment', [AdminProofOfPaymentController::class, 'show'])->name('dashboard.orders.proof.show');
+    Route::get('/dashboard/orders/{id}/proof-of-payment/image', [AdminProofOfPaymentController::class, 'image'])->name('dashboard.orders.proof.image');
+
     Route::resource('product', ProductAdminController::class)
         ->parameters(['product' => 'id'])
         ->names('product');
@@ -93,6 +99,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [\App\Http\Controllers\OrderHistoryController::class, 'index'])->name('index');
         Route::get('/{id}', [\App\Http\Controllers\OrderHistoryController::class, 'show'])->name('show');
+
+        // Proof of payment (protected: only the order owner can access)
+        Route::get('/{id}/proof-of-payment', [ProofOfPaymentController::class, 'show'])->name('proof.show');
+        Route::get('/{id}/proof-of-payment/image', [ProofOfPaymentController::class, 'image'])->name('proof.image');
     });
 
     Route::prefix('cart')->name('cart.')->group(function () {

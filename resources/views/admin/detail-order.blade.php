@@ -33,8 +33,8 @@
         <div class="card detail-card payment-card">
             <h4>Bukti Pembayaran</h4>
             @if ($order->proof_of_payment_path)
-                <img src="{{ asset($order->proof_of_payment_path) }}" alt="Bukti Pembayaran" class="bukti-bayar-img">
-                <a href="{{ asset($order->proof_of_payment_path) }}" target="_blank" class="btn btn-sm btn-primary mt-2">Lihat Ukuran Penuh</a>
+                <img src="{{ route('dashboard.orders.proof.image', $order->id) }}" alt="Bukti Pembayaran" class="bukti-bayar-img">
+                <a href="{{ route('dashboard.orders.proof.show', $order->id) }}" class="btn btn-sm btn-primary mt-2">View Image + Metadata</a>
             @else
                 <div class="alert alert-info">Bukti pembayaran belum diunggah oleh pelanggan.</div>
             @endif
