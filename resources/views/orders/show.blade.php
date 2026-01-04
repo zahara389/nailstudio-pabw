@@ -4,128 +4,162 @@
 
 @push('styles')
     <style>
-        .ns-progress-line {
-            height: 0.375rem;
-        }
+        .step-icon { transition: all 0.3s ease; }
     </style>
 @endpush
 
 @section('content')
-<div class="max-w-4xl mx-auto py-10 px-4">
-    <h1 class="text-2xl font-bold mb-4 text-pink-700">Order Detail {{ $order->order_number }}</h1>
-
-    <div class="bg-white rounded-lg shadow mb-6 p-4">
-        <p><strong>Date:</strong> {{ $order->created_at->format('d M Y, H:i') }}</p>
-        <p><strong>Status:</strong> {{ $order->order_status }}</p>
-        <p><strong>Payment:</strong> {{ $order->payment_method ?? 'Manual Transfer' }}</p>
-        <p><strong>Total:</strong> Rp{{ number_format($order->total_amount, 0, ',', '.') }}</p>
-
+<div class="max-w-5xl mx-auto py-12 px-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <nav class="text-sm text-gray-500 mb-2">
+                <a href="{{ route('orders.index') }}" class="hover:text-pink-600">My Orders</a> / 
+                <span class="text-gray-900 font-medium">Detail</span>
+            </nav>
+            <h1 class="text-3xl font-bold text-gray-900">Order #{{ $order->order_number }}</h1>
+            <p class="text-gray-500 text-sm">Placed on {{ $order->created_at->format('d M Y, H:i') }}</p>
+        </div>
+        
         @php
-            $orderStatusRaw = (string) ($order->order_status ?? '');
-            $orderStatus = strtolower($orderStatusRaw);
-
-            $isPacked = in_array($orderStatus, ['processing', 'shipped', 'completed'], true);
-            $isInProgress = in_array($orderStatus, ['shipped', 'completed'], true);
-            $isComplete = ($orderStatus === 'completed');
-            $isCancelled = ($orderStatus === 'cancelled');
-
-            $statusMap = [
-                'pending' => 'Menunggu konfirmasi',
-                'processing' => 'Sedang dikemas',
-                'shipped' => 'Dalam pengiriman',
-                'completed' => 'Selesai',
-                'cancelled' => 'Dibatalkan',
+            $orderStatusRaw = strtolower($order->order_status ?? '');
+            $statusColors = [
+                'pending' => 'bg-amber-100 text-amber-700 border-amber-200',
+                'processing' => 'bg-blue-100 text-blue-700 border-blue-200',
+                'shipped' => 'bg-indigo-100 text-indigo-700 border-indigo-200',
+                'completed' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                'cancelled' => 'bg-rose-100 text-rose-700 border-rose-200',
             ];
-            $currentStatusText = $statusMap[$orderStatus] ?? $orderStatusRaw;
+            $statusColor = $statusColors[$orderStatusRaw] ?? 'bg-gray-100 text-gray-700 border-gray-200';
         @endphp
+        
+        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border {{ $statusColor }}">
+            <span class="w-2 h-2 mr-2 rounded-full bg-current"></span>
+            {{ ucfirst($orderStatusRaw) }}
+        </span>
+    </div>
 
-        <div class="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <h2 class="text-lg font-semibold text-pink-700">Order Status</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-8">Order Journey</h2>
+                
+                <div class="relative flex items-center justify-between">
+                    <div class="absolute left-6 right-6 top-6 h-1 bg-gray-100 -z-0"></div>
+                    
+                    <div class="absolute left-6 top-6 h-1 bg-pink-500 transition-all duration-700 -z-0" 
+                         id="mainProgressBar" style="width: 0%"></div>
 
-            <div class="mt-4 flex items-start justify-between">
-                <div class="flex-1 text-center">
-                    <div id="nsStatusIcon1" class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-300 text-white transition-colors">
-                        <i class="fas fa-box-open text-xl"></i>
+                    @php
+                        $steps = [
+                            ['id' => 'processing', 'label' => 'Packed', 'icon' => 'fa-box-open'],
+                            ['id' => 'shipped', 'label' => 'Shipped', 'icon' => 'fa-truck'],
+                            ['id' => 'completed', 'label' => 'Arrived', 'icon' => 'fa-check-circle']
+                        ];
+                    @endphp
+
+                    @foreach($steps as $index => $step)
+                    <div class="relative z-10 flex flex-col items-center group">
+                        <div id="step-icon-{{ $index + 1 }}" 
+                             data-icon="{{ $step['icon'] }}"
+                             class="step-icon w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-gray-400 group-hover:border-pink-300">
+                            <i class="fas {{ $step['icon'] }} text-lg"></i>
+                        </div>
+                        <span class="mt-3 text-xs font-bold uppercase tracking-wider text-gray-500">{{ $step['label'] }}</span>
                     </div>
-                    <p class="mt-2 text-sm font-medium text-gray-700">Sedang dikemas</p>
-                </div>
-
-                <div class="flex-1 px-2 pt-5">
-                    <div class="ns-progress-line w-full rounded-full bg-gray-200">
-                        <div id="nsProgressBarFill1" class="ns-progress-line w-0 rounded-full bg-pink-500 transition-all duration-500"></div>
-                    </div>
-                </div>
-
-                <div class="flex-1 text-center">
-                    <div id="nsStatusIcon2" class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-300 text-white transition-colors">
-                        <i class="fas fa-truck text-xl"></i>
-                    </div>
-                    <p class="mt-2 text-sm font-medium text-gray-700">Dalam pengiriman</p>
-                </div>
-
-                <div class="flex-1 px-2 pt-5">
-                    <div class="ns-progress-line w-full rounded-full bg-gray-200">
-                        <div id="nsProgressBarFill2" class="ns-progress-line w-0 rounded-full bg-pink-500 transition-all duration-500"></div>
-                    </div>
-                </div>
-
-                <div class="flex-1 text-center">
-                    <div id="nsStatusIcon3" class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-300 text-white transition-colors">
-                        <i class="fas fa-check-circle text-xl"></i>
-                    </div>
-                    <p class="mt-2 text-sm font-medium text-gray-700">Selesai</p>
+                    @endforeach
                 </div>
             </div>
 
-            <p class="mt-4 text-center text-sm text-gray-600">
-                Current status:
-                <span class="font-semibold text-gray-900">{{ $currentStatusText }}</span>
-                @if ($isCancelled)
-                    <span class="ml-2 inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700">Cancelled</span>
-                @endif
-            </p>
-        </div>
-
-        <div class="mt-4">
-            <h2 class="text-lg font-semibold mb-2">Items</h2>
-            <table class="w-full text-sm border">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border p-2 text-left">Product</th>
-                        <th class="border p-2">Qty</th>
-                        <th class="border p-2">Price</th>
-                        <th class="border p-2">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach ($order->items as $item)
-                    <tr>
-                        <td class="border p-2">{{ $item->product->name ?? 'Produk dihapus' }}</td>
-                        <td class="border p-2 text-center">{{ $item->quantity }}</td>
-                        <td class="border p-2 text-right">Rp{{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                        <td class="border p-2 text-right">Rp{{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-6">
-            <h2 class="text-lg font-semibold mb-2">Proof of Payment</h2>
-            @if ($order->proof_of_payment_path)
-                <img src="{{ asset('storage/' . $order->proof_of_payment_path) }}" alt="Bukti Pembayaran" class="max-h-64 object-contain border rounded" />
-                <div class="mt-2">
-                    <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" class="text-pink-600 underline">View Full</a>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-gray-900">Purchased Items</h2>
+                    <span class="text-sm text-gray-500">{{ $order->items->count() }} Items</span>
                 </div>
-            @else
-                <p class="text-gray-500">No payment proof uploaded.</p>
-            @endif
-        </div>
-    </div>
+                <div class="divide-y divide-gray-100">
+                    @foreach ($order->items as $item)
+                    <div class="p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                        <div class="w-20 h-20 rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden border">
+                            @php
+                                $productImagePath = $item->product->image ?? null;
+                                $productImageUrl = $productImagePath
+                                    ? (filter_var($productImagePath, FILTER_VALIDATE_URL) ? $productImagePath : asset($productImagePath))
+                                    : null;
+                            @endphp
 
-    <div class="flex gap-3">
-        <a href="{{ route('orders.index') }}" class="rounded bg-gray-200 px-4 py-2 text-gray-800">Back to Orders</a>
-        <a href="{{ route('landing.index') }}" class="rounded bg-pink-600 px-4 py-2 text-white">Home</a>
+                            @if($productImageUrl)
+                                <img src="{{ $productImageUrl }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <i class="fas fa-image text-2xl"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-gray-900">{{ $item->product->name ?? 'Deleted Product' }}</h3>
+                            <p class="text-sm text-gray-500">Qty: {{ $item->quantity }} × Rp{{ number_format($item->unit_price, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="text-right font-bold text-gray-900">
+                            Rp{{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="bg-gray-50 p-6 space-y-2">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span>Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between text-xl font-black text-pink-700 pt-2 border-t">
+                        <span>Total Amount</span>
+                        <span>Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Payment Info</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold">Method</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $order->payment_method ?? 'Manual Transfer' }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 border-t">
+                        <p class="text-xs text-gray-500 uppercase font-bold mb-3">Proof of Payment</p>
+                        @if ($order->proof_of_payment_path)
+                            <div class="relative group cursor-pointer overflow-hidden rounded-xl border">
+                                <img src="{{ asset('storage/' . $order->proof_of_payment_path) }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" 
+                                   class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white font-medium transition-opacity">
+                                    Click to View
+                                </a>
+                            </div>
+                        @else
+                            <div class="bg-gray-50 rounded-xl p-4 text-center border-2 border-dashed">
+                                <p class="text-sm text-gray-400 italic">No proof uploaded</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <a href="{{ route('landing.index') }}" class="w-full py-4 bg-pink-600 hover:bg-pink-700 text-white rounded-2xl font-bold text-center shadow-lg shadow-pink-200 transition-all active:scale-95">
+                    Continue Shopping
+                </a>
+                <a href="{{ route('orders.index') }}" class="w-full py-4 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-2xl font-bold text-center transition-all">
+                    Back to My Orders
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -133,44 +167,92 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const isPacked = @json($isPacked);
-            const isInProgress = @json($isInProgress);
-            const isComplete = @json($isComplete);
-            const isCancelled = @json($isCancelled);
+            const isPacked = @json($isPacked ?? false);
+            const isInProgress = @json($isInProgress ?? false);
+            const isComplete = @json($isComplete ?? false);
+            const isCancelled = @json($isCancelled ?? false);
 
-            const icon1 = document.getElementById('nsStatusIcon1');
-            const icon2 = document.getElementById('nsStatusIcon2');
-            const icon3 = document.getElementById('nsStatusIcon3');
-            const progressBarFill1 = document.getElementById('nsProgressBarFill1');
-            const progressBarFill2 = document.getElementById('nsProgressBarFill2');
+            const progressBar = document.getElementById('mainProgressBar');
+            const icons = [
+                document.getElementById('step-icon-1'),
+                document.getElementById('step-icon-2'),
+                document.getElementById('step-icon-3')
+            ];
 
-            if (!icon1 || !icon2 || !icon3 || !progressBarFill1 || !progressBarFill2) return;
-            if (isCancelled) return;
+            const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-            const activate = (icon, fill) => {
-                icon.classList.remove('bg-gray-300');
-                icon.classList.add('bg-pink-500');
-                if (fill) {
-                    fill.classList.remove('w-0');
-                    fill.classList.add('w-full');
+            const setStepState = (index, state) => {
+                const el = icons[index];
+                if (!el) return;
+
+                const i = el.querySelector('i');
+                const original = el.getAttribute('data-icon') || 'fa-circle';
+
+                // reset
+                el.classList.remove(
+                    'bg-pink-600', 'border-pink-600', 'text-white', 'ring-4', 'ring-pink-100',
+                    'bg-emerald-600', 'border-emerald-600', 'ring-emerald-100',
+                    'bg-white', 'text-gray-400', 'border-gray-200', 'text-pink-600', 'text-emerald-600'
+                );
+
+                if (state === 'pending') {
+                    el.classList.add('bg-white', 'border-gray-200', 'text-gray-400');
+                    if (i) i.className = `fas ${original} text-lg`;
+                    return;
+                }
+
+                if (state === 'active') {
+                    el.classList.add('bg-white', 'border-pink-600', 'text-pink-600', 'ring-4', 'ring-pink-100');
+                    if (i) i.className = `fas ${original} text-lg`;
+                    return;
+                }
+
+                if (state === 'completed') {
+                    el.classList.add('bg-pink-600', 'border-pink-600', 'text-white');
+                    if (i) i.className = 'fas fa-check text-lg';
+                    return;
+                }
+
+                if (state === 'completedFinal') {
+                    el.classList.add('bg-emerald-600', 'border-emerald-600', 'text-white', 'ring-4', 'ring-emerald-100');
+                    if (i) i.className = 'fas fa-check text-lg';
                 }
             };
 
-            setTimeout(() => {
-                if (isPacked) activate(icon1, progressBarFill1);
-            }, 100);
+            const setProgress = (percent) => {
+                // Because the bar starts at left-6 and should stop at right-6,
+                // we can map 0-100% within that bounded track.
+                progressBar.style.width = `${clamp(percent, 0, 100)}%`;
+            };
+
+            if (isCancelled) return;
 
             setTimeout(() => {
-                if (isInProgress) activate(icon2, progressBarFill2);
-            }, 600);
+                // default
+                setProgress(0);
+                setStepState(0, 'pending');
+                setStepState(1, 'pending');
+                setStepState(2, 'pending');
 
-            setTimeout(() => {
-                if (isComplete) {
-                    activate(icon3, null);
-                    progressBarFill2.classList.remove('bg-pink-500');
-                    progressBarFill2.classList.add('bg-emerald-500');
+                if (isPacked) {
+                    setProgress(0);
+                    setStepState(0, 'active');
                 }
-            }, 1100);
+
+                if (isInProgress) {
+                    setProgress(50);
+                    setStepState(0, 'completed');
+                    setStepState(1, 'active');
+                }
+
+                if (isComplete) {
+                    setProgress(100);
+                    progressBar.classList.replace('bg-pink-500', 'bg-emerald-500');
+                    setStepState(0, 'completed');
+                    setStepState(1, 'completed');
+                    setStepState(2, 'completedFinal');
+                }
+            }, 300);
         });
     </script>
 @endpush
