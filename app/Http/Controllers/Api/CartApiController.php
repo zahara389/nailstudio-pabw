@@ -21,7 +21,7 @@ class CartApiController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user(); // ✅ PALING AMAN
+        $user = $request->user(); 
 
         $cart = Cart::with(['items.product'])
             ->where('user_id', $user->id)
